@@ -1,0 +1,5 @@
+id = "sdk"
+name = "SDK"
+description = "SDK for Airbrush"
+version = "0.1.0"
+mainClass = "gg.airbrush.sdk.SDKPlugin"

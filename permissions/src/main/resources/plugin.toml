@@ -1,0 +1,6 @@
+id = "permissions"
+name = "Permissions"
+description = "The permission manager for Airbrush."
+version = "0.1.0"
+mainClass = "gg.airbrush.permissions.Permissions"
+dependencies = ["sdk"]

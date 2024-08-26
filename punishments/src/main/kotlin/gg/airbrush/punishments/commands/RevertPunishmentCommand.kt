@@ -1,0 +1,91 @@
+package gg.airbrush.punishments.commands
+
+import gg.airbrush.discord.bot
+import gg.airbrush.punishments.enums.PunishmentTypes
+import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.server.lib.mm
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.minestom.server.adventure.audience.Audiences
+import net.minestom.server.command.CommandSender
+import net.minestom.server.command.builder.Command
+import net.minestom.server.command.builder.CommandContext
+import net.minestom.server.command.builder.CommandExecutor
+import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.entity.Player
+import net.minestom.server.utils.mojang.MojangUtils
+import java.awt.Color
+import java.util.UUID
+
+class RevertPunishmentCommand : Command("revertpun") {
+	init {
+		setCondition { sender, _ ->
+			sender.hasPermission("core.punish")
+		}
+
+		defaultExecutor = CommandExecutor { sender, _ ->
+			sender.sendMessage("<s>Invalid usage.".mm())
+		}
+
+		addSyntax(this::apply, ArgumentType.UUID("punishment"))
+	}
+
+	private fun getName(punishment: AirbrushPunishment): String {
+		val nameData = MojangUtils.fromUuid(punishment.data.player)
+		var playerName = "Not found"
+		if(nameData !== null && nameData.isJsonObject) {
+			playerName = nameData.get("name").asString
+		}
+		return playerName
+	}
+
+	private fun sendLog(punishment: AirbrushPunishment, moderator: String) {
+		val victim = getName(punishment)
+
+		Audiences.players { p -> p.hasPermission("core.staff") }
+			.sendMessage(Translations.translate("core.punish.reversion", moderator, victim).mm())
+	}
+
+	private fun apply(sender: CommandSender, context: CommandContext) {
+		if(sender !is Player) return
+
+		val punishmentId = context.get<UUID>("punishment")
+
+		val punishmentExists = SDK.punishments.exists(punishmentId)
+
+		if(!punishmentExists) {
+			sender.sendMessage("<error>A punishment with that ID does not exist!".mm())
+			return
+		}
+
+		val punishment = SDK.punishments.get(punishmentId)
+
+		if(!punishment.data.active) {
+			sender.sendMessage("<error>That punishment is not active!".mm())
+			return
+		}
+
+		punishment.setActive(false)
+
+		sender.sendMessage("<success>Successfully reverted punishment.".mm())
+
+		this.sendLog(punishment, sender.username)
+		// Make this a variable in a config
+		val discordLogChannel = bot.getTextChannelById("1162903708108071037")
+			?: throw Exception("Failed to find #staff-logs channel")
+
+		val victim = getName(punishment)
+
+		val logEmbed = EmbedBuilder().setTitle("Punishment for $victim reverted")
+			.setColor(Color.decode("#ff6e6e"))
+			.setThumbnail("https://crafatar.com/renders/head/${punishment.getPlayer()}")
+			.addField(MessageEmbed.Field("Reverted by", sender.username, false))
+			.addField(MessageEmbed.Field("Punishment ID", punishment.data.id, false))
+			.setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
+			.build()
+
+		discordLogChannel.sendMessageEmbeds(logEmbed).queue()
+	}
+}

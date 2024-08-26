@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bamboo/airbrush.bamboo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bamboo/airbrush.bamboo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bamboo/airbrush.bamboo.test.iml" filepath="$PROJECT_DIR$/.idea/modules/bamboo/airbrush.bamboo.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/airbrush.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/airbrush.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/discord/airbrush.discord.main.iml" filepath="$PROJECT_DIR$/.idea/modules/discord/airbrush.discord.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/permissions/airbrush.permissions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/permissions/airbrush.permissions.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pocket/airbrush.pocket.main.iml" filepath="$PROJECT_DIR$/.idea/modules/pocket/airbrush.pocket.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/punishments/airbrush.punishments.main.iml" filepath="$PROJECT_DIR$/.idea/modules/punishments/airbrush.punishments.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sdk/airbrush.sdk.main.iml" filepath="$PROJECT_DIR$/.idea/modules/sdk/airbrush.sdk.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/airbrush.server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/server/airbrush.server.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/airbrush.server.test.iml" filepath="$PROJECT_DIR$/.idea/modules/server/airbrush.server.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/worlds/airbrush.worlds.main.iml" filepath="$PROJECT_DIR$/.idea/modules/worlds/airbrush.worlds.main.iml" />
+    </modules>
+  </component>
+</project>

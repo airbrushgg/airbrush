@@ -1,0 +1,10 @@
+# IDE-specific
+.idea/
+.gradle/
+
+build/
+out/
+
+# Local Minestom server
+extensions/
+*.schematic

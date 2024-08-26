@@ -1,0 +1,5 @@
+id = "pocket"
+name = "Pocket"
+description = "GUI library for Minestom."
+version = "0.1.0"
+mainClass = "gg.airbrush.pocket.Pocket"

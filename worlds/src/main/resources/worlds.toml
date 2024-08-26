@@ -1,0 +1,12 @@
+## The default world.
+## If this world does not exist, it will be created with the schematic.
+[default]
+name = "spawn"
+schematic = "schematics/spawn.schem"
+
+## Templates are a way to programmatically create new worlds.
+## The world manager will load all templates declared in this file which you
+## can then reference by its ID.
+#[[template]]
+#id = "player_canvas"
+#schematic = "schematics/player_canvas.schem"

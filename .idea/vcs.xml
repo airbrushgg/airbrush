@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/bamboo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/discord" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/permissions" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pocket" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/punishments" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/template" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/worlds" vcs="Git" />
+  </component>
+</project>

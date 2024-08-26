@@ -1,0 +1,5 @@
+id = "${projectId}"
+name = "${projectName}"
+description = "${projectDescription}"
+version = "${version}"
+mainClass = "gg.airbrush..Template"

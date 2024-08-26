@@ -1,0 +1,13 @@
+botToken = ""
+channel = ""
+
+linkRequest = "<newline><#82a9ce>%username%<#bfdefb> requested to link their Discord<newline><#bffbdb><hover:show_text:'<#ffd4e3><i>Click to approve'><click:run_command:/link accept %sessionId%>✔ Accept </click><gray>| <#fbcebf><hover:show_text:'<#ffd4e3><i>Click to deny'><click:run_command:/link deny %sessionId%>✗ Deny</click><newline>"
+
+[join]
+content = "%name% joined the server"
+[leave]
+content = "%name% left"
+[chat]
+content = "**%name%**: %message%"
+[ingame]
+content = "<s>[#] <p>%name%</p>: %message%"
