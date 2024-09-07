@@ -2,7 +2,7 @@ package gg.airbrush.worlds
 
 import cc.ekblad.toml.decode
 import cc.ekblad.toml.tomlMapper
-import dev.flavored.bamboo.Bamboo
+import dev.flavored.bamboo.SchematicReader
 import gg.airbrush.sdk.lib.ConfigUtils
 import gg.airbrush.server.registerDefaultInstance
 import gg.airbrush.worlds.events.InstanceReadyEvent
@@ -25,6 +25,8 @@ object WorldManager {
 
     private val config: WorldConfig
     private val instanceManager = MinecraftServer.getInstanceManager()
+
+    private val reader = SchematicReader()
 
     private lateinit var _defaultInstance: InstanceContainer
     val defaultInstance get() = _defaultInstance
@@ -62,7 +64,7 @@ object WorldManager {
         instance.setTag(MANAGED_TAG, true)
 
         val schematicPath = Path.of(template.schematic)
-        val schematic = Bamboo.fromPath(schematicPath) ?: return instance
+        val schematic = reader.fromPath(schematicPath) ?: return instance
 
         val position = Pos(0.0, 4.0, 0.0)
         schematic.paste(instance, position)
@@ -119,8 +121,7 @@ object WorldManager {
         if (schematicPath.notExists())
             throw IOException("The default world schematic does not exist.")
 
-        val schematic = Bamboo.fromPath(schematicPath)
-            ?: throw Exception("Could not load default world schematic.")
+        val schematic = reader.fromPath(schematicPath)
         schematic.paste(_defaultInstance, Pos(0.0, 4.0, 0.0))
         // TODO: We should only save the world when the schematic has been fully pasted.
         _defaultInstance.saveChunksToStorage().join()
@@ -143,8 +144,7 @@ object WorldManager {
 
             if (worldPath.exists()) return
 
-            val schematic = Bamboo.fromPath(Path.of(world.schematic))
-                ?: throw Exception("Could not load schematic for world: ${world.name}")
+            val schematic = reader.fromPath(Path.of(world.schematic))
             schematic.paste(instance, Pos(0.0, 4.0, 0.0))
 
             // TODO: We should only send the event when the schematic has been fully pasted.
