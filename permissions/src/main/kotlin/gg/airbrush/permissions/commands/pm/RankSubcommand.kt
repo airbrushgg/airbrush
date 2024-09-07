@@ -6,6 +6,8 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.ranks.AirbrushRank
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.nbt.TagStringIO
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.minestom.server.MinecraftServer
@@ -17,7 +19,8 @@ import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentType.*
 import net.minestom.server.permission.Permission
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
+import net.minestom.server.utils.nbt.BinaryTagWriter
+import java.io.DataOutputStream
 import java.util.*
 
 object RankSubcommand : Command("rank") {
@@ -42,7 +45,7 @@ object RankSubcommand : Command("rank") {
          addSyntax(this::listPermissions, permission, Literal("list"))
          addSyntax(this::removePermission, permission, Literal("remove"), key)
          addSyntax(this::addPermission, permission, Literal("add"), key, NbtCompound("value")
-             .setDefaultValue(NBTCompound()))
+             .setDefaultValue(CompoundBinaryTag.empty()))
      }
 
     override fun addSyntax(
@@ -180,7 +183,7 @@ object RankSubcommand : Command("rank") {
     private fun addPermission(sender: CommandSender, context: CommandContext) {
         val (name, rank) = getRank(context) ?: return
         val key = context.get<String>("key")
-        val value = context.getOrDefault("value", NBTCompound())
+        val value = context.getOrDefault("value", CompoundBinaryTag.empty())
 
         if (rank.getData().permissions.any { it.key == key })
             rank.removePermission(key) // Override permission
@@ -194,7 +197,7 @@ object RankSubcommand : Command("rank") {
                 player.addPermission(Permission(key, value))
         }
 
-        sender.sendMessage("<s>Added permission <p>$key</p> with value <p>${value.toSNBT()}</p> to rank <p>$name</p>.".mm())
+        sender.sendMessage("<s>Added permission <p>$key</p> with value <p>${TagStringIO.builder().build().asString(value)}</p> to rank <p>$name</p>.".mm())
     }
 
     private fun removePermission(sender: CommandSender, context: CommandContext) {

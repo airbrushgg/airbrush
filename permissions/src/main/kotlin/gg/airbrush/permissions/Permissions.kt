@@ -4,12 +4,14 @@ import gg.airbrush.permissions.commands.PermissionManager
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.ranks.AirbrushRank
 import gg.airbrush.server.plugins.Plugin
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.nbt.TagStringIO
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
-import net.minestom.server.event.player.PlayerLoginEvent
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.permission.Permission
-import org.jglrxavpok.hephaistos.nbt.NBTCompound
-import org.jglrxavpok.hephaistos.parser.SNBTParser
+import net.minestom.server.utils.nbt.BinaryTagReader
+import java.io.DataInputStream
 import java.util.*
 
 class Permissions : Plugin() {
@@ -18,7 +20,7 @@ class Permissions : Plugin() {
         commandManager.register(PermissionManager())
 
         val eventManager = MinecraftServer.getGlobalEventHandler()
-        eventManager.addListener(PlayerLoginEvent::class.java) { event ->
+        eventManager.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
             val player = event.player
 
             if (!SDK.players.exists(player.uuid))
@@ -46,9 +48,9 @@ class Permissions : Plugin() {
             addPermissions(player, parent)
 
         for (permissionData in data.permissions) {
-            val nbt = SNBTParser((permissionData.value ?: "{}").reader()).parse()
+            val nbt = TagStringIO.builder().build().asCompound(permissionData.value ?: "{}")
 
-            if (nbt !is NBTCompound) {
+            if (nbt !is CompoundBinaryTag) {
                 println("Found invalid NBT for permission '${permissionData.key}' in rank '${data.name}'")
                 continue
             }
