@@ -8,6 +8,6 @@ content = "%name% joined the server"
 [leave]
 content = "%name% left"
 [chat]
-content = "**%name%**: %message%"
+content = "`[%timestamp%] %rank% %name%: %message%`"
 [ingame]
 content = "<s>[#] <p>%name%</p>: %message%"
