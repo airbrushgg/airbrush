@@ -25,7 +25,7 @@ import java.time.Duration
 import java.util.*
 import kotlin.time.toKotlinDuration
 
-class Boost : Command("boost", "boosters"), CommandExecutor {
+class Boost : Command("boost", "booster", "boosters"), CommandExecutor {
     init {
         defaultExecutor = this
     }

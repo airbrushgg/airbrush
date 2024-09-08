@@ -136,20 +136,25 @@ object WorldManager {
             }
 
             val worldPath = Path.of(world.path ?: "${world.name}.polar")
+            println("Loading world $worldPath")
             val instance = instanceManager.createInstanceContainer(fullbrightDimension).apply {
                 chunkLoader = PolarLoader(worldPath)
                 setTag(MANAGED_TAG, true)
                 setTag(PERSISTENT_TAG, world.name)
             }
+            println("Created instance")
 
             if (worldPath.exists()) return
 
+            println("Pasting schematic")
             val schematic = reader.fromPath(Path.of(world.schematic))
             schematic.paste(instance, Pos(0.0, 4.0, 0.0))
+            println("Schematic pasted")
 
             // TODO: We should only send the event when the schematic has been fully pasted.
             instance.eventNode().call(InstanceReadyEvent(instance))
             instance.saveChunksToStorage().join()
+            println("Done")
         }
     }
 

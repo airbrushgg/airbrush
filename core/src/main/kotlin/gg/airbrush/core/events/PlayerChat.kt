@@ -88,9 +88,7 @@ class PlayerChat {
             val messageComponent = Component.text { builder ->
                 builder.append("<${TextColor.color(levelColor).asHexString()}>[$level]".mm())
                 if (rankData.prefix.isNotEmpty()) {
-                    builder.appendSpace().append("<s>${rankData.prefix}".mm()
-                        .appendSpace()
-                        .append(Component.text(player.username)))
+                    builder.appendSpace().append("<s>${rankData.prefix} ${player.username}".mm())
                 } else builder.append("<p>${player.username}".mm())
                 builder.appendSpace().append("<s>- <white>$message".mm())
             }
