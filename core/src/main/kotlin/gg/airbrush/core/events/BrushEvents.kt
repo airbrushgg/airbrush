@@ -117,7 +117,11 @@ class BrushEvents {
             .filterNot { pos ->
                 // Filter out any blocks that should not get painted.
                 val block = instance.getBlock(pos)
-	            val exclusions = block.isAir || block.compare(chosenBlock) || block.compare(Material.BARRIER.block())
+	            val exclusions = block.isAir
+                        || block.compare(chosenBlock)
+                        || block.compare(Material.BARRIER.block())
+                        // TODO(cal): Improve this with potential region system?
+                        || pos.y() == 3.0
 	            val mask = (currentMask != null) && !block.compare(currentMask)
 	            mask || exclusions
             }
