@@ -72,12 +72,11 @@ class PlayerChat {
                 if (player.hasPermission("airbrush.staff")) {
                     builder.append("<s>☆ <p>${player.username} <s>is a staff member.\n\n".mm())
                 } else if (player.hasPermission("core.donor")) {
-                    builder.append("<donator>☆ ${player.username}</donator> <s>is a donator.\n\n".mm())
+                    builder.append("<donator>☆ ${player.username}</donator> <s>is a star.\n\n".mm())
                 }
 
-                val fullPrefix = getFullPrefix(rankData)
-                if (fullPrefix.isNotEmpty()) {
-                    builder.append(fullPrefix.mm()).appendSpace()
+                if (rankData.prefix.isNotEmpty()) {
+                    builder.append(rankData.prefix.mm()).appendSpace()
                 }
 
                 builder.append("<p>${player.username}\n".mm())
@@ -96,18 +95,5 @@ class PlayerChat {
 
             messageComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
         }
-    }
-
-    private fun getFullPrefix(rank: RankData): String {
-        // If the prefix belongs to a donator rank, just return the prefix as-is.
-        if (rank.prefix.contains("☆"))
-            return rank.prefix
-
-        // If there is no prefix, we probably have a default rank.
-        if (rank.prefix.isBlank())
-            return ""
-
-        // Otherwise, return the transformed prefix.
-        return rank.prefix.replaceFirst(rank.name.first().toString(), rank.name.uppercase(), ignoreCase = true)
     }
 }
