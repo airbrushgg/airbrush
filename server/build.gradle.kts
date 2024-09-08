@@ -19,7 +19,7 @@ repositories {
 dependencies {
     implementation("net.minestom:minestom-snapshots:1f34e60ea6")
     implementation("dev.hollowcube:polar:1.11.0")
-    implementation("dev.flavored:bamboo:1.0.0")
+    implementation("dev.flavored:bamboo:1.1.0")
     implementation("net.kyori:adventure-text-minimessage:4.14.0")
     implementation("cc.ekblad:4koma:1.2.0")
     implementation("org.apache.logging.log4j:log4j-api:2.17.2")

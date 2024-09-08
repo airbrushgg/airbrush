@@ -1,6 +1,6 @@
 package gg.airbrush.core.commands.admin
 
-import dev.flavored.bamboo.Bamboo
+import dev.flavored.bamboo.SchematicReader
 import gg.airbrush.core.lib.Constants
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
@@ -13,6 +13,8 @@ import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 
 class Reset : Command("resetworld"), CommandExecutor {
+    private val schematicReader = SchematicReader()
+
     init {
         defaultExecutor = this
         setCondition { sender, _ -> sender.hasPermission("core.admin") }
@@ -38,8 +40,8 @@ class Reset : Command("resetworld"), CommandExecutor {
         }
 
         val center = Pos(0.0, 4.0, 0.0)
-        val schematic = Bamboo.fromFile(schematicFile)
-        schematic.paste(instance, center)
+        val schematic = schematicReader.fromPath(schematicFile.toPath())
+        schematic.paste(instance, center, true)
 
         instance.saveChunksToStorage().join()
         sender.sendMessage("<success>The spawn world was reset.".mm())

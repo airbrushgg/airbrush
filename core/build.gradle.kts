@@ -22,7 +22,7 @@ dependencies {
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
     compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
     compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
-    compileOnly("dev.flavored:bamboo:0.1.0")
+    compileOnly("dev.flavored:bamboo:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     compileOnly("dev.hollowcube:polar:1.3.2")
     compileOnly("cc.ekblad:4koma:1.2.0")

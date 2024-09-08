@@ -67,7 +67,7 @@ object WorldManager {
         val schematic = reader.fromPath(schematicPath) ?: return instance
 
         val position = Pos(0.0, 4.0, 0.0)
-        schematic.paste(instance, position)
+        schematic.paste(instance, position, true)
 
         // TODO: We should only send the event when the schematic has been fully pasted.
         val readyEvent = InstanceReadyEvent(instance)
