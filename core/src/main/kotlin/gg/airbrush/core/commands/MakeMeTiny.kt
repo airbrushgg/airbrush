@@ -1,6 +1,7 @@
 package gg.airbrush.core.commands
 
 import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.server.lib.mm
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -25,6 +26,6 @@ class MakeMeTiny : Command("tiny"), CommandExecutor {
             "core.commands.tiny",
             if (enabled) "no longer" else "now",
             if (enabled) " ;c" else "!"
-        ))
+        ).mm())
     }
 }
