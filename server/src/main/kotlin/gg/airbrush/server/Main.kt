@@ -30,6 +30,8 @@ val pluginManager = PluginManager()
 private lateinit var defaultInstance: Instance
 
 fun main() {
+    val start = System.nanoTime()
+
     registerEvents()
     registerCommands()
     registerVelocity()
@@ -46,14 +48,16 @@ fun main() {
     server.start("0.0.0.0", port.toInt())
     consoleThread = setupConsole()
 
-    logger.info("Server started on port $port")
+    val time = System.nanoTime() - start
+    logger.info("Done ({})! For help, type \"help\"", String.format(Locale.ROOT, "%.3fs", time.toDouble() / 1.0E9))
 }
 
 fun registerVelocity() {
     val secret = File("velocity.secret")
+    val secretEnv = System.getenv("FABRIC_PROXY_SECRET")
 
-    if (secret.exists()) {
-        VelocityProxy.enable(secret.readText())
+    if (secretEnv != null || secret.exists()) {
+        VelocityProxy.enable(secretEnv ?: secret.readText())
         logger.info("Registered Velocity Proxy")
         return
     }

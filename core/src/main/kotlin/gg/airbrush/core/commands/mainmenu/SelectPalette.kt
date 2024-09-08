@@ -80,7 +80,7 @@ fun openPaletteGUI(p: Player) {
         inventory.put(char, createPaletteItem(paletteType, amountProgressed)) {
 			if(it.clickType == ClickType.RIGHT_CLICK && amountProgressed < paletteSize) {
 				sdkPlayer.setProgressionPalette(paletteType)
-				p.sendActionBar(Translations.translate("core.select_palette.progression_success", paletteType).mm())
+				p.sendActionBar(Translations.translate("core.select_palette.progression_success", paletteName).mm())
 			} else {
 				sdkPlayer.setPalette(paletteType)
 
