@@ -56,7 +56,8 @@ class Core : Plugin() {
 			Rollback(),
 			Teleport(),
 		    Mask(),
-		    Ad()
+		    Ad(),
+			MakeMeTiny()
 	    )
 
 	    // On start

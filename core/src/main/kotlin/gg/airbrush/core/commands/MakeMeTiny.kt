@@ -21,6 +21,10 @@ class MakeMeTiny : Command("tiny"), CommandExecutor {
         val enabled = scale.baseValue == 0.5
 
         scale.baseValue = if (enabled) 1.0 else 0.5
-        sender.sendMessage(Translations.translate("core.commands.tiny", if (enabled) "no longer" else "now"))
+        sender.sendMessage(Translations.translate(
+            "core.commands.tiny",
+            if (enabled) "no longer" else "now",
+            if (enabled) " ;c" else "!"
+        ))
     }
 }
