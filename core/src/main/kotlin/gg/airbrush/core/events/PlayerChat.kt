@@ -88,9 +88,10 @@ class PlayerChat {
             val messageComponent = Component.text { builder ->
                 builder.append("<${TextColor.color(levelColor).asHexString()}>[$level]".mm())
                 if (rankData.prefix.isNotEmpty()) {
-                    builder.appendSpace().append("<s>${rankData.prefix}".mm())
-                }
-                builder.appendSpace().append("<p>${player.username}<s> - <white>$message".mm())
+                    builder.appendSpace().append("<s>${rankData.prefix}".mm()
+                        .append(Component.text(player.username)))
+                } else builder.append("<p>${player.username}".mm())
+                builder.appendSpace().append("<s> - <white>$message".mm())
             }
 
             messageComponent.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
