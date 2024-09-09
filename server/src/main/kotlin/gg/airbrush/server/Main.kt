@@ -12,6 +12,9 @@ import net.minestom.server.extras.velocity.VelocityProxy
 import net.minestom.server.instance.Instance
 import net.minestom.server.timer.TaskSchedule
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.core.LoggerContext
+import org.apache.logging.log4j.core.appender.FileAppender
+import org.apache.logging.log4j.core.layout.PatternLayout
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -30,6 +33,8 @@ private lateinit var defaultInstance: Instance
 
 fun main() {
     val start = System.nanoTime()
+
+    configureLogAppender()
 
     registerEvents()
     registerCommands()
@@ -50,6 +55,30 @@ fun main() {
     val time = System.nanoTime() - start
     logger.info("Done ({})! For help, type \"help\"", String.format(Locale.ROOT, "%.3fs", time.toDouble() / 1.0E9))
 }
+
+fun configureLogAppender() {
+    val context = LogManager.getContext(false) as LoggerContext
+    val config = context.configuration
+
+    val layout = PatternLayout.newBuilder()
+        .withPattern("[%d{HH:mm:ss}] [%t/%level]: %msg%n")
+        .build()
+
+    val fileAppender = FileAppender.newBuilder()
+        .withFileName("logs/latest.log")
+        .setName("ServerLogAppender") // TIL: This needed a unique name?
+        .setLayout(layout)
+        .withAppend(true)
+        .build()
+
+    fileAppender.start()
+
+    val loggerConfig = config.getLoggerConfig("Server")
+    loggerConfig.addAppender(fileAppender, null, null)
+
+    context.updateLoggers()
+}
+
 
 fun registerVelocity() {
     val secret = File("velocity.secret")
@@ -112,7 +141,7 @@ fun registerEvents() {
 
     eventHandler.addListener(PlayerChatEvent::class.java) { event ->
         val player = event.player
-        logger.info("[Not Secure] ${player.username}: ${event.message}")
+        logger.info("${player.username}: ${event.message}")
     }
 
     scheduler.scheduleTask({
