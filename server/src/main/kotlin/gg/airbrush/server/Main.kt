@@ -16,8 +16,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -114,9 +112,7 @@ fun registerEvents() {
 
     eventHandler.addListener(PlayerChatEvent::class.java) { event ->
         val player = event.player
-
-        val timestamp = DateTimeFormatter.ofPattern("HH:mm:ss").format(ZonedDateTime.now())
-        logger.info("[$timestamp] [Server thread/INFO]: [Not Secure] ${player.username}: ${event.message}")
+        logger.info("[Not Secure] ${player.username}: ${event.message}")
     }
 
     scheduler.scheduleTask({
