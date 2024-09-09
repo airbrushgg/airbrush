@@ -10,13 +10,14 @@ import net.minestom.server.event.player.*
 import net.minestom.server.extras.MojangAuth
 import net.minestom.server.extras.velocity.VelocityProxy
 import net.minestom.server.instance.Instance
-import net.minestom.server.instance.block.Block
 import net.minestom.server.timer.TaskSchedule
 import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -113,7 +114,9 @@ fun registerEvents() {
 
     eventHandler.addListener(PlayerChatEvent::class.java) { event ->
         val player = event.player
-        logger.info("${player.username}: ${event.message}")
+
+        val timestamp = DateTimeFormatter.ofPattern("HH:mm:ss").format(ZonedDateTime.now())
+        logger.info("[$timestamp] [Server thread/INFO]: [Not Secure] ${player.username}: ${event.message}")
     }
 
     scheduler.scheduleTask({
