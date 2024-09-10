@@ -120,13 +120,15 @@ fun registerEvents() {
 
     eventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
         val player = event.player
+        val ip = player.playerConnection.remoteAddress
         event.spawningInstance = defaultInstance
-        logger.info("${player.username} joined Airbrush")
+        logger.info("[${ip}] ${player.username} joined Airbrush")
     }
 
     eventHandler.addListener(PlayerDisconnectEvent::class.java) { event ->
         val player = event.player
-        logger.info("${player.username} left Airbrush")
+        val ip = player.playerConnection.remoteAddress
+        logger.info("[${ip}] ${player.username} left Airbrush")
     }
 
     eventHandler.addListener(PlayerSpawnEvent::class.java) { event ->
