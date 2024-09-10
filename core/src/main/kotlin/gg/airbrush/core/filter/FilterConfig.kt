@@ -1,6 +1,7 @@
 package gg.airbrush.core.filter
 
 data class FilterConfig(
+    val logChannel: String,
     val root: Root,
     val rules: List<RuleDefinition>?
 ) {

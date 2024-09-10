@@ -68,7 +68,7 @@ class Core : Plugin() {
 
 		Boost.restoreActiveBoosters()
 
-        println("[Core] Loaded!")
+		MinecraftServer.LOGGER.info("[Core] Loaded!")
 
 	    MinecraftServer.getSchedulerManager().scheduleTask({
 			val broadcasts = Translations.translate("core.broadcasts").trimIndent().split("\n")

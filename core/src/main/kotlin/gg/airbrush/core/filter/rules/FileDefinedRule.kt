@@ -4,6 +4,7 @@ import gg.airbrush.core.filter.FilterAction
 import gg.airbrush.core.filter.FilterConfig
 import gg.airbrush.core.filter.FilterRule
 import gg.airbrush.server.lib.mm
+import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import java.nio.file.Path
 import kotlin.io.path.notExists
@@ -16,11 +17,11 @@ class FileDefinedRule(private val filterConfig: FilterConfig) : FilterRule {
         .orEmpty()
         .filter { rule ->
             if (rule.file == null && rule.pattern == null) {
-                println("[Core] Rule defined in filter.toml does not contain 'pattern' or 'file'")
+                MinecraftServer.LOGGER.info("[Core] Rule defined in filter.toml does not contain 'pattern' or 'file'")
                 return@filter false
             }
             if (rule.file != null && rule.pattern != null) {
-                println("[Core] Rule defined in filter.toml has both 'pattern' and 'file'")
+                MinecraftServer.LOGGER.info("[Core] Rule defined in filter.toml has both 'pattern' and 'file'")
                 return@filter false
             }
             if (rule.file != null && Path.of(rule.file).notExists()) {
@@ -35,7 +36,8 @@ class FileDefinedRule(private val filterConfig: FilterConfig) : FilterRule {
         validRules
             .filter { rule -> rule.file != null }
             .forEach { rule -> parsedPatternLists[rule] = parseFile(Path.of(rule.file!!)) }
-        println("[Core] Loaded ${validRules.size} user-defined filter rules (out of ${filterConfig.rules.orEmpty().size})")
+
+        MinecraftServer.LOGGER.info("[Core] Loaded ${validRules.size} user-defined filter rules (out of ${filterConfig.rules.orEmpty().size})")
     }
 
     override fun apply(player: Player, message: String): FilterAction {

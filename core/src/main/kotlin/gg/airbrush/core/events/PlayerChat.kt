@@ -29,9 +29,10 @@ class PlayerChat {
     private fun execute(event: PlayerChatEvent) {
         if (ChatFilter.shouldBlock(event.player, event.message)) {
             event.isCancelled = true
-	        // TODO: Make a global configuration of all the log channel IDs
-	        val filterLogs = bot.getTextChannelById("1178153995588612226")
-		        ?: throw Exception("Failed to find #filter-logs channel")
+
+            // TODO(cal): This should be better.
+	        val filterLogs = bot.getTextChannelById(ChatFilter.logChannel)
+		        ?: throw Exception("Failed to find respective logs channel")
 
 	        // TODO: Eventually get the filter rule they triggered? idk, that's an @apple thing
 	        val logEmbed = EmbedBuilder().setTitle("${event.player.username} triggered the filter")

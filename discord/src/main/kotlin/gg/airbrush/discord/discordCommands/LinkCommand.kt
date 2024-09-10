@@ -27,7 +27,7 @@ class LinkCommand {
 		try {
 			linkSession = SDK.linking.createSession(playerUUID, e.user.idLong)
 		} catch (ex: Exception) {
-			println(ex.message)
+			MinecraftServer.LOGGER.info(ex.message)
 			throw ex
 		}
 

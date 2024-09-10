@@ -3,6 +3,7 @@ package gg.airbrush.sdk
 import com.mongodb.MongoClientSettings
 import com.mongodb.kotlin.client.MongoClient
 import com.mongodb.kotlin.client.MongoDatabase
+import net.minestom.server.MinecraftServer
 import org.bson.UuidRepresentation
 import org.bson.codecs.UuidCodec
 import org.bson.codecs.configuration.CodecRegistries
@@ -13,7 +14,7 @@ object Database {
     private var connected: Boolean = false
 
     init {
-        println("[SDK] Connecting to database.")
+        MinecraftServer.LOGGER.info("[SDK] Connecting to database.")
 
         try {
 	        conn = MongoClient.create(config.database)

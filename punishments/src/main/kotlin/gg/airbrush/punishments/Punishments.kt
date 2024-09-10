@@ -63,7 +63,7 @@ class Punishments : Plugin() {
 			    val expiry = duration + it.getCreatedAt().epochSecond
 
 			    if(expiry < now) {
-				    println("[Punishments] Punishment expired, ID: ${it.data.id}.")
+				    MinecraftServer.LOGGER.info("[Punishments] Punishment expired, ID: ${it.data.id}.")
 				    it.setActive(false)
 				}
 		    }

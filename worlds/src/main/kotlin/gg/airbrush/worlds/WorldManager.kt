@@ -131,30 +131,30 @@ object WorldManager {
         val persistentWorlds = config.persistentWorlds.orEmpty()
         persistentWorlds.forEach { world ->
             if (persistentWorlds.singleOrNull() == null) {
-                println("[Worlds] ERROR! Config file contains multiple worlds with the name: ${world.name}")
+                MinecraftServer.LOGGER.info("[Worlds] ERROR! Config file contains multiple worlds with the name: ${world.name}")
                 return@forEach
             }
 
             val worldPath = Path.of(world.path ?: "${world.name}.polar")
-            println("Loading world $worldPath")
+            MinecraftServer.LOGGER.info("Loading world $worldPath")
             val instance = instanceManager.createInstanceContainer(fullbrightDimension).apply {
                 chunkLoader = PolarLoader(worldPath)
                 setTag(MANAGED_TAG, true)
                 setTag(PERSISTENT_TAG, world.name)
             }
-            println("Created instance")
+            MinecraftServer.LOGGER.info("Created instance")
 
             if (worldPath.exists()) return
 
-            println("Pasting schematic")
+            MinecraftServer.LOGGER.info("Pasting schematic")
             val schematic = reader.fromPath(Path.of(world.schematic))
             schematic.paste(instance, Pos(0.0, 4.0, 0.0))
-            println("Schematic pasted")
+            MinecraftServer.LOGGER.info("Schematic pasted")
 
             // TODO: We should only send the event when the schematic has been fully pasted.
             instance.eventNode().call(InstanceReadyEvent(instance))
             instance.saveChunksToStorage().join()
-            println("Done")
+            MinecraftServer.LOGGER.info("Done")
         }
     }
 

@@ -3,6 +3,7 @@ package gg.airbrush.server.plugins
 import cc.ekblad.toml.decode
 import cc.ekblad.toml.tomlMapper
 import gg.airbrush.server.pluginManager
+import net.minestom.server.MinecraftServer
 import java.io.File
 import java.net.URLClassLoader
 
@@ -31,7 +32,7 @@ class PluginClassLoader(private val file: File, parent: ClassLoader) : URLClassL
                         if (plugin.info.dependencies.contains(info.id) || info.id == plugin.info.id)
                             return clazz
 
-                        println("Plugin '${plugin.info.id}' loaded class '${clazz.name}' from non-dependency plugin '${info.id}'.")
+                        MinecraftServer.LOGGER.info("Plugin '${plugin.info.id}' loaded class '${clazz.name}' from non-dependency plugin '${info.id}'.")
                     }
 
                     return clazz
@@ -49,7 +50,7 @@ class PluginClassLoader(private val file: File, parent: ClassLoader) : URLClassL
         val stream = getResourceAsStream("plugin.toml")
 
         if (stream == null) {
-            println("Found JAR '${file.name}' in the plugins folder without a plugin.toml file.")
+            MinecraftServer.LOGGER.info("Found JAR '${file.name}' in the plugins folder without a plugin.toml file.")
             return null
         }
 

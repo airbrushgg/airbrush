@@ -1,6 +1,7 @@
 package gg.airbrush.server.plugins
 
 import cc.ekblad.toml.tomlMapper
+import net.minestom.server.MinecraftServer
 import java.io.File
 
 val PLUGIN_REGEX = Regex("[0-9a-z-]+")
@@ -17,7 +18,7 @@ class PluginManager {
             val info = loader.getPluginInfo() ?: continue
 
             if (!info.id.matches(PLUGIN_REGEX)) {
-                println("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
+                MinecraftServer.LOGGER.info("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
                 continue
             }
 
@@ -28,7 +29,7 @@ class PluginManager {
                 plugin.loader = loader
                 plugins[info.id.lowercase()] = plugin
             } catch (e: ClassNotFoundException) {
-                println("Found plugin '${info.name}' with an invalid main class.")
+                MinecraftServer.LOGGER.info("Found plugin '${info.name}' with an invalid main class.")
             }
         }
     }
@@ -42,7 +43,7 @@ class PluginManager {
 
             for (id in info.dependencies) {
                 if (!plugins.containsKey(id)) {
-                    println("Plugin '${info.id}' requires dependency '$id' that is not present.")
+                    MinecraftServer.LOGGER.info("Plugin '${info.id}' requires dependency '$id' that is not present.")
                     continue@main
                 }
 
@@ -52,7 +53,7 @@ class PluginManager {
                     continue
 
                 if (dependingPlugin.info.dependencies.contains(id)) {
-                    println("Found circular dependency between '${info.id}' and '$id'.")
+                    MinecraftServer.LOGGER.info("Found circular dependency between '${info.id}' and '$id'.")
                     continue@main
                 }
 

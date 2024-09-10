@@ -51,7 +51,7 @@ class Permissions : Plugin() {
             val nbt = TagStringIO.builder().build().asCompound(permissionData.value ?: "{}")
 
             if (nbt !is CompoundBinaryTag) {
-                println("Found invalid NBT for permission '${permissionData.key}' in rank '${data.name}'")
+                MinecraftServer.LOGGER.info("Found invalid NBT for permission '${permissionData.key}' in rank '${data.name}'")
                 continue
             }
 
