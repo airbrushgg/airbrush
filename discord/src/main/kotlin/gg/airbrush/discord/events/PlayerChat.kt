@@ -15,6 +15,7 @@ import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerChatEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.logging.LogManager
 
 object PlayerChat : ListenerAdapter() {
 	init {
@@ -63,10 +64,15 @@ object PlayerChat : ListenerAdapter() {
 			Placeholder("%display-name%", event.author.effectiveName),
 			Placeholder("%name%", event.author.name),
 			Placeholder("%tag%", event.author.globalName ?: ""),
-		))
+		)).mm()
+
+		val plainText = PlainTextComponentSerializer.plainText().serialize(parsedMsg)
+
+		// TODO(cal): Test.
+		MinecraftServer.LOGGER.info(plainText)
 
 		MinecraftServer.getConnectionManager().onlinePlayers.forEach {
-			it.sendMessage(parsedMsg.mm())
+			it.sendMessage(parsedMsg)
 		}
 	}
 }
