@@ -1,5 +1,7 @@
 package gg.airbrush.server.plugins
 
+import net.minestom.server.MinecraftServer
+
 data class PluginInfo(
     val id: String,
     val name: String,
