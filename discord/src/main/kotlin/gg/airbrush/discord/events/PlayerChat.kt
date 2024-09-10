@@ -15,7 +15,6 @@ import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerChatEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.logging.LogManager
 
 object PlayerChat : ListenerAdapter() {
 	init {
