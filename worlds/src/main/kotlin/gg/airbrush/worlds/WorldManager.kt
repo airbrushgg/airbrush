@@ -122,7 +122,7 @@ object WorldManager {
             throw IOException("The default world schematic does not exist.")
 
         val schematic = reader.fromPath(schematicPath)
-        schematic.paste(_defaultInstance, Pos(0.0, 4.0, 0.0))
+        schematic.paste(_defaultInstance, Pos(0.0, 4.0, 0.0), true)
         // TODO: We should only save the world when the schematic has been fully pasted.
         _defaultInstance.saveChunksToStorage().join()
     }
