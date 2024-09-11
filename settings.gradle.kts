@@ -15,7 +15,6 @@ include(
     "punishments",
     "sdk",
     "server",
-    "template",
-    "worlds",
-    "bamboo"
+//    "template",
+    "worlds"
 )
