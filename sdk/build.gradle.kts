@@ -27,10 +27,6 @@ dependencies {
 	implementation("com.moandjiezana.toml:toml4j:0.7.2")
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 application {
     mainClass.set("MainKt")
 }

@@ -21,7 +21,3 @@ dependencies {
     compileOnly("dev.hollowcube:polar:1.11.1")
     compileOnly("cc.ekblad:4koma:1.2.0")
 }
-
-kotlin {
-    jvmToolchain(21)
-}

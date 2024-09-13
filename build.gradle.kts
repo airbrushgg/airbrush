@@ -10,8 +10,12 @@ repositories {
     mavenCentral()
 }
 
-kotlin {
-    jvmToolchain(21)
+allprojects {
+    apply(plugin = "kotlin")
+
+    kotlin {
+        jvmToolchain(21)
+    }
 }
 
 subprojects {

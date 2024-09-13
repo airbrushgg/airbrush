@@ -30,7 +30,3 @@ dependencies {
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.0.0-beta.15")
 }
-
-kotlin {
-    jvmToolchain(21)
-}

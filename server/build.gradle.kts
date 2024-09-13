@@ -30,10 +30,6 @@ dependencies {
     implementation("org.slf4j:slf4j-log4j12:2.0.9")
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 application {
     mainClass.set("gg.airbrush.server.MainKt")
 }
