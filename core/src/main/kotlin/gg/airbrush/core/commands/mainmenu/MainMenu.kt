@@ -42,17 +42,13 @@ fun openMainMenu(player: Player) {
     val rankData = sdkPlayer.getRank().getData()
     val prefix = rankData.prefix
 
-    fun getFullPrefix(rank: RankData): String {
-        return rank.prefix.replaceFirst(rank.name.first().toString(), rank.name.uppercase(), ignoreCase = true)
-    }
-
     val builder = ItemStack.builder(Material.PLAYER_HEAD)
         .customName("<p>Player Settings".mm())
         .lore(
             "<s>View or change player information".mm(),
             "<s>and world settings".mm(),
             Component.empty(),
-            "<s>Rank: ${if (prefix.isNotEmpty()) getFullPrefix(rankData) else "Default"}".mm(),
+            "<s>Rank: ${if (prefix.isNotEmpty()) prefix.uppercase() else "Default"}".mm(),
             "<s>Level: <${TextColor.color(levelColor).asHexString()}>[$level]".mm()
         )
 
