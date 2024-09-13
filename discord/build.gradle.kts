@@ -35,10 +35,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 application {
     mainClass.set("MainKt")
 }

@@ -28,7 +28,3 @@ tasks.withType(ShadowJar::class.java) {
         }
     }
 }
-
-kotlin {
-    jvmToolchain(21)
-}

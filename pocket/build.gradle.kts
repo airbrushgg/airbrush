@@ -16,7 +16,3 @@ dependencies {
     compileOnly(project(":server"))
     compileOnly("dev.hollowcube:minestom-ce:010fe985bb")
 }
-
-kotlin {
-    jvmToolchain(19)
-}
