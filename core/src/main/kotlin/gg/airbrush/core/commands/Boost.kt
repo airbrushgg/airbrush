@@ -1,4 +1,3 @@
-package gg.airbrush.core.commands
 
 import gg.airbrush.core.commands.mainmenu.openMainMenu
 import gg.airbrush.core.lib.GUIItems

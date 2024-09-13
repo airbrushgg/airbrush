@@ -1,4 +1,3 @@
-package gg.airbrush.core.commands
 
 import gg.airbrush.server.lib.mm
 import net.minestom.server.command.CommandSender
