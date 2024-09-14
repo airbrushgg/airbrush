@@ -18,6 +18,7 @@ import Boost
 import gg.airbrush.core.commands.mainmenu.openMainMenu
 import gg.airbrush.core.commands.mainmenu.openPaletteGUI
 import gg.airbrush.core.commands.openBrushGUI
+import gg.airbrush.core.eventNode
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.NotFoundException
 import gg.airbrush.sdk.SDK
@@ -75,7 +76,7 @@ class BrushEvents {
             it.instance.getTag(Tag.String("PersistentWorld")) == "donator_world" ||
             it.instance.hasTag(Tag.String("CanvasUUID"))
         }
-        MinecraftServer.getGlobalEventHandler().addChild(eventHandler)
+        eventNode.addChild(eventHandler)
 
         eventHandler.addListener(
             PlayerUseItemEvent ::class.java

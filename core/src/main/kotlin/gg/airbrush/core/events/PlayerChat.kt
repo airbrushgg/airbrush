@@ -32,6 +32,7 @@ import net.minestom.server.event.player.PlayerChatEvent
 
 class PlayerChat {
     init {
+        // NOTE: This is intentionally added to the global event handler.
         val eventHandler = MinecraftServer.getGlobalEventHandler()
 
         eventHandler.addListener(

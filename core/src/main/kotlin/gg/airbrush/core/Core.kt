@@ -36,7 +36,10 @@ import gg.airbrush.server.lib.mm
 import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.builder.Command
+import net.minestom.server.event.EventNode
 import net.minestom.server.timer.TaskSchedule
+
+internal val eventNode = EventNode.all("Core")
 
 class Core : Plugin() {
 	private var commands: List<Command> = listOf()
@@ -77,6 +80,8 @@ class Core : Plugin() {
 	    )
 
 	    // On start
+		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+
         registerCommands()
         registerEvents()
 
@@ -98,6 +103,8 @@ class Core : Plugin() {
 	    commands.forEach {
 		    manager.unregister(it)
 	    }
+
+		MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
 
 		// Save all canvases to disk.
 		CanvasManager.saveAll()
