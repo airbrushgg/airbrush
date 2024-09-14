@@ -16,6 +16,7 @@ package gg.airbrush.discord.events
 
 import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.eventNode
 import gg.airbrush.discord.lib.Placeholder
 import gg.airbrush.discord.lib.pp
 import gg.airbrush.sdk.SDK
@@ -32,10 +33,7 @@ import java.time.format.DateTimeFormatter
 
 object PlayerChat : ListenerAdapter() {
 	init {
-		val discordChatNode = EventNode.type("Discord", EventFilter.PLAYER)
-		MinecraftServer.getGlobalEventHandler().addChild(discordChatNode)
-
-		discordChatNode.addListener(PlayerChatEvent::class.java) { event ->
+		eventNode.addListener(PlayerChatEvent::class.java) { event ->
 			chatMessage(event)
 		}
 	}
