@@ -21,7 +21,6 @@ import gg.airbrush.sdk.events.LinkAccountEvent
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.minestom.server.MinecraftServer
 
 object HandleLink {
 	init {

@@ -153,6 +153,7 @@ fun registerEvents() {
         logger.info("${player.username} executed /${event.command}")
     }
 
+    // TODO: This listener is executed before the chat filter's listener. Is this intentional?
     eventHandler.addListener(PlayerChatEvent::class.java) { event ->
         val player = event.player
         logger.info("${player.username}: ${event.message}")

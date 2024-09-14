@@ -14,6 +14,7 @@
 
 package gg.airbrush.core.events
 
+import gg.airbrush.core.eventNode
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.PaletteType
@@ -33,20 +34,19 @@ val sidebars = mutableMapOf<UUID, Sidebar>()
 
 class PlayerLogin {
     init {
-        val eventHandler = MinecraftServer.getGlobalEventHandler()
-        eventHandler.addListener(
+        eventNode.addListener(
             PlayerSpawnEvent::class.java
         ) { event: PlayerSpawnEvent -> execute(event) }
 
-        eventHandler.addListener(
+        eventNode.addListener(
             PlayerDisconnectEvent::class.java
         ) { event: PlayerDisconnectEvent -> executeDisconnect(event) }
 
-        eventHandler.addListener(
+        eventNode.addListener(
             AsyncPlayerPreLoginEvent::class.java
         ) { event: AsyncPlayerPreLoginEvent -> executePreLogin(event) }
 
-        eventHandler.addListener(
+        eventNode.addListener(
             PlayerSpawnEvent::class.java
         ) { event: PlayerSpawnEvent -> executeSpawn(event) }
     }

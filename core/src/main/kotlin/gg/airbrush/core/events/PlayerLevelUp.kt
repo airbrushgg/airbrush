@@ -14,6 +14,7 @@
 
 package gg.airbrush.core.events
 
+import gg.airbrush.core.eventNode
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.core.lib.prettify
 import gg.airbrush.sdk.SDK
@@ -24,14 +25,11 @@ import gg.airbrush.server.lib.mm
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.format.TextColor
-import net.minestom.server.MinecraftServer
 import net.minestom.server.color.Color
 
 class PlayerLevelUp {
     init {
-        val eventHandler = MinecraftServer.getGlobalEventHandler()
-
-        eventHandler.addListener(
+        eventNode.addListener(
             LevelUpEvent::class.java
         ) { event: LevelUpEvent -> execute(event) }
     }
