@@ -24,6 +24,7 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.ConfigUtils
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.MinecraftServer
+import net.minestom.server.event.EventNode
 import java.time.Instant
 
 data class Punishment(
@@ -46,6 +47,7 @@ data class PunishmentsConfig(
 )
 
 lateinit var punishmentConfig: PunishmentsConfig
+internal val eventNode = EventNode.all("Punishments")
 
 class Punishments : Plugin() {
 	private val mapper = tomlMapper {}
@@ -73,6 +75,7 @@ class Punishments : Plugin() {
 	    manager.register(PunishmentsCommand())
 	    manager.register(RevertPunishmentCommand())
 
+		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
 	    PlayerEvents()
 
 	    // Every minute, check for punishment expiry
@@ -94,5 +97,6 @@ class Punishments : Plugin() {
 
     override fun teardown() {
         // On shutdown
+		MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
     }
 }

@@ -13,15 +13,14 @@
 package gg.airbrush.punishments.events
 
 import gg.airbrush.punishments.enums.PunishmentTypes
+import gg.airbrush.punishments.eventNode
 import gg.airbrush.sdk.SDK
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
 
 class PlayerEvents {
 	init {
-		val eventHandler = MinecraftServer.getGlobalEventHandler()
-
-		eventHandler.addListener(
+		eventNode.addListener(
 			AsyncPlayerPreLoginEvent::class.java
 		) { event: AsyncPlayerPreLoginEvent -> executePreLogin(event) }
 	}
