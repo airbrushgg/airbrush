@@ -15,6 +15,7 @@
 package gg.airbrush.discord
 
 import cc.ekblad.toml.decode
+import cc.ekblad.toml.model.TomlException
 import cc.ekblad.toml.tomlMapper
 import gg.airbrush.discord.data.DiscordConfig
 import gg.airbrush.discord.events.HandleLink
@@ -22,6 +23,7 @@ import gg.airbrush.discord.events.PlayerChat
 import gg.airbrush.discord.events.PlayerJoin
 import gg.airbrush.discord.gameCommands.LinkCommand
 import gg.airbrush.sdk.lib.ConfigUtils
+import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.MinecraftServer
 
@@ -36,7 +38,14 @@ class DiscordPlugin : Plugin() {
             fileName = "config.toml",
             pluginInfo = this.info
         )
-        discordConfig = mapper.decode(configPath)
+
+        try {
+            discordConfig = mapper.decode<DiscordConfig>(configPath)
+        } catch (e: TomlException) {
+            MinecraftServer.LOGGER.error("[Discord] Failed to load discord config file.", e)
+            pluginManager.disablePlugin(this)
+            return
+        }
 
 	    registerCommands()
 
