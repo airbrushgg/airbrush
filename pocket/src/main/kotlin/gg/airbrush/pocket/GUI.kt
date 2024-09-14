@@ -12,7 +12,6 @@
 
 package gg.airbrush.pocket
 
-import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventListener
 import net.minestom.server.event.inventory.InventoryClickEvent
@@ -90,8 +89,6 @@ open class GUI(
     fun open(player: Player, handler: CloseHandler = {}): GUI {
         player.openInventory(inventory)
 
-        val manager = MinecraftServer.getGlobalEventHandler()
-
         val clickHandler = EventListener.of(InventoryClickEvent::class.java) { event ->
             val inventory = event.inventory
             val eventPlayer = event.player
@@ -111,13 +108,13 @@ open class GUI(
             if (eventPlayer != player || inventory != this.inventory)
                 return@of
 
-            manager.removeListener(clickHandler)
-            manager.removeListener(closeHandler)
+            eventNode.removeListener(clickHandler)
+            eventNode.removeListener(closeHandler)
             handler(event)
         }
 
-        manager.addListener(clickHandler)
-        manager.addListener(closeHandler)
+        eventNode.addListener(clickHandler)
+        eventNode.addListener(closeHandler)
 
         return this
     }
