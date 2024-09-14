@@ -57,6 +57,11 @@ class Tpa : Command("tpa"), CommandExecutor {
             return
         }
 
+        if (sender.instance != destination.instance) {
+            sender.sendMessage("<error>You cannot send a request because ${destination.username} is in a different world".mm())
+            return
+        }
+
         val existingRequest = teleportRequests.find { it.requester == sender && it.destination == destination }
         if (existingRequest != null) {
             sender.sendMessage("<error>You already have a pending teleport request to ${destination.username}".mm())
