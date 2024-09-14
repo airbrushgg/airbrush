@@ -27,7 +27,7 @@ class PluginManager {
             val info = loader.getPluginInfo() ?: continue
 
             if (!info.id.matches(PLUGIN_REGEX)) {
-                MinecraftServer.LOGGER.info("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
+                MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
                 continue
             }
 
@@ -38,7 +38,7 @@ class PluginManager {
                 plugin.loader = loader
                 plugins[info.id.lowercase()] = plugin
             } catch (e: ClassNotFoundException) {
-                MinecraftServer.LOGGER.info("Found plugin '${info.name}' with an invalid main class.")
+                MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid main class.")
             }
         }
     }
@@ -52,7 +52,7 @@ class PluginManager {
 
             for (id in info.dependencies) {
                 if (!plugins.containsKey(id)) {
-                    MinecraftServer.LOGGER.info("Plugin '${info.id}' requires dependency '$id' that is not present.")
+                    MinecraftServer.LOGGER.warn("Plugin '${info.id}' requires dependency '$id' that is not present.")
                     continue@main
                 }
 
@@ -62,7 +62,7 @@ class PluginManager {
                     continue
 
                 if (dependingPlugin.info.dependencies.contains(id)) {
-                    MinecraftServer.LOGGER.info("Found circular dependency between '${info.id}' and '$id'.")
+                    MinecraftServer.LOGGER.warn("Found circular dependency between '${info.id}' and '$id'.")
                     continue@main
                 }
 
