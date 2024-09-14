@@ -17,7 +17,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
 
-	implementation("net.dv8tion:JDA:5.0.0-beta.15") {
+	implementation("net.dv8tion:JDA:5.1.0") {
 		exclude("opus-java")
 	}
 

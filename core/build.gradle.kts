@@ -28,5 +28,5 @@ dependencies {
     compileOnly("cc.ekblad:4koma:1.2.0")
 
 	compileOnly(project(":discord"))
-	compileOnly("net.dv8tion:JDA:5.0.0-beta.15")
+	compileOnly("net.dv8tion:JDA:5.1.0")
 }
