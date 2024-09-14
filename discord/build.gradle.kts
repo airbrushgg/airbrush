@@ -3,7 +3,7 @@ plugins {
     application
     `maven-publish`
     id("com.palantir.git-version") version "3.0.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.gradleup.shadow") version "8.3.1"
 }
 
 group = "gg.airbrush"

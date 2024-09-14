@@ -1,6 +1,6 @@
 plugins {
 	kotlin("jvm") version "2.0.0"
-	id("com.github.johnrengelman.shadow") version "7.0.0"
+	id("com.gradleup.shadow") version "8.3.1"
 	kotlin("plugin.serialization") version "1.9.0"
 	id("com.palantir.git-version") version "3.0.0"
 	`maven-publish`
