@@ -13,6 +13,9 @@
 package gg.airbrush.pocket
 
 import gg.airbrush.server.plugins.Plugin
+import net.minestom.server.event.EventNode
+
+internal val eventNode = EventNode.all("Pocket")
 
 class Pocket : Plugin() {
     override fun setup() {}
