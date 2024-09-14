@@ -12,7 +12,6 @@
 
 package gg.airbrush.server.plugins
 
-import cc.ekblad.toml.tomlMapper
 import net.minestom.server.MinecraftServer
 import java.io.File
 
@@ -23,8 +22,6 @@ class PluginManager {
     val plugins = mutableMapOf<String, Plugin>()
 
     fun registerPlugins() {
-        val mapper = tomlMapper {}
-
         for (file in listJARs()) {
             val loader = PluginClassLoader(file, this.javaClass.classLoader)
             val info = loader.getPluginInfo() ?: continue

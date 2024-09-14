@@ -66,7 +66,11 @@ class PluginClassLoader(private val file: File, parent: ClassLoader) : URLClassL
             return null
         }
 
-        val info = mapper.decode<PluginInfo>(stream.bufferedReader().use { it.readText() })
+        val infoResult = runCatching {
+            mapper.decode<PluginInfo>(stream.bufferedReader().use { it.readText() })
+        }
+        val info = infoResult.getOrNull() ?: return null
+
         cachedInfo = info
         return info
     }
