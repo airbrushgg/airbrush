@@ -25,6 +25,7 @@ import gg.airbrush.discord.gameCommands.LinkCommand
 import gg.airbrush.sdk.lib.ConfigUtils
 import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.Plugin
+import net.dv8tion.jda.api.exceptions.InvalidTokenException
 import net.minestom.server.MinecraftServer
 
 lateinit var discordConfig: DiscordConfig
@@ -47,13 +48,19 @@ class DiscordPlugin : Plugin() {
             return
         }
 
-	    registerCommands()
+        registerCommands()
 
-	    HandleLink
-	    PlayerJoin
-	    PlayerChat
+        HandleLink
+        PlayerJoin
+        PlayerChat
 
-	    Discord.load()
+        try {
+            Discord.load()
+        } catch (e: InvalidTokenException) {
+            MinecraftServer.LOGGER.error("[Discord] Bot was provided with an invalid token.", e)
+            pluginManager.disablePlugin(this)
+            return
+        }
     }
 
     override fun teardown() {
