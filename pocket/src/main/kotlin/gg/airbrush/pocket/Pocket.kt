@@ -13,11 +13,16 @@
 package gg.airbrush.pocket
 
 import gg.airbrush.server.plugins.Plugin
+import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventNode
 
 internal val eventNode = EventNode.all("Pocket")
 
 class Pocket : Plugin() {
-    override fun setup() {}
-    override fun teardown() {}
+    override fun setup() {
+        MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+    }
+    override fun teardown() {
+        MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
+    }
 }
