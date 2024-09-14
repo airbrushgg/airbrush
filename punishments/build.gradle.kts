@@ -16,7 +16,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation(kotlin("reflect"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	compileOnly(project(":server"))
 	compileOnly(project(":sdk"))
 	compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
