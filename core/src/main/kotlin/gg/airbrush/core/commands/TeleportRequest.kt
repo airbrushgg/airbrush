@@ -17,13 +17,11 @@ package gg.airbrush.core.commands
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentType
-import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import net.minestom.server.entity.Player
 
 data class TeleportRequest(

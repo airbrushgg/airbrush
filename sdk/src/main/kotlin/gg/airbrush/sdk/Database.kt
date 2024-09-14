@@ -53,7 +53,5 @@ object Database {
         conn.close()
     }
 
-    fun load() {}
-
     fun get() = db
 }

@@ -38,7 +38,6 @@ class Boosters {
         config = mapper.decode(configPath)
     }
 
-    @Suppress("unused")
     fun create(data: BoosterData): ActiveBooster {
         val booster = ActiveBooster(
             id = UUID.randomUUID().toString(),
@@ -49,7 +48,6 @@ class Boosters {
         return booster.also { col.insertOne(it) }
     }
 
-    @Suppress("unused")
     fun get(id: UUID): ActiveBooster? {
         return col
             .find(Filters.eq(ActiveBooster::id.name, id.toString()))
@@ -73,17 +71,14 @@ class Boosters {
         }
     }
 
-    @Suppress("unused")
     fun clear(id: UUID) {
         col.deleteOne(Filters.eq(ActiveBooster::id.name, id.toString()))
     }
 
-    @Suppress("unused")
     fun getActiveBoosters(): List<ActiveBooster> {
         return col.find().toList()
     }
 
-    @Suppress("unused")
     fun getAvailableBoosters(): List<BoosterData> {
         return config.boosters.orEmpty()
     }

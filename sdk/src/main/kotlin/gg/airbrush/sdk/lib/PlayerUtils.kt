@@ -27,7 +27,6 @@ object PlayerUtils {
     private const val NAME_URL = "https://api.mojang.com/user/profile"
     private val REGEX = Regex("([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})")
 
-    @Suppress("unused")
     fun getUUID(name: String): UUID {
         val lower = name.lowercase()
         val response = HTTP.get("$UUID_URL/$lower")
@@ -35,7 +34,6 @@ object PlayerUtils {
         return formatUUID(body.id)
     }
 
-    @Suppress("unused")
     fun getName(uuid: UUID): String {
         val response = HTTP.get("$NAME_URL/$uuid")
         val body = Json.decodeFromString(response.body()) as MojangResponse

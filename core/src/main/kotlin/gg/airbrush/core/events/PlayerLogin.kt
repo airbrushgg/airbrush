@@ -17,6 +17,7 @@ package gg.airbrush.core.events
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.PaletteType
+import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
@@ -25,9 +26,7 @@ import net.minestom.server.event.player.PlayerSpawnEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.scoreboard.Sidebar
-import net.minestom.server.tag.Tag
-import java.util.UUID
-import gg.airbrush.sdk.lib.Translations
+import java.util.*
 
 private val SIDEBAR_SPACER = "".mm()
 val sidebars = mutableMapOf<UUID, Sidebar>()

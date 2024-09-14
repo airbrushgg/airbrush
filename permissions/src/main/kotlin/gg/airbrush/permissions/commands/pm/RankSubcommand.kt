@@ -31,8 +31,6 @@ import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.arguments.ArgumentType.*
 import net.minestom.server.permission.Permission
-import net.minestom.server.utils.nbt.BinaryTagWriter
-import java.io.DataOutputStream
 import java.util.*
 
 object RankSubcommand : Command("rank") {
@@ -68,8 +66,8 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun setParent(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
-        val (parentName, parent) = getRank(context, "new-parent") ?: return
+        val (name, rank) = getRank(context)
+        val (parentName, parent) = getRank(context, "new-parent")
 
         if (parent == rank) {
             sender.sendMessage("<s>You cannot set the parent of a rank to itself.".mm())
@@ -89,7 +87,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun getParent(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val parent = rank.getParent()
 
         if (parent == null) {
@@ -114,7 +112,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun rename(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val newName = context.get<String>("new-name")
 
         rank.setName(newName)
@@ -122,7 +120,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun delete(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
 
         SDK.ranks.delete(UUID.fromString(rank.getData().id))
         rankCache.remove(rank)
@@ -130,7 +128,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun setPrefix(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val prefix = context.get<String>("new-prefix")
 
         rank.setPrefix(prefix)
@@ -138,14 +136,14 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun getPrefix(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
 
         val prefix = rank.getData().prefix
         sender.sendMessage("<s>The prefix of rank <p>$name</p> is <p>$prefix</p><reset><s>.".mm())
     }
 
     private fun listPermissions(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val permissions = rank.getData().permissions
         val pages = mutableListOf<Component>()
         val book = Book
@@ -178,7 +176,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun getPermission(sender: CommandSender, context: CommandContext) {
-        val (_, rank) = getRank(context) ?: return
+        val (_, rank) = getRank(context)
         val key = context.get<String>("key")
 
         val permissions = rank.getData().permissions
@@ -193,7 +191,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun addPermission(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val key = context.get<String>("key")
         val value = context.getOrDefault("value", CompoundBinaryTag.empty())
 
@@ -213,7 +211,7 @@ object RankSubcommand : Command("rank") {
     }
 
     private fun removePermission(sender: CommandSender, context: CommandContext) {
-        val (name, rank) = getRank(context) ?: return
+        val (name, rank) = getRank(context)
         val key = context.get<String>("key")
 
         for (player in MinecraftServer.getConnectionManager().onlinePlayers) {
@@ -227,7 +225,7 @@ object RankSubcommand : Command("rank") {
         sender.sendMessage("<s>Removed permission <p>$key</p> from rank <p>$name</p>.".mm())
     }
 
-    private fun getRank(context: CommandContext, id: String = "rank-name"): Pair<String, AirbrushRank>? {
+    private fun getRank(context: CommandContext, id: String = "rank-name"): Pair<String, AirbrushRank> {
         val rank = context.get<AirbrushRank>(id)
         return rank.getData().name to rank
     }

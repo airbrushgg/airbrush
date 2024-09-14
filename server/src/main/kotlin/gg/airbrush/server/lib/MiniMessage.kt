@@ -34,7 +34,6 @@ private val miniMessage = MiniMessage.builder()
     ))
     .build()
 
-@Suppress("unused")
 fun String.mm(
     vararg resolvers: TagResolver,
 ): Component {

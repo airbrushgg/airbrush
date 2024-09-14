@@ -22,8 +22,6 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.permission.Permission
-import net.minestom.server.utils.nbt.BinaryTagReader
-import java.io.DataInputStream
 import java.util.*
 
 class Permissions : Plugin() {

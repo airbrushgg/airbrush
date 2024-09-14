@@ -13,7 +13,6 @@
 package gg.airbrush.punishments.commands
 
 import gg.airbrush.discord.bot
-import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.lib.Translations
@@ -29,7 +28,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 import net.minestom.server.utils.mojang.MojangUtils
 import java.awt.Color
-import java.util.UUID
+import java.util.*
 
 class RevertPunishmentCommand : Command("revertpun") {
 	init {

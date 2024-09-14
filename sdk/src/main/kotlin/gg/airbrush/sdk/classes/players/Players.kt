@@ -30,25 +30,21 @@ class Players {
     private val db = Database.get()
     private val col = db.getCollection<PlayerData>("players")
 
-    @Suppress("unused")
     fun get(uuid: UUID): AirbrushPlayer {
         // OPTIMIZATION: Cache the player data so that we don't have to query the database each time.
         return playerCache.computeIfAbsent(uuid, ::AirbrushPlayer)
     }
 
-    @Suppress("unused")
     fun exists(uuid: UUID): Boolean {
         val data = col.find(Filters.eq(PlayerData::uuid.name, uuid.toString())).firstOrNull()
         return data !== null
     }
 
-	@Suppress("unused")
 	fun getByDiscordID(id: String): PlayerData? {
 		return col.find(Filters.eq(PlayerData::discordId.name, id.toLong())).firstOrNull()
 	}
 
-	@Suppress("unused")
-    fun create(uuid: UUID): PlayerData {
+	fun create(uuid: UUID): PlayerData {
         val defaultRank = SDK.ranks.get("Default")
 
         val paletteProgression = mutableListOf<ProgressionData>()
@@ -73,7 +69,6 @@ class Players {
         return player
     }
 
-    @Suppress("unused")
     fun updateBlockCounts(counts: HashMap<UUID, Int>) = runBlocking<Unit> {
         launch {
             col.bulkWrite(counts.map { (uuid, delta) ->

@@ -39,7 +39,8 @@ object SDK {
 		)
 		config = mapper.decode(configPath)
 
-		Database.load()
+		// Initialize the Database object before it is used.
+		Database.get()
 	}
 
 	val ranks = Ranks()

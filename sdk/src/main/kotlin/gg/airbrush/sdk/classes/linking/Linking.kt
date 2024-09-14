@@ -32,7 +32,6 @@ class Linking {
         return col.find(Filters.eq(LinkData::code.name, sessionId.toString())).firstOrNull()
     }
 
-    @Suppress("unused")
     fun createSession(player: UUID, discordId: Long): LinkData {
         val playerUUID = player.toString()
 
@@ -53,7 +52,6 @@ class Linking {
         return linkData
     }
 
-    @Suppress("unused")
     fun verifySession(sessionId: UUID) {
         val session = getSession(sessionId)
             ?: throw Exception("$sessionId is not a valid linking session")

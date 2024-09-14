@@ -30,7 +30,7 @@ class Palettes {
         val glazedTerracotta: List<String>
     )
 
-    private var config: Palette;
+    private var config: Palette
 
     init {
         val text = SDK::class.java.getResourceAsStream("/palette.toml")?.bufferedReader().use { it?.readText() }

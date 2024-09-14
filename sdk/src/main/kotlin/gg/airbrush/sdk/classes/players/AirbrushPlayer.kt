@@ -61,7 +61,6 @@ data class PlayerData(
 	var pronouns: String? = null
 )
 
-@Suppress("unused")
 enum class PaletteType {
     CONCRETE,
     WOOL,
@@ -82,17 +81,14 @@ class AirbrushPlayer(uuid: UUID) {
             ?: throw NotFoundException("Player with UUID of $uuid not found.")
     }
 
-    @Suppress("unused")
     fun getData(): PlayerData {
         return data
     }
 
-    @Suppress("unused")
     fun getLevel(): Int {
         return data.level
     }
 
-    @Suppress("unused")
     fun setLevel(level: Int) {
         col.updateOne(query, Updates.set(PlayerData::level.name, level))
         data.level = level
@@ -105,19 +101,16 @@ class AirbrushPlayer(uuid: UUID) {
         launch { col.updateOne(query, Updates.set(PlayerData::blockCount.name, newCount)) }
 	}
 
-	@Suppress("unused")
 	fun setPronouns(pronouns: String) {
 		col.updateOne(query, Updates.set(PlayerData::pronouns.name, pronouns))
 		data.pronouns = pronouns
 	}
 
-	@Suppress("unused")
 	fun setProgressionPalette(type: PaletteType) {
 		col.updateOne(query, Updates.set(PlayerData::progressedPalette.name, type.ordinal))
 		data.progressedPalette = type.ordinal
 	}
 
-    @Suppress("unused")
     fun setRadius(radius: Int, force: Boolean = false) {
         if((radius < 1 || radius > 5) && !force)
             throw Exception("Invalid radius. Radii must be between 1 and 5.")
@@ -127,7 +120,6 @@ class AirbrushPlayer(uuid: UUID) {
         col.updateOne(query, Updates.set(PlayerData::brushRadius.name, data.brushRadius))
     }
 
-    @Suppress("unused")
     fun setMaxRadius(radius: Int) {
         if(radius < 1 || radius > 5)
             throw Exception("Invalid radius. Radii must be between 1 and 5.")
@@ -137,35 +129,29 @@ class AirbrushPlayer(uuid: UUID) {
         col.updateOne(query, Updates.set(PlayerData::brushRadius.name, data.brushRadius))
     }
 
-    @Suppress("unused")
     fun getExperience(): Int {
         return data.experience
     }
 
-    @Suppress("unused")
     fun setExperience(experience: Int) = runBlocking<Unit> {
         data.experience = experience
         launch { col.updateOne(query, Updates.set(PlayerData::experience.name, experience)) }
     }
 
-	@Suppress("unused")
 	fun setDiscordId(discordId: Long) {
 		col.updateOne(query, Updates.set(PlayerData::discordId.name, discordId))
 		data.discordId = discordId
 	}
 
-	@Suppress("unused")
 	fun wipeDiscordId() {
 		val query = Filters.eq(PlayerData::discordId.name, data.discordId)
 		col.updateOne(query, Updates.unset(PlayerData::discordId.name))
 	}
 
-    @Suppress("unused")
     fun getRank(): AirbrushRank {
         return SDK.ranks.get(UUID.fromString(data.rank))
     }
 
-    @Suppress("unused")
     fun setRank(name: String) {
         val rankExists = SDK.ranks.exists(name)
 
@@ -181,7 +167,6 @@ class AirbrushPlayer(uuid: UUID) {
         data.rank = rankId
     }
 
-    @Suppress("unused")
     fun setPalette(type: PaletteType) {
         col.updateOne(query, Updates.set(PlayerData::palette.name, type.ordinal))
         data.palette = type.ordinal
@@ -203,7 +188,6 @@ class AirbrushPlayer(uuid: UUID) {
     }
 
     // If this method returns null, then the player does not own the palette.
-    @Suppress("unused")
     fun getPaletteProgression(type: PaletteType): ProgressionData? {
         val progressionInfo = data.paletteProgression.find {
             it.paletteType == type.ordinal
@@ -213,7 +197,6 @@ class AirbrushPlayer(uuid: UUID) {
     }
 
     // If this method returns null, then the player does not own the palette.
-    @Suppress("unused")
     fun progressPalette(): Boolean {
 	    val currentPalette = PaletteType.entries[data.progressedPalette]
 
@@ -243,13 +226,11 @@ class AirbrushPlayer(uuid: UUID) {
         return true
     }
 
-    @Suppress("unused")
     fun setChosenBlock(block: String) {
         col.updateOne(query, Updates.set(PlayerData::chosenBlock.name, block))
         data.chosenBlock = block
     }
 
-    @Suppress("unused")
     fun hasPermission(node: PermissionData): Boolean {
         val rankUUID = UUID.fromString(data.rank)
         val playerRank = SDK.ranks.get(rankUUID)
@@ -257,13 +238,11 @@ class AirbrushPlayer(uuid: UUID) {
         return rankPermissions.contains(node)
     }
 
-    @Suppress("unused")
     fun addBooster(booster: BoosterData) {
         data.ownedBoosters = data.ownedBoosters.plus(booster)
         col.updateOne(query, Updates.addToSet(PlayerData::ownedBoosters.name, booster))
     }
 
-    @Suppress("unused")
     fun removeBooster(booster: BoosterData) {
         val newList = data.ownedBoosters.toMutableList()
         if (newList.remove(booster)) {
@@ -272,12 +251,10 @@ class AirbrushPlayer(uuid: UUID) {
         }
     }
 
-    @Suppress("unused")
     fun getOwnedBoosters(): List<BoosterData> {
         return data.ownedBoosters
     }
 
-    @Suppress("unused")
     fun addPlaytime(duration: Long) {
         data.timePlayed += duration
         col.updateOne(query, Updates.set(PlayerData::timePlayed.name, data.timePlayed))

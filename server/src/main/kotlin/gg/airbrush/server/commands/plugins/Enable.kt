@@ -14,10 +14,8 @@ package gg.airbrush.server.commands.plugins
 
 import gg.airbrush.server.commands.arguments.PluginArgument
 import gg.airbrush.server.lib.mm
-import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.command.builder.Command
-import net.minestom.server.command.builder.arguments.ArgumentType
 
 object Enable : Command("enable") {
     init {
