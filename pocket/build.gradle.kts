@@ -14,5 +14,5 @@ repositories {
 
 dependencies {
     compileOnly(project(":server"))
-    compileOnly("dev.hollowcube:minestom-ce:010fe985bb")
+    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
 }
