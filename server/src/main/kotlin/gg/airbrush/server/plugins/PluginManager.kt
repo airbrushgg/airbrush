@@ -66,17 +66,35 @@ class PluginManager {
                     continue@main
                 }
 
-                dependingPlugin.setup()
-                dependingPlugin.isSetup = true
+                enablePlugin(dependingPlugin)
             }
 
-            plugin.setup()
-            plugin.isSetup = true
+            enablePlugin(plugin)
         }
     }
 
     fun teardownPlugins() {
         plugins.values.forEach(Plugin::teardown)
+    }
+
+    fun enablePlugin(plugin: Plugin) {
+        if (plugin.isSetup) {
+            return
+        }
+
+        MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
+        plugin.setup()
+        plugin.isSetup = true
+    }
+
+    fun disablePlugin(plugin: Plugin) {
+        if (!plugin.isSetup) {
+            return
+        }
+
+        MinecraftServer.LOGGER.info("Disabling plugin '${plugin.info.id}'...")
+        plugin.teardown()
+        plugin.isSetup = false
     }
 
     private fun listJARs(): List<File> {

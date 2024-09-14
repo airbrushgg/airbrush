@@ -14,7 +14,9 @@ package gg.airbrush.server.commands.plugins
 
 import gg.airbrush.server.commands.arguments.PluginArgument
 import gg.airbrush.server.lib.mm
+import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.Plugin
+import gg.airbrush.server.plugins.PluginManager
 import net.minestom.server.command.builder.Command
 
 object Disable : Command("disable") {
@@ -29,8 +31,7 @@ object Disable : Command("disable") {
             }
 
             sender.sendMessage("<s>Disabling plugin <p>${plugin.info.id}</p>...".mm())
-            plugin.teardown()
-            plugin.isSetup = false
+            pluginManager.disablePlugin(plugin)
             sender.sendMessage("<s>Plugin <p>${plugin.info.id}</p> has been disabled.".mm())
         }, PluginArgument("plugin"))
     }
