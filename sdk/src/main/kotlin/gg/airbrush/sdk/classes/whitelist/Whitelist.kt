@@ -24,8 +24,7 @@ class Whitelist {
     private val db = Database.get()
     private val col = db.getCollection<WhitelistData>("whitelist")
 
-    @Suppress("unused")
-    fun add(uuid: UUID): WhitelistData? {
+    fun add(uuid: UUID): WhitelistData {
         if(get(uuid) !== null) {
             throw Exception("Player already added to whitelist.")
         }
@@ -35,12 +34,10 @@ class Whitelist {
         return data
     }
 
-    @Suppress("unused")
     fun get(uuid: UUID): WhitelistData? {
         return col.find(Filters.eq(WhitelistData::uuid.name, uuid.toString())).firstOrNull()
     }
 
-    @Suppress("unused")
     fun list(): FindIterable<WhitelistData> {
         return col.find()
     }
@@ -49,7 +46,6 @@ class Whitelist {
 		return config.whitelistEnabled
 	}
 
-    @Suppress("unused")
     fun remove(uuid: UUID) {
         if(get(uuid) === null) {
             throw Exception("Player not added to whitelist.")

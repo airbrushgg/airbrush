@@ -14,7 +14,6 @@ package gg.airbrush.server.commands
 
 import gg.airbrush.server.consoleThread
 import gg.airbrush.server.lib.mm
-import gg.airbrush.server.server
 import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command

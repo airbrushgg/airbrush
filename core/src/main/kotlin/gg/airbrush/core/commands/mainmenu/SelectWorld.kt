@@ -86,13 +86,13 @@ fun openWorldGUI(p: Player) {
     inventory.put('d', donatorWorld) {
 		if(!p.hasPermission("core.donor")) {
 			p.sendMessage("<error>You're not a donator, so you can't access this world!".mm())
-			return@put Unit // Compiler is dumb, so I need to do this for some reason.
+			return@put
 		}
 
         val donatorInstance = WorldManager.getPersistentWorld("donator_world")
         if (donatorInstance == null) {
             p.sendMessage("<error>A problem occurred teleporting to this world!".mm())
-            return@put Unit // Compiler is dumb, so I need to do this for some reason.
+            return@put
         }
         p.sendMessage("<s>Teleporting you to the donator world!".mm())
         p.setInstance(donatorInstance)
@@ -105,7 +105,7 @@ fun openWorldGUI(p: Player) {
         val playerWorld = SDK.worlds.getByOwner(p.uuid.toString())
         if (playerWorld == null) {
             p.sendMessage("<s>You do not have a player world! If you are a donator, you can create one with <p>/create<s>.".mm())
-            return@put Unit // Compiler is dumb, so I need to do this for some reason.
+            return@put
         }
 
         p.sendMessage("<s>Teleporting you to your world!".mm())

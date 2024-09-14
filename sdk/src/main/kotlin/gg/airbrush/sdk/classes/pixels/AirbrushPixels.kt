@@ -13,9 +13,7 @@
 package gg.airbrush.sdk.classes.pixels
 
 import net.minestom.server.coordinate.Point
-import net.minestom.server.coordinate.Pos
-import org.bson.codecs.pojo.annotations.BsonId
-import java.util.UUID
+import java.util.*
 
 data class Location(
     val x: Int,

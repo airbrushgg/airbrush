@@ -14,14 +14,15 @@
 
 package gg.airbrush.core.events
 
+import Boost
 import gg.airbrush.core.commands.mainmenu.openMainMenu
 import gg.airbrush.core.commands.mainmenu.openPaletteGUI
 import gg.airbrush.core.commands.openBrushGUI
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.NotFoundException
-import gg.airbrush.sdk.events.LevelUpEvent
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.PaletteType
+import gg.airbrush.sdk.events.LevelUpEvent
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
@@ -40,8 +41,7 @@ import net.minestom.server.instance.block.Block
 import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
 import net.minestom.server.timer.TaskSchedule
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
+import java.util.*
 import kotlin.math.roundToInt
 
 private class PixelManager {

@@ -15,7 +15,6 @@ package gg.airbrush.server.commands.arguments
 import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.PLUGIN_REGEX
 import gg.airbrush.server.plugins.Plugin
-import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.arguments.Argument
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException

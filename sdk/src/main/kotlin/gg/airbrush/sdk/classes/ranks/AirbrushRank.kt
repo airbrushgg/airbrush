@@ -47,12 +47,10 @@ class AirbrushRank(id: UUID) {
             ?: throw NotFoundException("Rank with ID of $id not found.")
     }
 
-    @Suppress("unused")
     fun getData(): RankData {
         return data
     }
 
-    @Suppress("unused")
     fun addPermission(key: String, value: CompoundBinaryTag?) {
         val currentPermissions = data.permissions.toMutableList()
         val writtenNbt = TagStringIO.builder().build().asString(value ?: CompoundBinaryTag.empty())
@@ -63,7 +61,6 @@ class AirbrushRank(id: UUID) {
         data.permissions = currentPermissions
     }
 
-    @Suppress("unused")
     fun removePermission(key: String) {
         val currentPermissions = data.permissions.toMutableList()
         currentPermissions.removeIf { it.key == key }
@@ -73,14 +70,12 @@ class AirbrushRank(id: UUID) {
         data.permissions = currentPermissions
     }
 
-    @Suppress("unused")
     fun setParent(rank: AirbrushRank?) {
         val id = rank?.data?.id
         col.updateOne(query, Updates.set(RankData::parent.name, id))
         data.parent = id
     }
 
-    @Suppress("unused")
     fun getParent(): AirbrushRank? {
         if (data.parent == null)
             return null
@@ -88,14 +83,12 @@ class AirbrushRank(id: UUID) {
         return SDK.ranks.get(UUID.fromString(data.parent))
     }
 
-    @Suppress("unused")
     fun setPrefix(prefix: String) {
         col.updateOne(query, Updates.set(RankData::prefix.name, prefix))
 
         data.prefix = prefix
     }
 
-    @Suppress("unused")
     fun setName(name: String) {
         col.updateOne(query, Updates.set(RankData::name.name, name))
 

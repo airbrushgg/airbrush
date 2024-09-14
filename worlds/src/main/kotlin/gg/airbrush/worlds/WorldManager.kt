@@ -24,7 +24,6 @@ import net.minestom.server.coordinate.Pos
 import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.tag.Tag
-import net.minestom.server.utils.NamespaceID
 import net.minestom.server.world.DimensionType
 import java.io.IOException
 import java.nio.file.Path
@@ -76,7 +75,7 @@ object WorldManager {
         instance.setTag(MANAGED_TAG, true)
 
         val schematicPath = Path.of(template.schematic)
-        val schematic = reader.fromPath(schematicPath) ?: return instance
+        val schematic = reader.fromPath(schematicPath)
 
         val position = Pos(0.0, 4.0, 0.0)
         schematic.paste(instance, position, true)

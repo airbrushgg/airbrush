@@ -16,22 +16,23 @@ package gg.airbrush.core.commands
 
 import gg.airbrush.core.commands.mainmenu.openMainMenu
 import gg.airbrush.core.commands.mainmenu.openPaletteGUI
-import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.classes.players.PaletteType
-import gg.airbrush.server.lib.mm
 import gg.airbrush.core.lib.GUIItems
 import gg.airbrush.core.lib.prettify
 import gg.airbrush.core.lib.toMaterial
 import gg.airbrush.pocket.GUI
 import gg.airbrush.sdk.NotFoundException
+import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.classes.players.PaletteType
 import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.server.lib.mm
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
-import net.minestom.server.component.DataComponentMap
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.block.Block
 import net.minestom.server.inventory.InventoryType
-import net.minestom.server.item.*
+import net.minestom.server.item.ItemComponent
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 import net.minestom.server.item.component.EnchantmentList
 import net.minestom.server.item.enchant.Enchantment
 

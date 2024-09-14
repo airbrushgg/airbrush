@@ -23,8 +23,6 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
-import net.minestom.server.utils.mojang.MojangUtils
-import java.util.UUID
 
 class AddBooster : Command("addbooster"), CommandExecutor {
     private val registeredBoosters = SDK.boosters.getAvailableBoosters()

@@ -16,9 +16,8 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import gg.airbrush.sdk.Database
 import gg.airbrush.sdk.NotFoundException
-import gg.airbrush.sdk.classes.ranks.RankData
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 private val db = Database.get()
 

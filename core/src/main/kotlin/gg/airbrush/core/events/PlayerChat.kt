@@ -19,7 +19,6 @@ import gg.airbrush.core.filter.ChatFilter
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.discord.bot
 import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.classes.ranks.RankData
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
