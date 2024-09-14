@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.0"
     id("com.gradleup.shadow") version "8.3.1"
-    application
     `maven-publish`
     kotlin("plugin.serialization") version "1.9.0"
     id("com.palantir.git-version") version "3.0.0"
@@ -25,8 +24,4 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 	// Used for translations, needed for its lack of type-safety :kek:
 	implementation("com.moandjiezana.toml:toml4j:0.7.2")
-}
-
-application {
-    mainClass.set("MainKt")
 }
