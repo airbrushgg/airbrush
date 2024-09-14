@@ -19,7 +19,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	compileOnly(project(":server"))
 	compileOnly(project(":sdk"))
-	compileOnly("dev.hollowcube:minestom-ce:010fe985bb")
+	compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
 	compileOnly("cc.ekblad:4koma:1.2.0")
 	compileOnly(project(":core"))
 	compileOnly(project(":discord"))
