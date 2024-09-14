@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm") version "2.0.0"
-    application
     `maven-publish`
     id("com.gradleup.shadow") version "8.3.1"
     id("com.palantir.git-version") version "3.0.0"
@@ -39,10 +38,6 @@ tasks.withType<ProcessResources> {
     filesMatching("plugin.toml") {
         expand(props)
     }
-}
-
-application {
-    mainClass.set("MainKt")
 }
 
 val packageFile = File("src/main/kotlin/gg/airbrush/${projectId}")

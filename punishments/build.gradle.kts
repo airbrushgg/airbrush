@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm") version "2.0.0"
-    application
     `maven-publish`
     id("com.gradleup.shadow") version "8.3.1"
     id("com.palantir.git-version") version "3.0.0"
@@ -15,7 +14,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	compileOnly(project(":server"))
@@ -25,12 +23,4 @@ dependencies {
 	compileOnly(project(":core"))
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.1.0")
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-application {
-    mainClass.set("MainKt")
 }
