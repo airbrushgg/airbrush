@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     implementation("net.minestom:minestom-snapshots:1f34e60ea6")
-    implementation("dev.hollowcube:polar:1.11.0")
+    implementation("dev.hollowcube:polar:1.11.2")
     implementation("dev.flavored:bamboo:1.1.0")
     implementation("net.kyori:adventure-text-minimessage:4.14.0")
     implementation("cc.ekblad:4koma:1.2.0")

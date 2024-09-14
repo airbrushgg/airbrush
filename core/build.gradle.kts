@@ -24,7 +24,7 @@ dependencies {
     compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
     compileOnly("dev.flavored:bamboo:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    compileOnly("dev.hollowcube:polar:1.3.2")
+    compileOnly("dev.hollowcube:polar:1.11.2")
     compileOnly("cc.ekblad:4koma:1.2.0")
 
 	compileOnly(project(":discord"))
