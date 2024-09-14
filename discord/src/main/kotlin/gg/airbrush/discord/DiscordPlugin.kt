@@ -27,8 +27,10 @@ import gg.airbrush.server.pluginManager
 import gg.airbrush.server.plugins.Plugin
 import net.dv8tion.jda.api.exceptions.InvalidTokenException
 import net.minestom.server.MinecraftServer
+import net.minestom.server.event.EventNode
 
 lateinit var discordConfig: DiscordConfig
+internal val eventNode = EventNode.all("Discord")
 
 class DiscordPlugin : Plugin() {
     private val mapper = tomlMapper {}

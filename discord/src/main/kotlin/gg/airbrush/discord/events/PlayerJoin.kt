@@ -16,6 +16,7 @@ package gg.airbrush.discord.events
 
 import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.eventNode
 import gg.airbrush.discord.lib.Placeholder
 import gg.airbrush.discord.lib.pp
 import net.minestom.server.MinecraftServer
@@ -25,13 +26,11 @@ import net.minestom.server.event.player.PlayerSpawnEvent
 
 object PlayerJoin {
 	init {
-		val eventHandler = MinecraftServer.getGlobalEventHandler()
-
-        eventHandler.addListener(PlayerSpawnEvent::class.java) { event ->
+        eventNode.addListener(PlayerSpawnEvent::class.java) { event ->
             handle(event.player, type = "join")
         }
 
-        eventHandler.addListener(PlayerDisconnectEvent::class.java) { event ->
+		eventNode.addListener(PlayerDisconnectEvent::class.java) { event ->
             handle(event.player, type = "leave")
         }
 	}
