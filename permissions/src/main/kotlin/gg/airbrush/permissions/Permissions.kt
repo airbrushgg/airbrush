@@ -20,17 +20,20 @@ import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.TagStringIO
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
+import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.permission.Permission
 import java.util.*
+
+internal val eventNode = EventNode.all("Permissions")
 
 class Permissions : Plugin() {
     override fun setup() {
         val commandManager = MinecraftServer.getCommandManager()
         commandManager.register(PermissionManager())
 
-        val eventManager = MinecraftServer.getGlobalEventHandler()
-        eventManager.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
+        MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+        eventNode.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
             val player = event.player
 
             if (!SDK.players.exists(player.uuid))
@@ -48,6 +51,7 @@ class Permissions : Plugin() {
 
     override fun teardown() {
         // On shutdown
+        MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
     }
 
     private fun addPermissions(player: Player, rank: AirbrushRank) {
