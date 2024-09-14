@@ -52,6 +52,7 @@ class DiscordPlugin : Plugin() {
 
         registerCommands()
 
+        MinecraftServer.getGlobalEventHandler().addChild(eventNode)
         HandleLink
         PlayerJoin
         PlayerChat
@@ -68,6 +69,7 @@ class DiscordPlugin : Plugin() {
     override fun teardown() {
         // On shutdown
 	    bot.shutdownNow()
+        MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
     }
 
 	private fun registerCommands() {
