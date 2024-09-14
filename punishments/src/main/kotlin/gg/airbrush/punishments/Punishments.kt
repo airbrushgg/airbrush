@@ -13,6 +13,7 @@
 package gg.airbrush.punishments
 
 import cc.ekblad.toml.decode
+import cc.ekblad.toml.model.TomlException
 import cc.ekblad.toml.tomlMapper
 import gg.airbrush.core.lib.setInterval
 import gg.airbrush.punishments.commands.PunishCommand
@@ -56,7 +57,16 @@ class Punishments : Plugin() {
 		    fileName = "punishments.toml",
 		    pluginInfo = this.info
 	    )
-	    punishmentConfig = mapper.decode(configPath)
+
+		try {
+			punishmentConfig = mapper.decode(configPath)
+		} catch (e: TomlException) {
+			// We don't want to disable the plugin since it is essential. Instead, we load the default config.
+			MinecraftServer.LOGGER.error("[Punishments] Failed to load punishments config, loading default.", e)
+
+			val stream = Punishment::class.java.getResourceAsStream("/punishments.toml")!!
+			stream.use { punishmentConfig = mapper.decode(it) }
+		}
 
 	    val manager = MinecraftServer.getCommandManager()
 	    manager.register(PunishCommand())

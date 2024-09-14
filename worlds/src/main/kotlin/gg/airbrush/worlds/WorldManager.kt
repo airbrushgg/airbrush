@@ -13,6 +13,7 @@
 package gg.airbrush.worlds
 
 import cc.ekblad.toml.decode
+import cc.ekblad.toml.model.TomlException
 import cc.ekblad.toml.tomlMapper
 import dev.flavored.bamboo.SchematicReader
 import gg.airbrush.sdk.lib.ConfigUtils
@@ -34,7 +35,7 @@ object WorldManager {
     private val MANAGED_TAG = Tag.Boolean("ManagedInstance")
     private val PERSISTENT_TAG = Tag.String("PersistentWorld")
 
-    private val config: WorldConfig
+    private var config: WorldConfig
     private val instanceManager = MinecraftServer.getInstanceManager()
 
     private val reader = SchematicReader()
@@ -57,7 +58,15 @@ object WorldManager {
             )
         }
         val configPath = ConfigUtils.loadResource(WorldConfig::class.java, "worlds.toml", "..")
-        config = mapper.decode<WorldConfig>(configPath)
+        try {
+            config = mapper.decode<WorldConfig>(configPath)
+        } catch (e: TomlException) {
+            // We don't want to disable the plugin since it is essential. Instead, we load the default config.
+            MinecraftServer.LOGGER.error("[Worlds] Failed to load worlds config, loading default.", e)
+
+            val stream = Worlds::class.java.getResourceAsStream("/worlds.toml")!!
+            stream.use { config = mapper.decode(it) }
+        }
 
         checkConfigValues()
     }
