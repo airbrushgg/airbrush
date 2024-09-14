@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.0.0"
     application
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.gradleup.shadow") version "8.3.1"
     id("com.palantir.git-version") version "3.0.0"
 }
 
