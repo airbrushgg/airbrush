@@ -62,7 +62,7 @@ class PluginClassLoader(private val file: File, parent: ClassLoader) : URLClassL
         val stream = getResourceAsStream("plugin.toml")
 
         if (stream == null) {
-            MinecraftServer.LOGGER.info("Found JAR '${file.name}' in the plugins folder without a plugin.toml file.")
+            MinecraftServer.LOGGER.warn("Found JAR '${file.name}' in the plugins folder without a plugin.toml file.")
             return null
         }
 

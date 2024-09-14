@@ -27,7 +27,7 @@ data class PluginInfo(
             if (dependency.matches(Regex("[0-9a-z-]+")))
                 continue
 
-            MinecraftServer.LOGGER.info("Plugin '$id' contains invalid dependency '$dependency' ([0-9a-z-])")
+            MinecraftServer.LOGGER.warn("Plugin '$id' contains invalid dependency '$dependency' ([0-9a-z-])")
         }
     }
 }
