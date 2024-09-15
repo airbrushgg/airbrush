@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.0.0"
     id("com.gradleup.shadow") version "8.3.1"
     `maven-publish`
-    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("plugin.serialization") version "2.0.0"
     id("com.palantir.git-version") version "3.0.0"
 }
 
@@ -20,8 +20,9 @@ dependencies {
     compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
     compileOnly("cc.ekblad:4koma:1.2.0")
     implementation("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation(kotlin("coroutines"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 	// Used for translations, needed for its lack of type-safety :kek:
 	implementation("com.moandjiezana.toml:toml4j:0.7.2")
 }
