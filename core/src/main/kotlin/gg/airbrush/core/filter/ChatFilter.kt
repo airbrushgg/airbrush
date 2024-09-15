@@ -27,7 +27,7 @@ object ChatFilter {
     private lateinit var filterConfigPath: Path
     private lateinit var filterConfig: FilterConfig
 
-    val logChannel = filterConfig.logChannel
+    val logChannel get() = filterConfig.logChannel
 
     private val mapper = tomlMapper {
         mapping<FilterConfig> (
