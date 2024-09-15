@@ -19,9 +19,13 @@ import gg.airbrush.server.plugins.PluginManager
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.event.player.*
+import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.MojangAuth
 import net.minestom.server.extras.velocity.VelocityProxy
 import net.minestom.server.instance.Instance
+import net.minestom.server.listener.preplay.StatusListener
+import net.minestom.server.network.packet.client.status.StatusRequestPacket
+import net.minestom.server.ping.ResponseData
 import net.minestom.server.timer.TaskSchedule
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
@@ -31,8 +35,11 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.io.path.exists
 
 private val queuedCommands = Collections.synchronizedList(mutableListOf<String>())
 private val logger = LogManager.getLogger("Server")
@@ -155,6 +162,20 @@ fun registerEvents() {
     eventHandler.addListener(PlayerCommandEvent::class.java) { event ->
         val player = event.player
         logger.info("${player.username} executed /${event.command}")
+    }
+
+    val serverIconPath = Path.of("server-icon.png")
+    val encodedFavicon = if (serverIconPath.exists()) {
+        val bytes = Files.readAllBytes(serverIconPath)
+        "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes)
+    } else {
+        ""
+    }
+
+    eventHandler.addListener(ServerListPingEvent::class.java) { event ->
+        event.responseData = ResponseData().apply {
+            favicon = encodedFavicon
+        }
     }
 
     // TODO: This listener is executed before the chat filter's listener. Is this intentional?
