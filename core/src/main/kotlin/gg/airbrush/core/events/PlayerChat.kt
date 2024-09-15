@@ -16,6 +16,8 @@ package gg.airbrush.core.events
 
 import gg.airbrush.core.commands.admin.Lockdown
 import gg.airbrush.core.filter.ChatFilter
+import gg.airbrush.core.filter.FilterAction
+import gg.airbrush.core.filter.FilterResult
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.discord.bot
 import gg.airbrush.sdk.SDK
@@ -41,38 +43,39 @@ class PlayerChat {
     }
 
     private fun execute(event: PlayerChatEvent) {
-        if (ChatFilter.shouldBlock(event.player, event.message)) {
-            event.isCancelled = true
-
-            // TODO(cal): This should be better.
-	        val filterLogs = bot.getTextChannelById(ChatFilter.logChannel)
-		        ?: throw Exception("Failed to find respective logs channel")
-
-	        // TODO: Eventually get the filter rule they triggered? idk, that's an @apple thing
-	        val logEmbed = EmbedBuilder().setTitle("${event.player.username} triggered the filter")
-		        .setColor(java.awt.Color.decode("#ff6e6e"))
-		        .addField(MessageEmbed.Field("Message", event.message, false))
-		        .build()
-
-	        filterLogs.sendMessageEmbeds(logEmbed).queue()
-            return
-        }
-
         if (Lockdown.isLockedDown()) {
             event.isCancelled = true
             return
         }
 
-	    val punishments = SDK.punishments.list(event.player)
-	    val activeMute = punishments.find { it.data.active }
-	    if(activeMute !== null) {
-		    event.player.sendMessage("<error>${activeMute.data.reason}".mm())
-		    event.isCancelled = true
-		    return
-	    }
-
         val player = event.player
         val sdkPlayer = SDK.players.get(player.uuid)
+
+        val punishments = SDK.punishments.list(player)
+        val activeMute = punishments.find { it.data.active }
+        if (activeMute !== null) {
+            player.sendMessage("<error>${activeMute.data.reason}".mm())
+            event.isCancelled = true
+            return
+        }
+
+        val filterResult = ChatFilter.validateMessage(player, event.message)
+        if (filterResult.action == FilterAction.BLOCK) {
+            event.isCancelled = true
+
+            // TODO(cal): This should be better.
+            val filterLogs = bot.getTextChannelById(ChatFilter.logChannel)
+                ?: throw Exception("Failed to find respective logs channel")
+
+            // TODO: Eventually get the filter rule they triggered? idk, that's an @apple thing
+            val logEmbed = EmbedBuilder().setTitle("${event.player.username} triggered the filter")
+                .setColor(java.awt.Color.decode("#ff6e6e"))
+                .addField(MessageEmbed.Field("Message", event.message, false))
+                .build()
+
+            filterLogs.sendMessageEmbeds(logEmbed).queue()
+            return
+        }
 
         event.setChatFormat { _ ->
             val level = sdkPlayer.getLevel()

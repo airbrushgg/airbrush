@@ -54,11 +54,6 @@ object ChatFilter {
         loadRules()
     }
 
-    fun shouldBlock(player: Player, message: String): Boolean {
-        return registeredRules.any { rule -> rule.apply(player, message) >= FilterAction.BLOCK }
-    }
-
-    @Suppress("unused")
     // TODO(cal): Do we want to swap to this so we can log what filter rules were triggered? See events/PlayerChat.kt:36
     fun validateMessage(player: Player, message: String): FilterResult {
         val failedChecks = registeredRules
