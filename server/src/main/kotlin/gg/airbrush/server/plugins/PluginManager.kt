@@ -43,13 +43,13 @@ class PluginManager {
             } catch (e: ClassNotFoundException) {
                 MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid main class.")
             } catch (e: InvocationTargetException) {
-                MinecraftServer.getExceptionManager().handleException(e.targetException)
+                MinecraftServer.LOGGER.error("Exception thrown while running plugin constructor", e.targetException)
             }
         }
     }
 
     fun setupPlugins() {
-        main@for (plugin in plugins.values) {
+        outer@for (plugin in plugins.values) {
             if (plugin.isSetup)
                 continue
 
@@ -58,7 +58,7 @@ class PluginManager {
             for (id in info.dependencies) {
                 if (!plugins.containsKey(id)) {
                     MinecraftServer.LOGGER.warn("Plugin '${info.id}' requires dependency '$id' that is not present.")
-                    continue@main
+                    continue@outer
                 }
 
                 val dependingPlugin = plugins[id] ?: continue
@@ -68,7 +68,7 @@ class PluginManager {
 
                 if (dependingPlugin.info.dependencies.contains(id)) {
                     MinecraftServer.LOGGER.warn("Found circular dependency between '${info.id}' and '$id'.")
-                    continue@main
+                    continue@outer
                 }
 
                 enablePlugin(dependingPlugin)
@@ -87,10 +87,12 @@ class PluginManager {
             return
         }
 
-        scheduler.scheduleNextTick {
-            MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
+        MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
+        try {
             plugin.setup()
             plugin.isSetup = true
+        } catch (e: Exception) {
+            MinecraftServer.getExceptionManager().handleException(e)
         }
     }
 
