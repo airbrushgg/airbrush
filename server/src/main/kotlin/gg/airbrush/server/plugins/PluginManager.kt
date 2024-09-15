@@ -14,12 +14,15 @@ package gg.airbrush.server.plugins
 
 import net.minestom.server.MinecraftServer
 import java.io.File
+import java.lang.reflect.InvocationTargetException
 
 val PLUGIN_REGEX = Regex("[0-9a-z-]+")
 
 class PluginManager {
     private val pluginsFolder = File("plugins")
     val plugins = mutableMapOf<String, Plugin>()
+
+    private val scheduler = MinecraftServer.getSchedulerManager()
 
     fun registerPlugins() {
         for (file in listJARs()) {
@@ -39,6 +42,8 @@ class PluginManager {
                 plugins[info.id.lowercase()] = plugin
             } catch (e: ClassNotFoundException) {
                 MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid main class.")
+            } catch (e: InvocationTargetException) {
+                MinecraftServer.getExceptionManager().handleException(e.targetException)
             }
         }
     }
@@ -82,9 +87,11 @@ class PluginManager {
             return
         }
 
-        MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
-        plugin.setup()
-        plugin.isSetup = true
+        scheduler.scheduleNextTick {
+            MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
+            plugin.setup()
+            plugin.isSetup = true
+        }
     }
 
     fun disablePlugin(plugin: Plugin) {
@@ -93,8 +100,13 @@ class PluginManager {
         }
 
         MinecraftServer.LOGGER.info("Disabling plugin '${plugin.info.id}'...")
-        plugin.teardown()
-        plugin.isSetup = false
+        try {
+            plugin.teardown()
+        } catch (e: Exception) {
+            MinecraftServer.getExceptionManager().handleException(e)
+        } finally {
+            plugin.isSetup = false
+        }
     }
 
     private fun listJARs(): List<File> {
