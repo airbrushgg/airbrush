@@ -48,6 +48,10 @@ fun main() {
 
     configureLogAppender()
 
+    MinecraftServer.getExceptionManager().setExceptionHandler { e ->
+        logger.error(e.message, e)
+    }
+
     registerEvents()
     registerCommands()
     registerVelocity()
