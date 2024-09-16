@@ -34,7 +34,7 @@ class Plugins : Command("plugins", "pl"), CommandExecutor {
     override fun apply(sender: CommandSender, context: CommandContext) {
         val plugins = pluginManager.plugins.values
         val list = plugins.joinToString("</p>, <p>") {
-            if (it.isSetup) { it.info.name } else { "<error>${it.info.name}</error>" }
+            if (it.isSetup) { it.info.name } else { "<error>${it.info.name}" }
         }
         sender.sendMessage("<s>Plugins (<p>${plugins.size}</p>): <p>$list".mm())
     }
