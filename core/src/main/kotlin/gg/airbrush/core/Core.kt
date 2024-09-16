@@ -85,8 +85,6 @@ class Core : Plugin() {
         registerCommands()
         registerEvents()
 
-        ChatFilter.initialize(info)
-
 		Boost.restoreActiveBoosters()
 
 		MinecraftServer.LOGGER.info("[Core] Loaded!")

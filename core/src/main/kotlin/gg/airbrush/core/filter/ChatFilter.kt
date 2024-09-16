@@ -16,58 +16,79 @@ package gg.airbrush.core.filter
 
 import cc.ekblad.toml.decode
 import cc.ekblad.toml.tomlMapper
-import gg.airbrush.core.filter.rules.FileDefinedRule
 import gg.airbrush.sdk.lib.ConfigUtils
-import gg.airbrush.server.plugins.PluginInfo
-import net.minestom.server.MinecraftServer
+import gg.airbrush.core.filter.parsing.Tag
+import gg.airbrush.core.filter.parsing.Tokenizer
 import net.minestom.server.entity.Player
-import java.nio.file.Path
+import org.slf4j.LoggerFactory
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
-object ChatFilter {
-    private lateinit var filterConfigPath: Path
-    private lateinit var filterConfig: FilterConfig
+val chatFilterInstance = ChatFilter()
 
-    val logChannel get() = filterConfig.logChannel
+class ChatFilter {
+    private val logger = LoggerFactory.getLogger(ChatFilter::class.java)
+    private val mapper = tomlMapper { }
 
-    private val mapper = tomlMapper {
-        mapping<FilterConfig> (
-            "rule" to "rules"
-        )
-    }
+    private val config: FilterConfig
+    private val tokenizer = Tokenizer()
+    private val blockedWords: MutableList<String> = fetchWordList().toMutableList()
 
-    private val registeredRules = ArrayList<FilterRule>()
+    val logChannel get() = config.logChannel
 
-    fun initialize(info: PluginInfo) {
-        filterConfigPath = ConfigUtils.loadResource(FilterConfig::class.java, "filter.toml", info)
-        loadRules()
-    }
+    init {
+        val configPath = ConfigUtils.loadResource(FilterConfig::class.java, "filter.toml", "core/")
+        config = mapper.decode(configPath)
 
-    private fun loadRules() {
-        filterConfig = mapper.decode(filterConfigPath)
-
-        registerRule(FileDefinedRule(filterConfig))
-        MinecraftServer.LOGGER.info("[Core] Loaded ${registeredRules.size} internal filter rules.")
-    }
-
-    fun reloadRules() {
-        registeredRules.clear()
-        loadRules()
+        if (blockedWords.isEmpty()) {
+            logger.warn("The chat filter disabled! Failed to load the filter word list (or list returned empty).")
+        }
     }
 
     // TODO(cal): Do we want to swap to this so we can log what filter rules were triggered? See events/PlayerChat.kt:36
     fun validateMessage(player: Player, message: String): FilterResult {
-        val failedChecks = registeredRules
-            .filter { rule -> rule.apply(player, message) >= FilterAction.BLOCK }
+        //
+//        val failedChecks = registeredRules
+//            .filter { rule -> rule.apply(player, message) >= FilterAction.BLOCK }
+
+        val tokens = tokenizer.tokenize(message)
+
+        val failedTokens = tokens.filter {
+            it.tag == Tag.WORD && blockedWords.contains(it.value)
+        }
 
         return FilterResult(
-            if(failedChecks.isNotEmpty()) FilterAction.BLOCK else FilterAction.ALLOW,
-            failedChecks
+            if (failedTokens.isNotEmpty()) FilterAction.BLOCK else FilterAction.ALLOW,
+            failedTokens
         )
     }
 
-    private fun registerRule(rule: FilterRule) {
-        if (registeredRules.contains(rule))
+    fun clearAndFetchWordList() {
+        val newList = fetchWordList()
+        if (newList.isEmpty()) {
+            logger.warn("Failed to fetch the filter word list (or list returned empty). Using previous word list instead.")
             return
-        registeredRules += rule
+        }
+
+        blockedWords.clear()
+        blockedWords.addAll(newList)
+    }
+
+    companion object {
+        // This is hard-coded for now. Ideally, we would want to fetch these from an API endpoint.
+        private const val WORDLIST_URL: String = "https://gist.githubusercontent.com/AppleFlavored/b04bc246d0dc7361c53c27228f1592b4/raw/0d01f7b51e5d6530b58ad4b604c58dac6126943e/wordlist.txt"
+        private val client = HttpClient.newHttpClient()
+
+        private fun fetchWordList(): List<String> {
+            val request = HttpRequest.newBuilder(URI.create(WORDLIST_URL)).build()
+            val response = client.send(request, HttpResponse.BodyHandlers.ofLines())
+
+            return when (response.statusCode()) {
+                200, 304 -> response.body().toList()
+                else -> emptyList()
+            }
+        }
     }
 }

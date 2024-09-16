@@ -14,4 +14,6 @@
 
 package gg.airbrush.core.filter
 
-data class FilterResult(val action: FilterAction, val failedChecks: List<FilterRule>)
+import gg.airbrush.core.filter.parsing.TokenSpan
+
+data class FilterResult(val action: FilterAction, val failedTokens: List<TokenSpan>)
