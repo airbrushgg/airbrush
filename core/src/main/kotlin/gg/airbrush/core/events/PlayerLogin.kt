@@ -98,13 +98,15 @@ class PlayerLogin {
 
         player.isAllowFlying = true
 
-        val joinInfo = Translations.translate("core.welcome", player.username)
-        player.sendMessage(joinInfo.mm())
+        if (event.isFirstSpawn) {
+            val joinInfo = Translations.translate("core.welcome", player.username)
+            player.sendMessage(joinInfo.mm())
 
-	    val joinNotification = Translations.translate("core.notifications.join", player.username)
+            val joinNotification = Translations.translate("core.notifications.join", player.username)
 
-        MinecraftServer.getConnectionManager().onlinePlayers.forEach {
-            it.sendMessage(joinNotification.mm())
+            MinecraftServer.getConnectionManager().onlinePlayers.forEach {
+                it.sendMessage(joinNotification.mm())
+            }
         }
     }
 
