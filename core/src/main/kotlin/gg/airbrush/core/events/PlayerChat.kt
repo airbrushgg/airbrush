@@ -18,6 +18,7 @@ import gg.airbrush.core.commands.admin.Lockdown
 import gg.airbrush.core.filter.ChatFilter
 import gg.airbrush.core.filter.FilterAction
 import gg.airbrush.core.filter.FilterResult
+import gg.airbrush.core.filter.chatFilterInstance
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.discord.bot
 import gg.airbrush.sdk.SDK
@@ -59,18 +60,23 @@ class PlayerChat {
             return
         }
 
-        val filterResult = ChatFilter.validateMessage(player, event.message)
+        val filterResult = chatFilterInstance.validateMessage(player, event.message)
         if (filterResult.action == FilterAction.BLOCK) {
             event.isCancelled = true
 
             // TODO(cal): This should be better.
-            val filterLogs = bot.getTextChannelById(ChatFilter.logChannel)
+            val filterLogs = bot.getTextChannelById(chatFilterInstance.logChannel)
                 ?: throw Exception("Failed to find respective logs channel")
+
+            val firstToken = filterResult.failedTokens.first()
+            val formattedMessage = event.message
+                .replace("`", "\\`")
+                .replaceFirst(firstToken.value, "`${firstToken.value}`")
 
             // TODO: Eventually get the filter rule they triggered? idk, that's an @apple thing
             val logEmbed = EmbedBuilder().setTitle("${event.player.username} triggered the filter")
                 .setColor(java.awt.Color.decode("#ff6e6e"))
-                .addField(MessageEmbed.Field("Message", event.message, false))
+                .addField(MessageEmbed.Field("Message", formattedMessage, false))
                 .build()
 
             filterLogs.sendMessageEmbeds(logEmbed).queue()

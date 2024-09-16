@@ -16,13 +16,7 @@ package gg.airbrush.core.filter
 
 data class FilterConfig(
     val logChannel: String,
-    val root: Root,
-    val rules: List<RuleDefinition>?
+    val root: Root
 ) {
     data class Root(val blockMessage: String)
-    data class RuleDefinition(
-        val blockMessage: String?,
-        val pattern: String?,
-        val file: String?,
-        val action: FilterAction?)
 }

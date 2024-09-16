@@ -14,7 +14,7 @@
 
 package gg.airbrush.core.commands
 
-import gg.airbrush.core.filter.ChatFilter
+import gg.airbrush.core.filter.chatFilterInstance
 import gg.airbrush.server.lib.mm
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -40,7 +40,7 @@ class Filter : Command("filter"), CommandExecutor {
     private fun runReload(sender: CommandSender, context: CommandContext) {
         when (context.get(action)) {
             Action.RELOAD -> {
-                ChatFilter.reloadRules()
+                chatFilterInstance.clearAndFetchWordList()
                 sender.sendMessage("<success>Reloaded filter configuration!".mm())
             }
             else -> {
