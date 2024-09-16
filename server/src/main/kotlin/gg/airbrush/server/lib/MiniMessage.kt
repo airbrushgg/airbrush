@@ -19,13 +19,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 
 /** Global [MiniMessage] instance. */
 private val miniMessage = MiniMessage.builder()
     .tags(TagResolver.resolver(
+        StandardTags.defaults(),
         Placeholder.parsed("error", "<#ff6e6e>⚠ <#ff7f6e>"),
         Placeholder.parsed("success", "<g>✔ "),
-
         TagResolver.resolver("p", Tag.styling(TextColor.color(200, 130, 224))),
         TagResolver.resolver("donator", Tag.styling(TextColor.color(255, 229, 99))),
         TagResolver.resolver("s", Tag.styling(TextColor.color(244, 212, 255))),
