@@ -50,13 +50,26 @@ class PlayerLevelUp {
 
         if (level % 5 == 0) {
             val sdkPlayer = SDK.players.get(player.uuid)
+            val radiusBeforeLevelUp = sdkPlayer.getData().brushRadius.max
 
 	        when(level) {
 		        5 -> sdkPlayer.setMaxRadius(2)
 		        15 -> sdkPlayer.setMaxRadius(3)
 		        25 -> sdkPlayer.setMaxRadius(4)
 		        50 -> sdkPlayer.setMaxRadius(5)
-	        }
+            }
+
+            val radiusAfterLevelUp = sdkPlayer.getData().brushRadius.max
+
+            if(radiusAfterLevelUp > radiusBeforeLevelUp) {
+                player.sendMessage(Translations.translate("core.leveling.new_max_radius", radiusBeforeLevelUp, radiusAfterLevelUp).mm())
+
+                // TODO(cal): Figure out applicable sound for this.
+                player.playSound(
+                    Sound.sound(Key.key("block.note_block.bell"), Sound.Source.MASTER, 1.0f, 1.0f),
+                    Sound.Emitter.self()
+                )
+            }
 
             val paletteOrdinal = sdkPlayer.getData().progressedPalette
             val paletteType = PaletteType.entries.firstOrNull {
