@@ -16,6 +16,7 @@ package gg.airbrush.core.lib
 
 import gg.airbrush.core.events.sidebars
 import gg.airbrush.sdk.SDK
+import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
 import gg.airbrush.worlds.events.InstanceReadyEvent
 import net.hollowcube.polar.PolarLoader
@@ -38,6 +39,7 @@ object CanvasManager {
         val instance = createInstance(sdkWorld.data.id)
         instance.eventNode().addListener(InstanceReadyEvent::class.java) {
             sidebars[player.uuid]?.updateLineContent("world", getWorldLine(player))
+            player.sendMessage("<p>Teleporting you to <s>${player.username}'s World</s>...</p>".mm())
             player.setInstance(it.instance)
         }
     }

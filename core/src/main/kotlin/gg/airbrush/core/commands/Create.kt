@@ -15,6 +15,8 @@
 package gg.airbrush.core.commands
 
 import gg.airbrush.core.lib.CanvasManager
+import gg.airbrush.core.lib.teleportToCanvas
+import gg.airbrush.server.lib.mm
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -31,6 +33,7 @@ class Create : Command("create"), CommandExecutor {
     override fun apply(sender: CommandSender, context: CommandContext) {
         val player = sender as Player
 
+        sender.sendMessage("<p>Creating your very own canvas world...</p>".mm())
         CanvasManager.create(player)
     }
 }
