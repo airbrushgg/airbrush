@@ -9,6 +9,8 @@ plugins {
 group = "gg.airbrush"
 version = "0.2.0"
 
+val minestomVersion: String by rootProject.extra
+
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io/")
@@ -18,7 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     compileOnly(project(":server"))
     compileOnly(project(":sdk"))
-    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+    compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 }
 
 tasks.withType(ShadowJar::class.java) {

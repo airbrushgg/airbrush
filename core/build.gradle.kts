@@ -9,6 +9,8 @@ plugins {
 group = "gg.airbrush"
 version = "0.1.0"
 
+val minestomVersion: String by rootProject.extra
+
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io")
@@ -20,7 +22,7 @@ dependencies {
     compileOnly(project(":server"))
     compileOnly(project(":worlds"))
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
-    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+    compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
     compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
     compileOnly("dev.flavored:bamboo:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")

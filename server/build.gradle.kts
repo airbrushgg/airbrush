@@ -10,6 +10,7 @@ group = "gg.airbrush"
 version = "0.3.2"
 
 val workaroundVersion = version as String
+val minestomVersion: String by rootProject.extra
 
 repositories {
     mavenCentral()
@@ -17,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.minestom:minestom-snapshots:1f34e60ea6")
+    implementation("net.minestom:minestom-snapshots:$minestomVersion")
     implementation("dev.hollowcube:polar:1.11.2")
     implementation("dev.flavored:bamboo:1.1.0")
     implementation("net.kyori:adventure-text-minimessage:4.14.0")

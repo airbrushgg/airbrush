@@ -8,6 +8,8 @@ plugins {
 group = "gg.airbrush"
 version = "1.0-SNAPSHOT"
 
+val minestomVersion: String by rootProject.extra
+
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io")
@@ -23,7 +25,7 @@ dependencies {
 
     compileOnly("cc.ekblad:4koma:1.2.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
-    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+    compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 
 	implementation("me.santio.Coffee:jda:85d9b1e6d5")
 }
