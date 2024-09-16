@@ -15,7 +15,6 @@
 package gg.airbrush.core.lib
 
 import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.classes.worlds.WorldVisibility
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.Component
@@ -33,19 +32,29 @@ fun getLevelLine(player: Player): Component {
 }
 
 fun getWorldLine(player: Player): Component {
-    var worldName = "Spawn"
+    val instance = player.instance
 
-	if(player.instance.hasTag(Tag.String("CanvasUUID"))) {
-		val canvasID = player.instance.getTag(Tag.String("CanvasUUID"))!!
-		val world = SDK.worlds.getByUUID(canvasID)
-			?: return Translations.translate("core.scoreboard.world", worldName).mm()
-        worldName = when(world.data.visibility) {
-            WorldVisibility.PRIVATE -> "Private World"
-            WorldVisibility.PUBLIC -> "Public World"
+    val internalWorldName = instance.getTag(Tag.String("PersistentWorld")) ?: null
+    val canvasId = instance.getTag(Tag.String("CanvasUUID")) ?: null
+
+    fun getWorldName(): String {
+        if (internalWorldName == null && canvasId == null) {
+            return "Spawn"
         }
-	}
 
-    return Translations.translate("core.scoreboard.world", worldName).mm()
+        if (internalWorldName == "donator_world") {
+            return "<y>★"
+        }
+
+        if (canvasId != null) {
+            val world = SDK.worlds.getByUUID(canvasId) ?: return "Unknown World"
+            return world.data.name
+        }
+
+        return "Unknown World"
+    }
+
+    return Translations.translate("core.scoreboard.world", getWorldName()).mm()
 }
 
 // This is going to be removed for now as updating it would suck.
