@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Copy
+
 plugins {
     kotlin("jvm") version "2.0.0"
     id("com.gradleup.shadow") version "8.3.1"
@@ -29,4 +31,24 @@ dependencies {
 
 application {
     mainClass.set("gg.airbrush.server.MainKt")
+}
+
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == "airbrush.jar"
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set("airbrush.jar")
+    finalizedBy(tasks.named("moveJar"))
 }

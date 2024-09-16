@@ -11,6 +11,7 @@ version = "0.2.0"
 
 val workaroundVersion = version as String
 val minestomVersion: String by rootProject.extra
+val jarName = "sdk.jar"
 
 repositories {
     mavenCentral()
@@ -26,4 +27,24 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 	// Used for translations, needed for its lack of type-safety :kek:
 	implementation("com.moandjiezana.toml:toml4j:0.7.2")
+}
+
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/plugins")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == jarName
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set(jarName)
+    finalizedBy(tasks.named("moveJar"))
 }

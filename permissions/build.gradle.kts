@@ -10,6 +10,7 @@ group = "gg.airbrush"
 version = "0.2.0"
 
 val minestomVersion: String by rootProject.extra
+val jarName = "permissions.jar"
 
 repositories {
     mavenCentral()
@@ -29,4 +30,24 @@ tasks.withType(ShadowJar::class.java) {
             it.moduleGroup == "org.jetbrains.kotlin"
         }
     }
+}
+
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/plugins")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == jarName
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set(jarName)
+    finalizedBy(tasks.named("moveJar"))
 }

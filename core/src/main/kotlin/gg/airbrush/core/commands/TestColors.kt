@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -30,14 +28,13 @@ class TestColors : Command("testcolors"), CommandExecutor {
 	    setCondition { sender, _ -> sender.hasPermission("core.admin") }
 
         addSyntax({ sender: CommandSender, context: CommandContext ->
-            run(sender, context)
+            apply(sender, context)
         }, messageArg)
     }
 
-    private fun run(sender: CommandSender, context: CommandContext) {
+    override fun apply(sender: CommandSender, context: CommandContext) {
         val message = context.get(messageArg)
+        sender.sendMessage("Hello, world!")
         sender.sendMessage(message.joinToString(" ") { it }.mm())
     }
-
-    override fun apply(sender: CommandSender, context: CommandContext) {}
 }

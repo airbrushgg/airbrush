@@ -9,6 +9,7 @@ group = "gg.airbrush"
 version = "1.0-SNAPSHOT"
 
 val minestomVersion: String by rootProject.extra
+val jarName = "punishments.jar"
 
 repositories {
     mavenCentral()
@@ -25,4 +26,24 @@ dependencies {
 	compileOnly(project(":core"))
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.1.0")
+}
+
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/plugins")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == jarName
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set(jarName)
+    finalizedBy(tasks.named("moveJar"))
 }

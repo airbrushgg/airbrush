@@ -9,6 +9,7 @@ group = "gg.airbrush"
 version = "1.0-SNAPSHOT"
 
 val minestomVersion: String by rootProject.extra
+val jarName = "discord.jar"
 
 repositories {
     mavenCentral()
@@ -28,4 +29,24 @@ dependencies {
     compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 
 	implementation("me.santio.Coffee:jda:85d9b1e6d5")
+}
+
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/plugins")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == jarName
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set(jarName)
+    finalizedBy(tasks.named("moveJar"))
 }
