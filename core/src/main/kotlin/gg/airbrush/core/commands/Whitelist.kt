@@ -32,7 +32,7 @@ class Whitelist : Command("whitelist") {
         defaultExecutor = CommandExecutor { sender, _ ->
             sender.sendMessage("<error>Usage: /whitelist <add/remove/list>".mm())
         }
-        setCondition { sender, _ -> sender.hasPermission("core.whitelist") }
+        setCondition { sender, _ -> sender.hasPermission("core.admin") }
 
         addSubcommand(ListSubcommand())
         addSubcommand(AddSubcommand())

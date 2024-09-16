@@ -28,7 +28,7 @@ class AddBooster : Command("addbooster"), CommandExecutor {
     private val registeredBoosters = SDK.boosters.getAvailableBoosters()
 
     init {
-        setCondition { sender, _ -> sender.hasPermission("core.staff") }
+        setCondition { sender, _ -> sender.hasPermission("core.admin") }
         addSyntax(this::apply, ArgumentType.String("player"), ArgumentType.String("id"), ArgumentType.Integer("amount"))
     }
 

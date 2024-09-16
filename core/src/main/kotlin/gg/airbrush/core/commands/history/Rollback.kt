@@ -43,7 +43,7 @@ class Rollback : Command("rollback", "rb"), CommandExecutor {
         defaultExecutor = CommandExecutor { sender, _ ->
             sender.sendMessage("<error>Usage: /rollback <radius> <time>".mm())
         }
-        setCondition { sender, _ -> sender.hasPermission("core.rollback") }
+        setCondition { sender, _ -> sender.hasPermission("core.admin") }
         addSyntax(this, radiusArgument, timeArgument)
         //addSubcommand(SaveSubcommand())
     }
