@@ -27,7 +27,7 @@ import net.minestom.server.entity.Player
 
 class Gamemode : Command("gamemode", "gm"), CommandExecutor {
     init {
-	    setCondition { sender, _ -> sender.hasPermission("core.gamemode") }
+	    setCondition { sender, _ -> sender.hasPermission("core.staff") }
 
         addSyntax(this::apply, ArgumentType
             .Enum("gamemode", GameMode::class.java)

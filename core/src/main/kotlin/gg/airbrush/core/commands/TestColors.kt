@@ -27,7 +27,7 @@ class TestColors : Command("testcolors"), CommandExecutor {
     init {
         defaultExecutor = this
 
-	    setCondition { sender, _ -> sender.hasPermission("core.staff") }
+	    setCondition { sender, _ -> sender.hasPermission("core.admin") }
 
         addSyntax({ sender: CommandSender, context: CommandContext ->
             run(sender, context)

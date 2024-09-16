@@ -30,7 +30,7 @@ class Filter : Command("filter"), CommandExecutor {
     init {
         defaultExecutor = this
 
-	    setCondition { sender, _ -> sender.hasPermission("core.staff") }
+	    setCondition { sender, _ -> sender.hasPermission("core.admin") }
 
         addSyntax({ sender: CommandSender, context: CommandContext ->
             runReload(sender, context)
