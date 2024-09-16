@@ -47,7 +47,7 @@ private val pages: List<String> = listOf(
     // Rule 2
     """
         <b>2. No inappropriate content</b>
-        NFSW topics or themes are not allowed in neither chat nor paint.
+        NSFW topics or themes are not allowed in neither chat nor paint.
         Politics are discouraged as it is a near guarantee of turning hostile.
     """.trimIndent(),
 
