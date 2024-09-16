@@ -23,12 +23,8 @@ dependencies {
     implementation("dev.flavored:bamboo:1.1.0")
     implementation("net.kyori:adventure-text-minimessage:4.14.0")
     implementation("cc.ekblad:4koma:1.2.0")
-    implementation("org.apache.logging.log4j:log4j-api:2.17.2")
-    implementation("org.apache.logging.log4j:log4j-core:2.17.2")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.14.1")
-    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.2.0")
-    implementation("org.slf4j:slf4j-api:2.0.9")
-    implementation("org.slf4j:slf4j-log4j12:2.0.9")
+    implementation("ch.qos.logback:logback-core:1.5.8")
+    implementation("ch.qos.logback:logback-classic:1.5.8")
 }
 
 application {
