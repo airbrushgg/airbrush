@@ -16,9 +16,11 @@ import gg.airbrush.sdk.commands.ReloadCommand
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.MinecraftServer
+import org.slf4j.LoggerFactory
 
 class SDKPlugin : Plugin() {
     override fun setup() {
+		// TODO: Disable logging for MongoDB driver
 	    val manager = MinecraftServer.getCommandManager()
 	    manager.register(ReloadCommand())
 	    // Triggers an initialization to create the language files

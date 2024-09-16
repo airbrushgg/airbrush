@@ -8,6 +8,8 @@ plugins {
 group = "gg.airbrush"
 version = "1.0-SNAPSHOT"
 
+val minestomVersion: String by rootProject.extra
+
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io")
@@ -18,7 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	compileOnly(project(":server"))
 	compileOnly(project(":sdk"))
-	compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+	compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 	compileOnly("cc.ekblad:4koma:1.2.0")
 	compileOnly(project(":core"))
 	compileOnly(project(":discord"))

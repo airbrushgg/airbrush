@@ -5,7 +5,9 @@ plugins {
 
 group = "gg.airbrush"
 version = "1.0.0"
+
 val workaroundVersion = version as String
+val minestomVersion: String by rootProject.extra
 
 repositories {
     mavenCentral()
@@ -14,5 +16,5 @@ repositories {
 
 dependencies {
     compileOnly(project(":server"))
-    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+    compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 }

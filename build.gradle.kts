@@ -3,8 +3,7 @@ plugins {
     `maven-publish`
 }
 
-group = "gg.airbrush"
-version = "1.0.0"
+val minestomVersion: String by extra { "4305006e6b" }
 
 repositories {
     mavenCentral()

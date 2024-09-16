@@ -8,7 +8,9 @@ plugins {
 
 group = "gg.airbrush"
 version = "0.2.0"
+
 val workaroundVersion = version as String
+val minestomVersion: String by rootProject.extra
 
 repositories {
     mavenCentral()
@@ -17,7 +19,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":server"))
-    compileOnly("net.minestom:minestom-snapshots:1f34e60ea6")
+    compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
     compileOnly("cc.ekblad:4koma:1.2.0")
     implementation("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
