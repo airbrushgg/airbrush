@@ -15,11 +15,20 @@ package gg.airbrush.sdk.classes.ranks
 import com.mongodb.client.model.Filters
 import gg.airbrush.sdk.NotFoundException
 import gg.airbrush.sdk.Database
+import net.minestom.server.MinecraftServer
 import java.util.UUID
 
 class Ranks {
     private val db = Database.get()
     private val col = db.getCollection<RankData>("ranks")
+
+    init {
+        val defaultExists = exists("Default")
+        if (!defaultExists) {
+            MinecraftServer.LOGGER.info("Default rank does not exist, creating...")
+            create("Default")
+        }
+    }
 
     fun create(name: String): RankData {
         val exists = exists(name)
