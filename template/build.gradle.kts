@@ -18,11 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":server")) // change to latest git hash
-}
-
-kotlin {
-    jvmToolchain(19)
+    compileOnly(project(":server"))
 }
 
 tasks.withType<ProcessResources> {

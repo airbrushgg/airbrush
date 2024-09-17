@@ -10,6 +10,7 @@ group = "gg.airbrush"
 version = "0.1.0"
 
 val minestomVersion: String by rootProject.extra
+val jarName = "core.jar"
 
 repositories {
     mavenCentral()
@@ -31,4 +32,23 @@ dependencies {
 
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.1.0")
+}
+tasks.register<Copy>("moveJar") {
+    val sourceDir = file("${layout.buildDirectory.asFile.get().path}/libs")
+    val destinationDir = file("../dev-env/plugins")
+
+    destinationDir.mkdirs()
+
+    from(sourceDir) {
+        include { details ->
+            details.file.name == jarName
+        }
+    }
+
+    into(destinationDir)
+}
+
+tasks.shadowJar {
+    archiveFileName.set(jarName)
+    finalizedBy(tasks.named("moveJar"))
 }

@@ -1,0 +1,24 @@
+name: "airbrush"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - airbrush-mongo-data:/data/db
+
+  server:
+    build: .
+    restart: always
+    ports:
+      - "25565:25565"
+    depends_on:
+      - mongo
+    volumes:
+      - $PWD/plugins:/app/plugins
+      - $PWD/airbrush.jar:/app/airbrush.jar
+
+volumes:
+  airbrush-mongo-data:
