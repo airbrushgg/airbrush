@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -59,6 +57,10 @@ class DiscordPlugin : Plugin() {
 
         try {
             Discord.load()
+        } catch (e: IllegalArgumentException) {
+            MinecraftServer.LOGGER.error("[Discord] No token was provided.", e)
+            pluginManager.disablePlugin(this)
+            return
         } catch (e: InvalidTokenException) {
             MinecraftServer.LOGGER.error("[Discord] Bot was provided with an invalid token.", e)
             pluginManager.disablePlugin(this)
@@ -74,6 +76,8 @@ class DiscordPlugin : Plugin() {
 
 	private fun registerCommands() {
 		val manager = MinecraftServer.getCommandManager()
-		manager.register(LinkCommand())
+        if(!manager.commandExists("link")) {
+            manager.register(LinkCommand())
+        }
 	}
 }

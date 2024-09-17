@@ -3,4 +3,4 @@ name = "Punishments"
 description = "Punishment system for Airbrush"
 version = "0.1.0"
 mainClass = "gg.airbrush.punishments.Punishments"
-depend = ["sdk", "core", "discord"]
+dependencies =["sdk", "core", "discord"]
