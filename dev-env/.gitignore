@@ -1,2 +1,2 @@
-*.jar
-config.toml
+/plugins
+airbrush.jar

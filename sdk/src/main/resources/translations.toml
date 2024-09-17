@@ -43,7 +43,7 @@ join = "<s>[<g>+</g>] <p>%s"
 leave = "<s>[<color:#f16c6c>-</color>] <p>%s"
 
 [en.core.scoreboard]
-title = "<b><#cd1a15>A<#f84600>i<#f87d00>r<#f8c300>b<#12b304>r<#2d2ff8>u<#7711d8>s<#c111d8>h"
+title = "<b><#cd1a15>A<#f84600>i<#f87d00>r<#f8c300>b<#12b304>r<#2d2ff8>u<#7711d8>s<#c111d8>h</b>"
 level = "<s>Level: %s"
 exp = "<s>XP: <p>%s</p>/<p>%s"
 rank = "<s>Rank: <p>%s"

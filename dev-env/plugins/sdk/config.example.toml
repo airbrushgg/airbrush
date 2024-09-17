@@ -1,3 +1,0 @@
-database = "mongodb://localhost:27017/?retryWrites=true&w=majority&appName=Airbrush"
-isDev = true
-whitelistEnabled = false
