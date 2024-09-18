@@ -14,7 +14,7 @@ package gg.airbrush.discord.data
 
 data class DiscordConfig(
     val botToken: String,
-    val channel: String,
+    val channels: Channels,
     val donor: String,
     val superdonor: String,
     val join: MessageContent,
@@ -26,4 +26,9 @@ data class DiscordConfig(
 
 data class MessageContent(
     val content: String
+)
+
+data class Channels(
+    val main: String,
+    val log: String
 )

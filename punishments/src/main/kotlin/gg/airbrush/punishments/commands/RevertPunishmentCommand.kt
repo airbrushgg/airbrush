@@ -13,6 +13,7 @@
 package gg.airbrush.punishments.commands
 
 import gg.airbrush.discord.bot
+import gg.airbrush.discord.discordConfig
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.lib.Translations
@@ -83,9 +84,8 @@ class RevertPunishmentCommand : Command("revertpun") {
 		sender.sendMessage("<success>Successfully reverted punishment.".mm())
 
 		this.sendLog(punishment, sender.username)
-		// Make this a variable in a config
-		val discordLogChannel = bot.getTextChannelById("1162903708108071037")
-			?: throw Exception("Failed to find #staff-logs channel")
+		val discordLogChannel = bot.getTextChannelById(discordConfig.channels.log.toLong())
+			?: throw Exception("Failed to find logs channel")
 
 		val victim = getName(punishment)
 

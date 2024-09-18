@@ -31,7 +31,7 @@ object HandleLink {
 
 	private fun linkEvent(event: LinkAccountEvent) {
 		// Fetch the chat channel, this allows us to get the guild.
-		val channel = bot.getGuildChannelById(ChannelType.TEXT, discordConfig.channel.toLong()) ?: throw Exception("Failed to find guild!")
+		val channel = bot.getGuildChannelById(ChannelType.TEXT, discordConfig.channels.main.toLong()) ?: throw Exception("Failed to find guild!")
 
 		val paintersRole = channel.guild.roles.find {
 			it.name.lowercase() == "painters"

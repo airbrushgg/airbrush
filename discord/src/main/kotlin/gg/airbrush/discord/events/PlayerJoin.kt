@@ -50,7 +50,7 @@ object PlayerJoin {
 			)
 		)
 
-		val channel = bot.getTextChannelById(discordConfig.channel.toLong())
+		val channel = bot.getTextChannelById(discordConfig.channels.main.toLong())
 			?: throw Exception("Failed to find chat channel!")
 		channel.sendMessage(parsedMsg).queue()
 	}

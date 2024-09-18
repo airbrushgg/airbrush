@@ -13,6 +13,7 @@
 package gg.airbrush.punishments.lib
 
 import gg.airbrush.discord.bot
+import gg.airbrush.discord.discordConfig
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
@@ -139,9 +140,8 @@ data class Punishment(
     }
 
     private fun sendDiscordLog(id: String) {
-        // Make this a variable in a config
-        val discordLogChannel = bot.getTextChannelById("1250997625197563995")
-            ?: throw Exception("Failed to find #game-logs channel")
+        val discordLogChannel = bot.getTextChannelById(discordConfig.channels.log.toLong())
+            ?: throw Exception("Failed to find #punish-logs channel")
 
         val (shortReason) = getReasonInfo()
 
