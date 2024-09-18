@@ -40,6 +40,10 @@ object Translations {
 		return formatted.trimIndent()
 	}
 
+	fun getString(key: String): String {
+		return translations.getString("en.$key") ?: key
+	}
+
 	fun reload() {
 		loadTranslations()
 	}

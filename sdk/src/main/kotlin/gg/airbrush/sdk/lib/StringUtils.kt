@@ -1,7 +1,7 @@
 /*
  * This file is part of Airbrush
  *
- * Copyright (c) 2023 Airbrush Team
+ * Copyright (c) Airbrush Team
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -10,18 +10,10 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.airbrush.punishments.enums
+package gg.airbrush.sdk.lib
 
-@Suppress("UNUSED")
-enum class PunishmentShorts {
-	HATE,
-	FLOOD,
-	FILTER,
-	NSFW,
-	AD,
-	GRIEF,
-	ARGUING,
-	DOX,
-	DEATH,
-	UNDER13
+import java.util.*
+
+fun String.capitalize(): String {
+    return this.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }

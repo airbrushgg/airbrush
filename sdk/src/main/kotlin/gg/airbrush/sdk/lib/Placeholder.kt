@@ -12,7 +12,14 @@
 
 package gg.airbrush.sdk.lib
 
-class Placeholder(val string: String, val replacement: String)
+class Placeholder(val string: String, val replacement: String) {
+    /**
+     * Returns a string representation of the [Placeholder] object.
+     */
+    override fun toString(): String {
+        return "Placeholder(string='$string', replacement='$replacement')"
+    }
+}
 
 fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
     var message = this

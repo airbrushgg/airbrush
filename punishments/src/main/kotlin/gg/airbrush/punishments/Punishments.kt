@@ -28,22 +28,14 @@ import net.minestom.server.event.EventNode
 import java.time.Instant
 
 data class Punishment(
-	val reason: String,
+	val shortReason: String,
+	val longReason: String = shortReason,
 	val action: String,
 	val duration: String?
 )
 
 data class PunishmentsConfig(
-	val hate: Punishment,
-	val flood: Punishment,
-	val filter: Punishment,
-	val nsfw: Punishment,
-	val ad: Punishment,
-	val grief: Punishment,
-	val arguing: Punishment,
-	val dox: Punishment,
-	val death: Punishment,
-	val under13: Punishment
+	val punishments: Map<String, Punishment>
 )
 
 lateinit var punishmentConfig: PunishmentsConfig
