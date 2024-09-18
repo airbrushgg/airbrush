@@ -4,30 +4,30 @@ longReason = "You were banned for discrimination / hate speech"
 action = "ban"
 
 [punishments.flood]
-shortReason = "Flood"
+shortReason = "Flooding / Spamming"
 longReason = "You were muted for flooding / spamming"
 action = "mute"
 duration = "12h"
 
 [punishments.filter]
-shortReason = "Filter"
+shortReason = "Bypassing filter"
 longReason = "You were banned for bypassing our chat filter"
 action = "ban"
 duration = "24h"
 
 [punishments.nsfw]
-shortReason = "NSFW"
+shortReason = "NSFW Content"
 longReason = "You were banned for drawing NSFW content."
 action = "ban"
 
 [punishments.ad]
-shortReason = "Ad"
+shortReason = "Advertising"
 longReason = "You were muted for advertising"
 action = "mute"
 duration = "12h"
 
 [punishments.grief]
-shortReason = "Grief"
+shortReason = "Griefing Artwork"
 longReason = "You were banned for griefing artwork"
 action = "ban"
 
@@ -38,12 +38,12 @@ action = "mute"
 duration = "1h"
 
 [punishments.dox]
-shortReason = "DOX"
+shortReason = "DOX/DDOS threats"
 longReason = "You were banned for DOX/DDOS threats"
 action = "ban"
 
 [punishments.death]
-shortReason = "Death"
+shortReason = "Death threats"
 longReason = "You were banned for Threatening or Inciting Violence"
 action = "ban"
 
