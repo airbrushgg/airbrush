@@ -28,7 +28,7 @@ data class PunishmentData(
 	val type: Int,
 	val createdAt: Long = Instant.now().epochSecond,
 	val updatedAt: Long = createdAt,
-	val duration: Int?,
+	val duration: Long?,
 	var active: Boolean = true,
 	val id: String = UUID.randomUUID().toString(),
 	var notes: String? = null

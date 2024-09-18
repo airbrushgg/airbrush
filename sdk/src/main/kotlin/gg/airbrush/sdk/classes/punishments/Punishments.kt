@@ -28,7 +28,7 @@ class Punishments {
         player: UUID,
         reason: String,
         type: Int,
-        duration: Int,
+        duration: Long,
 		notes: String? = null
     ): PunishmentData {
         val punishment = PunishmentData(
