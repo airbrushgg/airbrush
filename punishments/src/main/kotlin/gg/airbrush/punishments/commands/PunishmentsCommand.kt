@@ -61,7 +61,7 @@ fun timestampToRelativeTime(timestamp: Long): String {
 class PunishmentsCommand : Command("punishments") {
 	init {
 		setCondition { sender, _ ->
-			sender.hasPermission("core.punish")
+			sender.hasPermission("core.staff")
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->

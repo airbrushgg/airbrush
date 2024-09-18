@@ -20,7 +20,7 @@ import net.minestom.server.command.builder.Command
 
 object Disable : Command("disable") {
     init {
-        setCondition { sender, _ -> sender.hasPermission("airbrush.pluginManager") }
+        setCondition { sender, _ -> sender.hasPermission("core.admin") }
         addSyntax({ sender, context ->
             val plugin = context.get<Plugin>("plugin")
 

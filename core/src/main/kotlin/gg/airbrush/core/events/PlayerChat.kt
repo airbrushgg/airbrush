@@ -93,7 +93,7 @@ class PlayerChat {
 	        val message = PlainTextComponentSerializer.plainText().serialize(event.message.mm())
 
             val hoverComponent = Component.text { builder ->
-                if (player.hasPermission("airbrush.staff")) {
+                if (player.hasPermission("core.staff")) {
                     builder.append("<s>☆ <p>${player.username} <s>is a staff member.\n\n".mm())
                 } else if (player.hasPermission("core.donor")) {
                     builder.append("<donator>☆ ${player.username}</donator> <s>is a star.\n\n".mm())
