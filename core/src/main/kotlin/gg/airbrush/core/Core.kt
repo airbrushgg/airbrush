@@ -29,7 +29,6 @@ import gg.airbrush.core.events.BrushEvents
 import gg.airbrush.core.events.PlayerChat
 import gg.airbrush.core.events.PlayerBlockHandler
 import gg.airbrush.core.events.PlayerLevelUp
-import gg.airbrush.core.filter.ChatFilter
 import gg.airbrush.core.lib.CanvasManager
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
@@ -104,10 +103,19 @@ class Core : Plugin() {
 
 		MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
 
-		// Save all canvases to disk.
-		CanvasManager.saveAll()
-		// Update the active boosters for next time to server starts.
-		Boost.clearActiveBoosters()
+		try {
+			// Save all canvases to disk.
+			CanvasManager.saveAll()
+		} catch (e: Exception) {
+			MinecraftServer.LOGGER.error("[Core] Failed to save canvases.", e)
+		}
+
+		try {
+			// Update the active boosters for next time to server starts.
+			Boost.clearActiveBoosters()
+		} catch (e: Exception) {
+			MinecraftServer.LOGGER.error("[Core] Failed to clear active boosters.", e)
+		}
     }
 
     private fun registerCommands() {
