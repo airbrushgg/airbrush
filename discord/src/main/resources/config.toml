@@ -7,9 +7,9 @@ superdonor = "" # Super donor role ID
 linkRequest = "<newline><#82a9ce>%username%<#bfdefb> requested to link their Discord<newline><#bffbdb><hover:show_text:'<#ffd4e3><i>Click to approve'><click:run_command:/link accept %sessionId%>✔ Accept </click><gray>| <#fbcebf><hover:show_text:'<#ffd4e3><i>Click to deny'><click:run_command:/link deny %sessionId%>✗ Deny</click><newline>"
 
 [join]
-content = "%name% joined the server"
+content = "`[%timestamp%] %name% joined`"
 [leave]
-content = "%name% left"
+content = "`[%timestamp%] %name% left`"
 [chat]
 content = "`[%timestamp%] %rank% %name%: %message%`"
 [ingame]
