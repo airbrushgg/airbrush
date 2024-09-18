@@ -13,7 +13,6 @@
 package gg.airbrush.punishments.lib
 
 import gg.airbrush.discord.bot
-import gg.airbrush.punishments.commands.toPluralForm
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
@@ -44,6 +43,7 @@ fun convertDate(input: String): Long {
     val (numericValue, timeUnit) = getNumericValue(input)
 
     val timeUnits: Map<String, Long> = mapOf(
+        "min" to 60,
         "h" to 60 * 60,
         "d" to 24 * 60 * 60,
         "w" to 7 * 24 * 60 * 60
@@ -55,9 +55,24 @@ fun convertDate(input: String): Long {
     return numericValue * secondValue
 }
 
+fun String.toPluralForm(): String {
+    return when {
+        endsWith("n") -> this + "ned"
+        endsWith("e") -> this + "d"
+        else -> this + "ed"
+    }
+}
+
+fun canPunish(uuid: UUID): Boolean {
+    val playerExists = SDK.players.exists(uuid)
+    if(!playerExists) return true
+    val offenderRank = SDK.players.get(uuid).getRank()
+    return offenderRank.getData().permissions.find { it.key == "core.staff" } !== null
+}
+
 data class User(val uuid: UUID, val name: String)
 
-data class PunishmentHandler(
+data class Punishment(
     /** The moderator who is applying the punishment */
     val moderator: User,
     /** The player being punished */
@@ -67,7 +82,7 @@ data class PunishmentHandler(
     /** The type of punishment to apply */
     val type: PunishmentTypes,
     /** Duration string (ex: "1h") */
-    val duration: String,
+    val duration: String = "FOREVER",
     /** Notes to be attached to the punishment */
     val notes: String,
 ) {
@@ -79,7 +94,7 @@ data class PunishmentHandler(
             longReason = punishmentInfo.longReason
         }
 
-        val translation = Translations.getString("punishments.playerBanned")
+        val translation = Translations.getString("punishments.${if(this.type == PunishmentTypes.BAN) "playerBanned" else "playerKicked"}")
         val title = Translations.getString("core.scoreboard.title")
 
         val placeholders = listOf(
@@ -99,7 +114,7 @@ data class PunishmentHandler(
         if(this.reason.lowercase() in punishmentConfig.punishments.keys) {
             println("Is a predefined punishment, getting info from config")
             val punishmentInfo = punishmentConfig.punishments[this.reason.lowercase()]!!
-            shortReason = punishmentInfo.shortReason
+            shortReason = punishmentInfo.shortReason.capitalize()
             longReason = punishmentInfo.longReason
         } else println("Is not a predefined punishment, using reason as-is")
 
@@ -133,7 +148,7 @@ data class PunishmentHandler(
         val logEmbed = EmbedBuilder().setTitle("${this.player.name} was ${getPluralType()}")
             .setColor(Color.decode("#ff6e6e"))
             .setThumbnail("https://skins.mcstats.com/body/side/${this.player.uuid}")
-            .addField(MessageEmbed.Field("Reason", shortReason.capitalize(), true))
+            .addField(MessageEmbed.Field("Reason", shortReason, true))
             .addField(MessageEmbed.Field("Moderator", this.moderator.name, true))
             .addField(MessageEmbed.Field("Punishment ID", id, false))
             .setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
@@ -145,8 +160,9 @@ data class PunishmentHandler(
         discordLogChannel.sendMessageEmbeds(logEmbed.build()).queue()
     }
 
-    fun handle(): PunishmentHandler {
-        val duration = convertDate(this.duration)
+    fun handle(): Punishment {
+        var duration = convertDate(this.duration)
+        if(this.type == PunishmentTypes.KICK) duration = 0
 
         val punishment = SDK.punishments.create(
             moderator = this.moderator.uuid,
@@ -154,7 +170,8 @@ data class PunishmentHandler(
             reason = this.reason,
             type = this.type.ordinal,
             duration = duration,
-            notes = this.notes
+            notes = this.notes,
+            active = this.type != PunishmentTypes.KICK
         )
 
         try {
@@ -165,8 +182,10 @@ data class PunishmentHandler(
 
         val logPlaceholders = this.getPlaceholders()
 
-        val logString = Translations.getString("punishments.punishment").parsePlaceholders(logPlaceholders).trimIndent()
-        Audiences.players { p -> p.hasPermission("core.staff") }.sendMessage(logString.mm())
+        val key = if(this.type == PunishmentTypes.KICK) "punishments.kickedPlayer" else "punishments.punishment"
+        val logString = Translations.getString(key).parsePlaceholders(logPlaceholders).trimIndent()
+        Audiences.players { p -> p.hasPermission("core.staff") }
+            .sendMessage(logString.mm())
 
         val onlinePlayer = MinecraftServer.getConnectionManager().onlinePlayers.firstOrNull {
             it.uuid == player.uuid
@@ -214,9 +233,11 @@ data class PunishmentHandler(
         val (numericValue, timeUnit) = getNumericValue(this.duration)
 
         var unit = when(timeUnit) {
+            "min" -> "minute"
             "h" -> "hour"
             "d" -> "day"
             "w" -> "week"
+            "mo" -> "month"
             else -> throw Exception("Invalid time unit specified")
         }
         if(numericValue > 1) unit += "s"

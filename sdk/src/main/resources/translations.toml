@@ -51,6 +51,7 @@ world = "<s>World: <g>%s"
 
 [en.punishments]
 punishment = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red> [%duration_uppercase%]"
+kickedPlayer = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red>"
 reversion = "<gray><p>%moderator%</p> reverted the punishment of <p>%player%</p>."
 playerMuted = """
         <s>%long_reason%. Expires in <p>%duration_lowercase%</p>.
@@ -63,6 +64,11 @@ playerBanned = """
         <s>%long_reason%
 
         <s>Think this is a mistake? Join https://discord.gg/yAgCb9AHM8 to appeal.
+"""
+playerKicked = """
+        <p>Kicked from</p> %title%.
+
+        <s>%long_reason%
 """
 
 [en.core.commands]

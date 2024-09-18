@@ -33,14 +33,6 @@ import java.util.*
 
 var nilUUID = UUID(0, 0)
 
-fun String.toPluralForm(): String {
-	return when {
-		endsWith("n") -> this + "ned"
-		endsWith("e") -> this + "d"
-		else -> this + "ed"
-	}
-}
-
 class PunishCommand : Command("punish") {
 	private val notesArg = ArgumentType.StringArray("notes")
 	private val typeArg = ArgumentType.String("type").setSuggestionCallback { _, context, suggestions ->
@@ -58,13 +50,6 @@ class PunishCommand : Command("punish") {
 
 		addSyntax(this::apply, typeArg, notesArg)
 		addSyntax(this::apply, typeArg)
-	}
-
-	private fun canPunish(uuid: UUID): Boolean {
-		val playerExists = SDK.players.exists(uuid)
-		if(!playerExists) return true
-		val offenderRank = SDK.players.get(uuid).getRank()
-		return offenderRank.getData().permissions.find { it.key == "core.staff" } !== null
 	}
 
 	private fun apply(sender: CommandSender, context: CommandContext) = runBlocking {
@@ -94,7 +79,7 @@ class PunishCommand : Command("punish") {
 		val punishmentType = PunishmentTypes.valueOf(punishmentInfo.action.uppercase())
 		val punishmentNotes = if(notes !== null) notes.joinToString(" ") { it } else ""
 
-		 PunishmentHandler(
+		Punishment(
 			moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
 			player = User(offlinePlayer.uniqueId, offlinePlayer.username),
 			reason = punishmentShort.uppercase(),
