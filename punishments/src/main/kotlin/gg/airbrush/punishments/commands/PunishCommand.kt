@@ -80,7 +80,7 @@ class PunishCommand : Command("punish") {
     
 	init {
 		setCondition { sender, _ ->
-			sender.hasPermission("core.punish")
+			sender.hasPermission("core.staff")
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->
@@ -99,12 +99,11 @@ class PunishCommand : Command("punish") {
 
 		val offenderRank = SDK.players.get(offlinePlayer.uniqueId).getRank()
 
-		when(offenderRank.getData().name.lowercase()) {
-			"mod",
-			"admin" -> {
-				sender.sendMessage("<error>You cannot punish this person!".mm())
-				return@runBlocking
-			}
+		val offenderIsImmune = offenderRank.getData().permissions.find { it.key == "core.staff" } !== null
+
+		if(offenderIsImmune) {
+			sender.sendMessage("<error>You cannot punish this person!".mm())
+			return@runBlocking
 		}
 
 		val activePunishment = SDK.punishments.list(offlinePlayer.uniqueId).find {it.data.active}

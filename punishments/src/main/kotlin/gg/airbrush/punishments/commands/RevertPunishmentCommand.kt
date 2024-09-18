@@ -33,7 +33,7 @@ import java.util.*
 class RevertPunishmentCommand : Command("revertpun") {
 	init {
 		setCondition { sender, _ ->
-			sender.hasPermission("core.punish")
+			sender.hasPermission("core.admin")
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->
