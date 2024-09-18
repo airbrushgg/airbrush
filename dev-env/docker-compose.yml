@@ -17,8 +17,8 @@ services:
     depends_on:
       - mongo
     volumes:
-      - $PWD/plugins:/app/plugins
-      - $PWD/airbrush.jar:/app/airbrush.jar
+      - ./plugins:/app/plugins
+      - ./airbrush.jar:/app/airbrush.jar
 
 volumes:
   airbrush-mongo-data:
