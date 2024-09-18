@@ -11,7 +11,7 @@ welcome = """
 """
 broadcasts = """
         <br><p>Airbrush <g>- <s>If you enjoyed the server, be sure to <y><u>/fav</u></y> it!<br>
-        <br><p>Airbrush <g>- <s>Join our Discord server with <#7289da><u>/discord</u></#7289da>!<br>
+        <br><p>Airbrush <g>- <s>Join our Discord server with <click:open_url:https://discord.gg/yAgCb9AHM8><#7289da><u>/discord</click><br>
 """
 
 [en.core.leveling]
