@@ -22,7 +22,12 @@ import gg.airbrush.punishments.commands.RevertPunishmentCommand
 import gg.airbrush.punishments.events.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.ConfigUtils
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
+import gg.airbrush.server.lib.mm
 import gg.airbrush.server.plugins.Plugin
+import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventNode
 import java.time.Instant
@@ -32,7 +37,22 @@ data class Punishment(
 	val longReason: String = shortReason,
 	val action: String,
 	val duration: String?
-)
+) {
+	fun getDisconnectMessage(): Component {
+		val translation = Translations.getString("punishments.playerBanned")
+		val title = Translations.getString("core.scoreboard.title")
+
+		// Nullable due to custom punishments
+		val reason = this.longReason
+
+		val placeholders = listOf(
+			Placeholder("%title%", title),
+			Placeholder("%long_reason%", reason),
+		)
+
+		return translation.parsePlaceholders(placeholders).trimIndent().mm()
+	}
+}
 
 data class PunishmentsConfig(
 	val punishments: Map<String, Punishment>

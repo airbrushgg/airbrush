@@ -69,7 +69,6 @@ fun String.toPluralForm(): String {
 	}
 }
 
-
 class PunishCommand : Command("punish") {
 	private val notesArg = ArgumentType.StringArray("notes")
 	private val typeArg = ArgumentType.String("type").setSuggestionCallback { _, context, suggestions ->
@@ -128,7 +127,7 @@ class PunishCommand : Command("punish") {
 		val punishment = SDK.punishments.create(
 			moderator = moderator,
 			player = offlinePlayer.uniqueId,
-			reason = punishmentInfo.longReason,
+			reason = punishmentShort.uppercase(),
 			type = punishmentType.ordinal,
 			// TODO: Make duration non-null in the SDK.
 			duration = if(punishmentInfo.duration !== null)
@@ -196,7 +195,7 @@ class PunishCommand : Command("punish") {
 		when(punishmentType) {
 			PunishmentTypes.BAN,
 			PunishmentTypes.KICK -> {
-				player.kick(punishmentInfo.longReason)
+				player.kick(punishmentInfo.getDisconnectMessage())
 			}
 			PunishmentTypes.MUTE -> {
 				val mutedMsg = Translations.getString("punishments.playerMuted").parsePlaceholders(logPlaceholders).trimIndent()
