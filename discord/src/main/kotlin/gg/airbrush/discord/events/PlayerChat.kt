@@ -18,7 +18,7 @@ import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.discord.eventNode
 import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.pp
+import gg.airbrush.discord.lib.parsePlaceholders
 import gg.airbrush.sdk.SDK
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -49,7 +49,7 @@ object PlayerChat : ListenerAdapter() {
 
 		val timestamp = DateTimeFormatter.ofPattern("HH:mm:ss z").format(ZonedDateTime.now())
 
-		val parsedMsg = configMsg.pp(
+		val parsedMsg = configMsg.parsePlaceholders(
 			listOf(
 				Placeholder("%timestamp%", timestamp),
 				Placeholder("%rank%", rank),
@@ -68,7 +68,7 @@ object PlayerChat : ListenerAdapter() {
 		val configMsg = discordConfig.ingame.content
 		val msgContent = event.message.contentDisplay
 
-		val parsedMsg = configMsg.pp(listOf(
+		val parsedMsg = configMsg.parsePlaceholders(listOf(
 			Placeholder("%message%", msgContent),
 			Placeholder("%display-name%", event.author.effectiveName),
 			Placeholder("%name%", event.author.name),

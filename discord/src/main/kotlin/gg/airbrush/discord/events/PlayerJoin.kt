@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -18,10 +16,12 @@ import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.discord.eventNode
 import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.pp
+import gg.airbrush.discord.lib.parsePlaceholders
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 object PlayerJoin {
 	init {
@@ -41,14 +41,17 @@ object PlayerJoin {
 			else -> throw Exception("$type is an invalid event to handle")
 		}
 
-		val parsedMsg = configMsg.pp(
+		val timestamp = DateTimeFormatter.ofPattern("HH:mm:ss z").format(ZonedDateTime.now())
+
+		val parsedMsg = configMsg.parsePlaceholders(
 			listOf(
 				Placeholder("%name%", player.username),
+				Placeholder("%timestamp%", timestamp),
 			)
 		)
 
 		val channel = bot.getTextChannelById(discordConfig.channel.toLong())
 			?: throw Exception("Failed to find chat channel!")
-		channel.sendMessage(parsedMsg)
+		channel.sendMessage(parsedMsg).queue()
 	}
 }

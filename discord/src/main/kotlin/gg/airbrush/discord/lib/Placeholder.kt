@@ -16,7 +16,7 @@ package gg.airbrush.discord.lib
 
 class Placeholder(val string: String, val replacement: String)
 
-fun String.pp(placeholders: List<Placeholder>): String {
+fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
     var message = this
 
     for (p in placeholders) {

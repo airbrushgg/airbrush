@@ -14,7 +14,7 @@ package gg.airbrush.discord.discordCommands
 
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.pp
+import gg.airbrush.discord.lib.parsePlaceholders
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.linking.Linking
 import gg.airbrush.sdk.lib.PlayerUtils
@@ -43,7 +43,7 @@ class LinkCommand {
 			throw ex
 		}
 
-		val msg = discordConfig.linkRequest.pp(
+		val msg = discordConfig.linkRequest.parsePlaceholders(
 			listOf(
 				Placeholder("%username%", e.user.name),
 				Placeholder("%sessionId%", linkSession.code)
