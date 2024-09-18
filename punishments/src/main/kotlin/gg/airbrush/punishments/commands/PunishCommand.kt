@@ -89,10 +89,10 @@ class PunishCommand : Command("punish") {
 		addSyntax(this::apply, typeArg)
 	}
 
-	private fun canPunish(player: OfflinePlayer): Boolean {
-		val playerExists = SDK.players.exists(player.uniqueId)
+	private fun canPunish(uuid: UUID): Boolean {
+		val playerExists = SDK.players.exists(uuid)
 		if(!playerExists) return true
-		val offenderRank = SDK.players.get(player.uniqueId).getRank()
+		val offenderRank = SDK.players.get(uuid).getRank()
 		return offenderRank.getData().permissions.find { it.key == "core.staff" } !== null
 	}
 
@@ -102,7 +102,7 @@ class PunishCommand : Command("punish") {
 		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
 		val notes = context.get(notesArg)
 
-		val punishable = canPunish(offlinePlayer)
+		val punishable = canPunish(offlinePlayer.uniqueId)
 /*		if(punishable) {
 			sender.sendMessage("<error>You cannot punish this person!".mm())
 			return@runBlocking
@@ -154,7 +154,7 @@ class PunishCommand : Command("punish") {
 			}
 			if(numericValue > 1) unit += "s"
 
-			duration = "$numericValue ${unit.uppercase()}"
+			duration = "$numericValue $unit"
 		}
 
 		val logPlaceholders = listOf(
@@ -198,7 +198,10 @@ class PunishCommand : Command("punish") {
 			PunishmentTypes.KICK -> {
 				player.kick(punishmentInfo.longReason)
 			}
-			else -> return@runBlocking
+			PunishmentTypes.MUTE -> {
+				val mutedMsg = Translations.getString("punishments.playerMuted").parsePlaceholders(logPlaceholders).trimIndent()
+				player.sendMessage(mutedMsg.mm())
+			}
 		}
 	}
 
