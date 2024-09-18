@@ -22,3 +22,4 @@ include(
 //    "template",
     "worlds"
 )
+include("splatoon")
