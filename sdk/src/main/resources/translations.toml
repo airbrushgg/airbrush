@@ -70,3 +70,44 @@ none = "<s>You don't have a mask set."
 clear = "<s>Your mask has been cleared."
 view = "<s>Your current mask is <p>%s</p>."
 alert = "<s>You currently have a <p>%s</p> mask enabled."
+
+[en.core.commands.rules]
+overview = """
+        <b>1.</b> Be respectful
+        <b>2.</b> No NSFW content
+        <b>3.</b> Threats are not welcome
+        <b>4.</b> No advertisements
+        <b>5.</b> No griefing or trolling
+
+        <#19911d>For further info, continue reading >
+"""
+rule1 = """
+        <b>1. Be respectful</b>
+
+        Discrimination in any form is not tolerated anywhere on Airbrush.
+        Being disrespectful to others, instigating arguments, attacking
+        people especially for no reason are also not welcome.
+"""
+rule2 = """
+        <b>2. No NSFW content</b>
+
+        NSFW topics or themes are not allowed in neither chat nor paint.
+        Politics are discouraged as it is a near guarantee of turning hostile.
+"""
+rule3 = """
+        <b>3. Threats are not welcome</b>
+
+        This includes any sort of threat, joke or not. Attempts will also be reported to Minehut themselves.
+"""
+rule4 = """
+        <b>4. No advertising</b>
+
+        Please do not advertise other servers, Discord servers, websites, etc.
+"""
+rule5 = """
+        <b>5. No griefing or trolling</b>
+
+        If someone is painting something, try to not disturb and paint elsewhere.
+        If you are only here to troll, harass, needlessly grief, etc. there is no reason
+        for your presence.
+"""
