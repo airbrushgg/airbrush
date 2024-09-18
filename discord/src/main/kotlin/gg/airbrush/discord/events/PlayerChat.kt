@@ -17,9 +17,9 @@ package gg.airbrush.discord.events
 import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.discord.eventNode
-import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.parsePlaceholders
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter

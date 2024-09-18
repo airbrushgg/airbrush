@@ -13,11 +13,11 @@
 package gg.airbrush.discord.discordCommands
 
 import gg.airbrush.discord.discordConfig
-import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.parsePlaceholders
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.linking.Linking
+import gg.airbrush.sdk.lib.Placeholder
 import gg.airbrush.sdk.lib.PlayerUtils
+import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
 import me.santio.coffee.common.annotations.Command
 import me.santio.coffee.jda.annotations.Description
