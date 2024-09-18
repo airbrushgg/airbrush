@@ -25,7 +25,7 @@ import kotlin.system.exitProcess
 class Stop : Command("stop"), CommandExecutor {
     init {
         setCondition { sender, _ ->
-            sender.hasPermission("airbrush.stop")
+            sender.hasPermission("core.admin")
         }
 
         defaultExecutor = this
