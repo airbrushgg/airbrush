@@ -18,6 +18,7 @@ class SplatoonCommand : Command("splatoon") {
         setDefaultExecutor { sender, context ->  }
         addSubcommand(StartSubcommand())
         addSubcommand(StopSubcommand())
+        addSubcommand(ParameterSubcommand())
     }
 }
 

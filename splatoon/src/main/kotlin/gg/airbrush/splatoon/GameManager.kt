@@ -34,7 +34,6 @@ object GameManager {
             return
         }
 
-
         if (activePlayers.size > 0) {
             activePlayers.forEach { player -> player.team = null }
             activePlayers.clear()
