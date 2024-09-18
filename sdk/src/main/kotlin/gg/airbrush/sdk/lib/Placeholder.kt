@@ -25,8 +25,17 @@ fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
     var message = this
 
     for (p in placeholders) {
-        if (message.contains(p.string)) {
-            message = message.replace(p.string, p.replacement)
+        val regex = Regex("%${p.string.replace("%", "")}(_([a-zA-Z]+))?%")
+
+        println(regex)
+
+        message = message.replace(regex) { matchResult ->
+            val found = matchResult.value
+            when {
+                found.endsWith("_lowercase%") -> p.replacement.lowercase()
+                found.endsWith("_uppercase%") -> p.replacement.uppercase()
+                else -> p.replacement
+            }
         }
     }
 
