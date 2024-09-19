@@ -17,3 +17,7 @@ import java.util.*
 fun String.capitalize(): String {
     return this.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
+
+fun String.replaceTabs(): String {
+    return this.replace("\t", "")
+}

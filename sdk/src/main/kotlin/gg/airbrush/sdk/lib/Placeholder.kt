@@ -27,8 +27,6 @@ fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
     for (p in placeholders) {
         val regex = Regex("%${p.string.replace("%", "")}(_([a-zA-Z]+))?%")
 
-        println(regex)
-
         message = message.replace(regex) { matchResult ->
             val found = matchResult.value
             when {

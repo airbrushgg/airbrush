@@ -67,6 +67,7 @@ class Punishments : Plugin() {
 		manager.register(BanCommand())
 		manager.register(KickCommand())
 		manager.register(MuteCommand())
+		manager.register(PunishmentCommand())
 
 		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
 	    PlayerEvents()

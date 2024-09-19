@@ -16,6 +16,7 @@ import gg.airbrush.punishments.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.OfflinePlayer
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.replaceTabs
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
@@ -27,36 +28,12 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
+import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.utils.mojang.MojangUtils
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-
-fun timestampToRelativeTime(timestamp: Long): String {
-	val currentInstant = Instant.now()
-	val targetInstant = Instant.ofEpochMilli(timestamp)
-
-	val zoneId = ZoneId.systemDefault()
-	val currentDateTime = LocalDateTime.ofInstant(currentInstant, zoneId)
-	val targetDateTime = LocalDateTime.ofInstant(targetInstant, zoneId)
-
-	val diff = ChronoUnit.SECONDS.between(targetDateTime, currentDateTime)
-
-	fun formatAgo(diff: Long, secondsInUnit: Long, unit: String): String {
-		val time = diff / secondsInUnit
-		return "$time ${if (time > 1) unit + "s" else unit} ago"
-	}
-
-	return when {
-		diff < 60 -> "Just now"
-		diff < 3600 -> formatAgo(diff, 60, "minute")
-		diff < 86400 -> formatAgo(diff, 3600, "hour")
-		diff < 604800 -> formatAgo(diff, 86400, "day")
-		else -> formatAgo(diff, 604800, "week")
-	}
-}
-
 
 class PunishmentsCommand : Command("punishments") {
 	init {
@@ -65,7 +42,7 @@ class PunishmentsCommand : Command("punishments") {
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->
-			sender.sendMessage("<s>Invalid usage.".mm())
+			sender.sendMessage("<error>Invalid usage.".mm())
 		}
 
 		addSyntax(this::apply)
@@ -76,48 +53,40 @@ class PunishmentsCommand : Command("punishments") {
 		val playerPunishments = SDK.punishments.list(offlinePlayer.uniqueId)
 
 		val pages = mutableListOf<Component>()
-		val book = Book
-			.builder()
-			.author("".mm())
-			.title("".mm())
+		val book = Book.builder().author(Component.empty()).title(Component.empty())
 
 		if(playerPunishments.isEmpty()) {
 			sender.sendMessage("<error>${offlinePlayer.username} does not have any punishments!".mm())
 			return@runBlocking
 		}
 
-		playerPunishments.forEach {
-			val type = PunishmentTypes.entries.find { t ->
-				t.ordinal == it.data.type
+		val punishments = playerPunishments.joinToString("\n") {
+			var text = ""
+			val type = PunishmentTypes.entries[it.data.type]
+
+			if(it.data.active) {
+				text = if(it.data.type == PunishmentTypes.BAN.ordinal) "<red>${it.data.reason}</red>"
+				else "<blue>${it.data.reason}</blue>"
 			}
 
-			if(type == null) {
-				sender.sendMessage("punishment type was null. (${it.data.type})")
-				return@forEach
+			if (it.data.reverted != null) {
+				text = "(R) ${it.data.reason}"
 			}
 
-			val action = if(it.data.active) "<red>${type.name}</red>" else "<p>${type.name}</p>"
-			val occurred = timestampToRelativeTime(it.getCreatedAt().toEpochMilli())
+			if(text.isEmpty()) text = it.data.reason
 
-			val nameData = MojangUtils.fromUuid(it.data.moderator)
-			var moderatorName = "Console"
-
-			if(nameData !== null && nameData.isJsonObject) {
-				moderatorName = nameData.get("name").asString
-			}
-
-			val string = """
-				Action: $action
-				Occurred: <p>$occurred</p>
-				From: <p>$moderatorName</p>
-				Reason: <hover:show_text:'${it.data.reason}'><p>(hover)</hover></p>
-				${if(it.data.notes !== null) "Notes: <p>${it.data.notes}</p>" else ""}
-			
-				<p>   ${if(it.data.active) ">>> <b> <click:run_command:/revertpun ${it.data.id}>REVERT</click> </b> <<<" else ""}
-			""".trimIndent()
-
-			pages.add(string.mm())
+			"<hover:show_text:'<p>View ${type.name.lowercase()} information</p>'><click:run_command:/punishment ${it.data.id}>$text</click></hover>"
 		}
+
+		val page = """
+			<p>Username:</p>
+			${offlinePlayer.username}
+			
+			<p>Punishments:</p>
+			$punishments
+		""".replaceTabs()
+
+		pages.add(page.mm())
 
 		sender.openBook(book.pages(pages))
 	}

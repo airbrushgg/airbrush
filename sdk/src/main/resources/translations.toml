@@ -71,6 +71,16 @@ playerKicked = """
         <s>%long_reason%
 """
 
+[en.punishments.view]
+specific = """
+	    <p>Username:</p>
+		%player%
+		<p>Punished by:</p>
+		%moderator%
+        <p>Punishment:</p>
+        %reason% <em>%type%</em>
+"""
+
 [en.core.commands]
 discord = "<s>You can join our discord server <click:open_url:https://discord.gg/yHnenrHnsQ><p>here</p>."
 gamemode = "<s>You are now in <p>%s mode</p>."

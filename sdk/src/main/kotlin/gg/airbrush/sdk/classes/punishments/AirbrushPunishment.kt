@@ -21,6 +21,11 @@ import java.util.*
 
 private val db = Database.get()
 
+data class RevertedData(
+	val revertedBy: String,
+	val revertedAt: Long = Instant.now().epochSecond,
+)
+
 data class PunishmentData(
 	val moderator: String,
 	val player: String,
@@ -31,7 +36,8 @@ data class PunishmentData(
 	val duration: Long?,
 	var active: Boolean = true,
 	val id: String = UUID.randomUUID().toString(),
-	var notes: String? = null
+	var notes: String? = null,
+	var reverted: RevertedData? = null,
 )
 
 class AirbrushPunishment(id: UUID) {
@@ -59,6 +65,12 @@ class AirbrushPunishment(id: UUID) {
 	fun setActive(active: Boolean) {
 		col.updateOne(query, Updates.set(PunishmentData::active.name, active))
 		data.active = active
+	}
+
+	fun setReverted(reverted: RevertedData) {
+		setActive(false)
+		col.updateOne(query, Updates.set(PunishmentData::reverted.name, reverted))
+		data.reverted = reverted
 	}
 
 	fun setNotes(notes: String) {

@@ -16,6 +16,7 @@ import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
+import gg.airbrush.sdk.classes.punishments.RevertedData
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
@@ -79,7 +80,7 @@ class RevertPunishmentCommand : Command("revertpun") {
 			return
 		}
 
-		punishment.setActive(false)
+		punishment.setReverted(RevertedData(sender.uuid.toString()))
 
 		sender.sendMessage("<success>Successfully reverted punishment.".mm())
 
