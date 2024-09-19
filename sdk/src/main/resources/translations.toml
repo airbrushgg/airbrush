@@ -88,6 +88,14 @@ overview = """
 
             <em>< <hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover>
 """
+notes = """
+            <#9248df>Notes:</#9248df>
+            %notes%
+"""
+reverted = """
+            <#9248df>Reverted:</#9248df>
+            %reverted_reason%
+"""
 
 [en.core.commands]
 discord = "<s>You can join our discord server <click:open_url:https://discord.gg/yHnenrHnsQ><p>here</p>."

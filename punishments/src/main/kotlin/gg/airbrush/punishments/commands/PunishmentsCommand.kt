@@ -79,7 +79,11 @@ class PunishmentsCommand : Command("punishments") {
 			return@runBlocking
 		}
 
-		val punishments = playerPunishments.joinToString("\n") {
+		val allPunishments = playerPunishments
+			.sortedWith(compareByDescending<AirbrushPunishment> { it.data.active }
+			.thenBy { it.data.type == PunishmentTypes.BAN.ordinal })
+
+		val punishments = allPunishments.joinToString("\n") {
 			val type = PunishmentTypes.entries[it.data.type]
 			val text = it.getReasonString()
 			"<hover:show_text:'<p>View ${type.name.lowercase()} information</p>'><click:run_command:/punishment ${it.data.id}>$text</click></hover>"

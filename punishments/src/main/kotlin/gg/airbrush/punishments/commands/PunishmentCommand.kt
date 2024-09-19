@@ -86,10 +86,31 @@ class PunishmentCommand : Command("punishment") {
             Placeholder("%status%", status)
         )
 
-        val translation = Translations.getString("punishments.view.overview").parsePlaceholders(placeholders)
-        val page = translation.trimIndent().replaceTabs()
+        val overviewPage = Translations.getString("punishments.view.overview").parsePlaceholders(placeholders)
+            .parsePlaceholders(placeholders)
+            .trimIndent()
+            .replaceTabs()
+        pages.add(overviewPage.mm())
 
-        pages.add(page.mm())
+        val notes = punishment.data.notes
+        if(!notes.isNullOrEmpty()) {
+            val notesPage = Translations.getString("punishments.view.notes")
+                .parsePlaceholders(placeholders.plus(Placeholder("%notes%", notes)))
+                .trimIndent()
+                .replaceTabs()
+            pages.add(notesPage.mm())
+        }
+
+        val reverted = punishment.data.reverted
+        if(reverted !== null) {
+            val revertedBy = PlayerUtils.getName(UUID.fromString(reverted.revertedBy))
+            val revertedPage = Translations.getString("punishments.view.reverted")
+                .parsePlaceholders(placeholders.plus(Placeholder("%reverted_by%", revertedBy)))
+                .parsePlaceholders(placeholders.plus(Placeholder("%reverted_reason%", reverted.revertedReason)))
+                .trimIndent()
+                .replaceTabs()
+            pages.add(revertedPage.mm())
+        }
 
         sender.openBook(book.pages(pages))
     }
