@@ -70,7 +70,7 @@ class PunishmentCommand : Command("punishment") {
         val reasonText = punishment.getReasonString()
 
         val issuedAt = formatDate(punishment.getCreatedAt())
-        val expiresAt = punishment.getExpiry()
+        val expiresAt = formatDate(punishment.getExpiry())
 
         var status = "active"
         if(!punishment.data.active) status = "expired"
@@ -82,7 +82,7 @@ class PunishmentCommand : Command("punishment") {
             Placeholder("%reason%", reasonText),
             Placeholder("%type%", punishmentType.name),
             Placeholder("%issued_at%", issuedAt),
-            Placeholder("%expires_at%", formatDate(expiresAt)),
+            Placeholder("%expires_at%", expiresAt),
             Placeholder("%status%", status)
         )
 
