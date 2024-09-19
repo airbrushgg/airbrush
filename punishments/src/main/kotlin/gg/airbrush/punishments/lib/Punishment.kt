@@ -31,14 +31,14 @@ import java.awt.Color
 import java.time.Instant
 import java.util.UUID
 
-fun getNumericValue(input: String): Pair<Int, String> {
+private fun getNumericValue(input: String): Pair<Int, String> {
     val regex = Regex("(\\d+)(\\D+)")
     val matchResult = regex.find(input)
     val (numericValue, timeUnit) = matchResult?.destructured ?: throw IllegalArgumentException("Invalid input format: $input")
     return Pair(numericValue.toInt(), timeUnit)
 }
 
-fun convertDate(input: String): Long {
+private fun convertDate(input: String): Long {
     if(input.lowercase() == "forever") return Instant.MAX.epochSecond
 
     val (numericValue, timeUnit) = getNumericValue(input)
@@ -56,7 +56,7 @@ fun convertDate(input: String): Long {
     return numericValue * secondValue
 }
 
-fun String.toPluralForm(): String {
+private fun String.toPluralForm(): String {
     return when {
         endsWith("n") -> this + "ned"
         endsWith("e") -> this + "d"
@@ -109,8 +109,6 @@ data class Punishment(
     private fun getReasonInfo(): Pair<String, String> {
         var shortReason = this.reason
         var longReason = this.reason
-
-        println(punishmentConfig.punishments.keys.toList())
 
         if(this.reason.lowercase() in punishmentConfig.punishments.keys) {
             println("Is a predefined punishment, getting info from config")

@@ -72,13 +72,21 @@ playerKicked = """
 """
 
 [en.punishments.view]
-specific = """
-	    <p>Username:</p>
-		%player%
-		<p>Punished by:</p>
-		%moderator%
-        <p>Punishment:</p>
-        %reason% <em>%type%</em>
+overview = """
+            <#9248df>Username:</#9248df>
+            %player%
+            <#9248df>Punished by:</#9248df>
+            %moderator%
+
+            <#9248df>Punishment:</#9248df>
+            %reason% <em>%type%</em>
+
+            <#9248df>Details:</#9248df>
+            <hover:show_text:'<p>Issued at'>Iss</hover>: %issued_at%
+            <hover:show_text:'<p>Expires at'>Exp</hover>: %expires_at%
+            Status: %status_capitalized%
+
+            <em>< <hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover>
 """
 
 [en.core.commands]

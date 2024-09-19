@@ -29,8 +29,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 
 class BanCommand : Command("ban") {
-    private val notesArg = ArgumentType.StringArray("notes")
-    private val reasonArg = ArgumentType.String("reason")
+    private val reasonArg = ArgumentType.StringArray("reason")
     private val durationArg = ArgumentType.String("duration")
 
     init {
@@ -42,17 +41,14 @@ class BanCommand : Command("ban") {
             sender.sendMessage("<error>/ban <player> [reason] [duration] [notes...]".mm())
         }
 
-        addSyntax(this::apply, reasonArg, durationArg, notesArg)
-        addSyntax(this::apply, reasonArg, notesArg)
-        addSyntax(this::apply, reasonArg, durationArg)
+        addSyntax(this::apply, durationArg, reasonArg)
         addSyntax(this::apply, reasonArg)
         addSyntax(this::apply)
     }
 
     private fun apply(sender: CommandSender, context: CommandContext) = runBlocking {
         val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
-        val notes = context.get(notesArg)
-        val reason = context.get<String?>("reason") ?: "No reason specified"
+        val reason = context.get(reasonArg)
         val duration = context.get<String?>("duration") ?: "FOREVER"
 
         val punishable = canPunish(offlinePlayer.uniqueId)
@@ -67,15 +63,13 @@ class BanCommand : Command("ban") {
             return@runBlocking
         }
 
-        val punishmentNotes = if(notes !== null) notes.joinToString(" ") { it } else ""
-
         Punishment(
             moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
             player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-            reason = reason,
+            reason = reason.joinToString(" "),
             type = PunishmentTypes.BAN,
             duration = duration,
-            notes = punishmentNotes
+            notes = ""
         ).handle()
     }
 

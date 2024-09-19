@@ -19,12 +19,23 @@ import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
+import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentType
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.UUID
+
+fun formatDate(instant: Instant): String {
+    if(instant == Instant.MAX) return "Never"
+    val formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu HH:mm")
+        .withZone(ZoneId.systemDefault())
+    return formatter.format(instant)
+}
 
 class PunishmentCommand : Command("punishment") {
     private val idArg = ArgumentType.String("id")
@@ -56,18 +67,27 @@ class PunishmentCommand : Command("punishment") {
         val playerName = PlayerUtils.getName(punishment.getPlayer())
         val moderatorName = PlayerUtils.getName(punishment.getModerator())
         val punishmentType = PunishmentTypes.entries[punishment.data.type]
+        val reasonText = punishment.getReasonString()
+
+        val issuedAt = formatDate(punishment.getCreatedAt())
+        val expiresAt = punishment.getExpiry()
+
+        var status = "active"
+        if(!punishment.data.active) status = "expired"
+        if(punishment.data.reverted != null) status ="reverted"
 
         val placeholders = listOf(
             Placeholder("%player%", playerName),
             Placeholder("%moderator%", moderatorName),
-            Placeholder("%reason%", punishment.data.reason),
-            Placeholder("%type%", punishmentType.name)
+            Placeholder("%reason%", reasonText),
+            Placeholder("%type%", punishmentType.name),
+            Placeholder("%issued_at%", issuedAt),
+            Placeholder("%expires_at%", formatDate(expiresAt)),
+            Placeholder("%status%", status)
         )
 
         val translation = Translations.getString("punishments.view.overview").parsePlaceholders(placeholders)
         val page = translation.trimIndent().replaceTabs()
-
-        println(page)
 
         pages.add(page.mm())
 

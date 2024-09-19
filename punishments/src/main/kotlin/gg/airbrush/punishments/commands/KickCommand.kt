@@ -28,8 +28,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 
 class KickCommand : Command("kick") {
-    private val notesArg = ArgumentType.StringArray("notes")
-    private val reasonArg = ArgumentType.String("reason")
+    private val reasonArg = ArgumentType.StringArray("reason")
 
     init {
         setCondition { sender, _ ->
@@ -40,15 +39,13 @@ class KickCommand : Command("kick") {
             sender.sendMessage("<error>/kick <player> [reason] [notes...]".mm())
         }
 
-        addSyntax(this::apply, reasonArg, notesArg)
         addSyntax(this::apply, reasonArg)
         addSyntax(this::apply)
     }
 
     private fun apply(sender: CommandSender, context: CommandContext) = runBlocking {
         val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
-        val notes = context.get(notesArg)
-        val reason = context.get<String?>("reason") ?: "No reason specified"
+        val reason = context.get(reasonArg)
 
         val punishable = canPunish(offlinePlayer.uniqueId)
         /*		if(punishable) {
@@ -56,14 +53,13 @@ class KickCommand : Command("kick") {
                     return@runBlocking
                 }*/
 
-        val punishmentNotes = if(notes !== null) notes.joinToString(" ") { it } else ""
 
         Punishment(
-            moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+            moderator = if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
             player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-            reason = reason,
+            reason = reason.joinToString(" "),
             type = PunishmentTypes.KICK,
-            notes = punishmentNotes
+            notes = ""
         ).handle()
     }
 

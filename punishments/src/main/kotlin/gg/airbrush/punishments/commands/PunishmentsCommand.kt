@@ -1,7 +1,7 @@
 /*
  * This file is part of Airbrush
  *
- * Copyright (c) 2023 Airbrush Team
+ * Copyright (c) 2024 Airbrush Team
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -15,7 +15,9 @@ package gg.airbrush.punishments.commands
 import gg.airbrush.punishments.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.OfflinePlayer
+import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.lib.replaceTabs
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
@@ -28,12 +30,29 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.command.builder.arguments.ArgumentType
-import net.minestom.server.utils.mojang.MojangUtils
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
+
+fun AirbrushPunishment.getReasonString(): String {
+	var text = ""
+	var reason = this.data.reason
+
+	if(reason.lowercase() in punishmentConfig.punishments.keys) {
+		val punishmentInfo = punishmentConfig.punishments[reason.lowercase()]!!
+		reason = punishmentInfo.shortReason
+	}
+
+	if(this.data.active) {
+		text = if(this.data.type == PunishmentTypes.BAN.ordinal) "<red>$reason</red>"
+		else "<blue>$reason</blue>"
+	}
+
+	if (this.data.reverted != null) {
+		text = "(R) $reason"
+	}
+
+	if(text.isEmpty()) text = reason
+
+	return text
+}
 
 class PunishmentsCommand : Command("punishments") {
 	init {
@@ -61,20 +80,8 @@ class PunishmentsCommand : Command("punishments") {
 		}
 
 		val punishments = playerPunishments.joinToString("\n") {
-			var text = ""
 			val type = PunishmentTypes.entries[it.data.type]
-
-			if(it.data.active) {
-				text = if(it.data.type == PunishmentTypes.BAN.ordinal) "<red>${it.data.reason}</red>"
-				else "<blue>${it.data.reason}</blue>"
-			}
-
-			if (it.data.reverted != null) {
-				text = "(R) ${it.data.reason}"
-			}
-
-			if(text.isEmpty()) text = it.data.reason
-
+			val text = it.getReasonString()
 			"<hover:show_text:'<p>View ${type.name.lowercase()} information</p>'><click:run_command:/punishment ${it.data.id}>$text</click></hover>"
 		}
 

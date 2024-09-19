@@ -32,6 +32,7 @@ fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
             when {
                 found.endsWith("_lowercase%") -> p.replacement.lowercase()
                 found.endsWith("_uppercase%") -> p.replacement.uppercase()
+                found.endsWith("_capitalized%") -> p.replacement.capitalize()
                 else -> p.replacement
             }
         }

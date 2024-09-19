@@ -77,4 +77,14 @@ class AirbrushPunishment(id: UUID) {
 		col.updateOne(query, Updates.set(PunishmentData::notes.name, notes))
 		data.notes = notes
 	}
+
+	fun getExpiry(): Instant {
+		val combined = data.createdAt + data.duration!!
+
+		if (data.duration >= Instant.MAX.epochSecond || combined >= Instant.MAX.epochSecond) {
+			return Instant.MAX
+		}
+
+		return Instant.ofEpochSecond(combined)
+	}
 }
