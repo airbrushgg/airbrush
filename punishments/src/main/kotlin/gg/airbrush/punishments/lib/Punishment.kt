@@ -65,6 +65,8 @@ private fun String.toPluralForm(): String {
 }
 
 fun canPunish(uuid: UUID): Boolean {
+    return true
+
     val playerExists = SDK.players.exists(uuid)
     if(!playerExists) return true
     val offenderRank = SDK.players.get(uuid).getRank()

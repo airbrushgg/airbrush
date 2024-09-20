@@ -52,10 +52,10 @@ class MuteCommand : Command("mute") {
         val duration = context.get<String?>("duration") ?: "FOREVER"
 
         val punishable = canPunish(offlinePlayer.uniqueId)
-        /*		if(punishable) {
-                    sender.sendMessage("<error>You cannot punish this person!".mm())
-                    return@runBlocking
-                }*/
+        if(punishable) {
+            sender.sendMessage("<error>You cannot punish this person!".mm())
+            return@runBlocking
+        }
 
         val activePunishment = SDK.punishments.list(offlinePlayer.uniqueId).find {it.data.active}
         if(activePunishment !== null) {

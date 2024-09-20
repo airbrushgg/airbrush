@@ -48,11 +48,10 @@ class KickCommand : Command("kick") {
         val reason = context.get(reasonArg)
 
         val punishable = canPunish(offlinePlayer.uniqueId)
-        /*		if(punishable) {
-                    sender.sendMessage("<error>You cannot punish this person!".mm())
-                    return@runBlocking
-                }*/
-
+        if(punishable) {
+            sender.sendMessage("<error>You cannot punish this person!".mm())
+            return@runBlocking
+        }
 
         Punishment(
             moderator = if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),

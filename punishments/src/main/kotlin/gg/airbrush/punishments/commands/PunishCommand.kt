@@ -17,9 +17,15 @@ import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.*
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
+import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.text.Component
+import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -48,11 +54,26 @@ class PunishCommand : Command("punish") {
 			sender.sendMessage("<error>/punish <player> <reason>".mm())
 		}
 
-		addSyntax(this::apply, typeArg, notesArg)
-		addSyntax(this::apply, typeArg)
+		addSyntax(this::punish, typeArg, notesArg)
+		addSyntax(this::punish, typeArg)
+		addSyntax(this::baseCommand)
 	}
 
-	private fun apply(sender: CommandSender, context: CommandContext) = runBlocking {
+	private fun getActivePunishmentWarning(player: OfflinePlayer): Component? {
+		val activePunishment = SDK.punishments.list(player.uniqueId).find {it.data.active}
+		if(activePunishment === null) return null
+
+		val translation = Translations.getString("punishments.hasActivePunishment")
+		val placeholders = listOf(
+			Placeholder("%id%", activePunishment.data.id),
+			Placeholder("%player%", player.username),
+			Placeholder("%reason%", activePunishment.getReasonString()),
+		)
+
+		return translation.parsePlaceholders(placeholders).mm()
+	}
+
+	private fun punish(sender: CommandSender, context: CommandContext) = runBlocking {
 		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
 		val notes = context.get(notesArg)
 
@@ -62,9 +83,9 @@ class PunishCommand : Command("punish") {
 			return@runBlocking
 		}*/
 
-		val activePunishment = SDK.punishments.list(offlinePlayer.uniqueId).find {it.data.active}
-		if(activePunishment !== null) {
-			sender.sendMessage("<error>This player already has an active punishment!".mm())
+		val activePunishmentWarning = getActivePunishmentWarning(offlinePlayer)
+		if(activePunishmentWarning !== null) {
+			sender.sendMessage(activePunishmentWarning)
 			return@runBlocking
 		}
 
@@ -88,6 +109,51 @@ class PunishCommand : Command("punish") {
 			notes = punishmentNotes
 		).handle()
 	}
+
+	private fun baseCommand(sender: CommandSender, context: CommandContext) = runBlocking {
+		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
+		val punishable = canPunish(offlinePlayer.uniqueId)
+
+		if (!punishable) {
+			sender.sendMessage("<error>You cannot punish this person!".mm())
+			return@runBlocking
+		}
+
+		val activePunishmentWarning = getActivePunishmentWarning(offlinePlayer)
+		if(activePunishmentWarning !== null) {
+			sender.sendMessage(activePunishmentWarning)
+			return@runBlocking
+		}
+
+		val punishmentsList = punishmentConfig.punishments.map { (key, value) ->
+			"- <click:run_command:/punish ${offlinePlayer.username} $key>${value.shortReason}</click>"
+		}
+
+		val pages = mutableListOf<Component>()
+		val book = Book.builder().author(Component.empty()).title(Component.empty())
+
+		val placeholders = listOf(
+			Placeholder("%player%", offlinePlayer.username)
+		)
+
+		val punishmentChunks = punishmentsList.chunked(8)
+		punishmentChunks.forEachIndexed { index, chunk ->
+			val punishments = chunk.joinToString("<br>")
+			val newPlaceholders = listOf(
+				*placeholders.toTypedArray(),
+				Placeholder("%current_page%", (index + 1).toString()),
+				Placeholder("%punishments%", punishments)
+			)
+			val pageText = Translations.getString("punishments.punishing")
+				.parsePlaceholders(newPlaceholders)
+				.trimIndent()
+			MinecraftServer.LOGGER.info(pageText)
+			pages.add(pageText.mm())
+		}
+
+		sender.openBook(book.pages(pages))
+	}
+
 
 	override fun addSyntax(
 		executor: CommandExecutor,

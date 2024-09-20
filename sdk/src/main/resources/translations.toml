@@ -50,6 +50,7 @@ rank = "<s>Rank: <p>%s"
 world = "<s>World: <g>%s"
 
 [en.punishments]
+hasActivePunishment = "<error>This player already has an active punishment! Click <click:run_command:/punishment %id%><u>here</u></click> to view it."
 punishment = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red> [%duration_uppercase%]"
 kickedPlayer = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red>"
 reversion = "<gray><p>%moderator%</p> reverted the punishment of <p>%player%</p>."
@@ -69,6 +70,13 @@ playerKicked = """
         <p>Kicked from</p> %title%.
 
         <s>%long_reason%
+"""
+punishing = """
+             <#9248df>Username:</#9248df>
+             %player%
+
+             <#9248df>What are you punishing for? (p.%current_page%)</#9248df>
+             %punishments%
 """
 
 [en.punishments.view]

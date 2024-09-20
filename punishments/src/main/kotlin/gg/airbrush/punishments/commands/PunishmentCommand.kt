@@ -86,7 +86,7 @@ class PunishmentCommand : Command("punishment") {
             Placeholder("%status%", status)
         )
 
-        val overviewPage = Translations.getString("punishments.view.overview").parsePlaceholders(placeholders)
+        val overviewPage = Translations.getString("punishments.view.overview")
             .parsePlaceholders(placeholders)
             .trimIndent()
             .replaceTabs()

@@ -10,7 +10,7 @@ action = "mute"
 duration = "12h"
 
 [punishments.filter]
-shortReason = "Bypassing filter"
+shortReason = "Bypassing Filter"
 longReason = "You were banned for bypassing our chat filter"
 action = "ban"
 duration = "24h"
@@ -38,12 +38,12 @@ action = "mute"
 duration = "1h"
 
 [punishments.dox]
-shortReason = "DOX/DDOS threats"
-longReason = "You were banned for DOX/DDOS threats"
+shortReason = "DOX/DDOS Threats"
+longReason = "You were banned for DOX/DDOS Threats"
 action = "ban"
 
 [punishments.death]
-shortReason = "Death threats"
+shortReason = "Death Threats"
 longReason = "You were banned for Threatening or Inciting Violence"
 action = "ban"
 
