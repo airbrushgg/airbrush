@@ -51,8 +51,8 @@ world = "<s>World: <g>%s"
 
 [en.punishments]
 hasActivePunishment = "<error>This player already has an active punishment! Click <click:run_command:/punishment %id%><u>here</u></click> to view it."
-punishment = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red> [%duration_uppercase%]"
-kickedPlayer = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red>"
+punishment = "<hover:show_text:'<p>View punishment</p>'><click:run_command:/punishment %id%><gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red> [%duration_uppercase%]"
+kickedPlayer = "<hover:show_text:'<p>View punishment</p>'><click:run_command:/punishment %id%><gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red>"
 reversion = "<hover:show_text:'<p>View punishment</p>'><click:run_command:/punishment %id%><gray><p>%moderator%</p> reverted <p>%player%</p> - <red>%reason%</red>"
 playerMuted = """
         <s>%long_reason%. Expires in <p>%duration_lowercase%</p>.
