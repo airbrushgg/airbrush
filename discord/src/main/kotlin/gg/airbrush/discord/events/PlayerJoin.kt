@@ -15,8 +15,8 @@ package gg.airbrush.discord.events
 import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
 import gg.airbrush.discord.eventNode
-import gg.airbrush.discord.lib.Placeholder
-import gg.airbrush.discord.lib.parsePlaceholders
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.parsePlaceholders
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
@@ -50,7 +50,7 @@ object PlayerJoin {
 			)
 		)
 
-		val channel = bot.getTextChannelById(discordConfig.channel.toLong())
+		val channel = bot.getTextChannelById(discordConfig.channels.main.toLong())
 			?: throw Exception("Failed to find chat channel!")
 		channel.sendMessage(parsedMsg).queue()
 	}

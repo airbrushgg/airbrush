@@ -21,6 +21,12 @@ import java.util.*
 
 private val db = Database.get()
 
+data class RevertedData(
+	val revertedBy: String,
+	val revertedAt: Long = Instant.now().epochSecond,
+	val revertedReason: String = "No reason specified",
+)
+
 data class PunishmentData(
 	val moderator: String,
 	val player: String,
@@ -28,10 +34,11 @@ data class PunishmentData(
 	val type: Int,
 	val createdAt: Long = Instant.now().epochSecond,
 	val updatedAt: Long = createdAt,
-	val duration: Int?,
+	val duration: Long?,
 	var active: Boolean = true,
 	val id: String = UUID.randomUUID().toString(),
-	var notes: String? = null
+	var notes: String? = null,
+	var reverted: RevertedData? = null,
 )
 
 class AirbrushPunishment(id: UUID) {
@@ -61,8 +68,24 @@ class AirbrushPunishment(id: UUID) {
 		data.active = active
 	}
 
+	fun setReverted(reverted: RevertedData) {
+		setActive(false)
+		col.updateOne(query, Updates.set(PunishmentData::reverted.name, reverted))
+		data.reverted = reverted
+	}
+
 	fun setNotes(notes: String) {
 		col.updateOne(query, Updates.set(PunishmentData::notes.name, notes))
 		data.notes = notes
+	}
+
+	fun getExpiry(): Instant {
+		val combined = data.createdAt + data.duration!!
+
+		if (data.duration >= Instant.MAX.epochSecond || combined >= Instant.MAX.epochSecond) {
+			return Instant.MAX
+		}
+
+		return Instant.ofEpochSecond(combined)
 	}
 }

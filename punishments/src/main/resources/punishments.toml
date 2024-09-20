@@ -1,43 +1,53 @@
-[hate]
-reason = "You were banned for discrimination / hate speech"
+[punishments.hate]
+shortReason = "Discrimination"
+longReason = "You were banned for discrimination / hate speech"
 action = "ban"
 
-[flood]
-reason = "You were muted for flooding / spamming"
+[punishments.flood]
+shortReason = "Flooding / Spamming"
+longReason = "You were muted for flooding / spamming"
 action = "mute"
 duration = "12h"
 
-[filter]
-reason = "You were banned for bypassing our chat filter"
+[punishments.filter]
+shortReason = "Bypassing Filter"
+longReason = "You were banned for bypassing our chat filter"
 action = "ban"
 duration = "24h"
 
-[nsfw]
-reason = "You were banned for drawing NSFW content."
+[punishments.nsfw]
+shortReason = "NSFW Content"
+longReason = "You were banned for drawing NSFW content."
 action = "ban"
 
-[ad]
-reason = "You were muted for advertising"
+[punishments.ad]
+shortReason = "Advertising"
+longReason = "You were muted for advertising"
 action = "mute"
 duration = "12h"
 
-[grief]
-reason = "You were banned for griefing artwork"
+[punishments.grief]
+shortReason = "Griefing Artwork"
+longReason = "You were banned for griefing artwork"
 action = "ban"
 
-[arguing]
-reason = "You were muted for arguing"
+[punishments.arguing]
+shortReason = "Arguing"
+longReason = "You were muted for arguing"
 action = "mute"
 duration = "1h"
 
-[dox]
-reason = "You were banned for DOX/DDOS threats"
+[punishments.dox]
+shortReason = "DOX/DDOS Threats"
+longReason = "You were banned for DOX/DDOS Threats"
 action = "ban"
 
-[death]
-reason = "You were banned for Threatening or Inciting Violence"
+[punishments.death]
+shortReason = "Death Threats"
+longReason = "You were banned for Threatening or Inciting Violence"
 action = "ban"
 
-[under13]
-reason = "You were banned for violating Minehuts rules on age policies."
+[punishments.under13]
+shortReason = "Under 13"
+longReason = "You were banned for violating Minehuts rules on age policies."
 action = "ban"

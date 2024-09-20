@@ -15,12 +15,11 @@
 package gg.airbrush.discord.lib
 
 import gg.airbrush.discord.bot
+import gg.airbrush.discord.discordConfig
 
 object Logging {
-	fun sendLog(msg: String) {
-		val channel = bot.getTextChannelById("1162903708108071037")
-			?: throw Exception("Failed to find logging channel!")
-
+	fun sendLog(msg: String, channelId: String = discordConfig.channels.log) {
+		val channel = bot.getTextChannelById(channelId) ?: throw Exception("Failed to find channel ($channelId)!")
 		return channel.sendMessage(msg).queue()
 	}
 }

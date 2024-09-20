@@ -16,9 +16,7 @@ import cc.ekblad.toml.decode
 import cc.ekblad.toml.model.TomlException
 import cc.ekblad.toml.tomlMapper
 import gg.airbrush.core.lib.setInterval
-import gg.airbrush.punishments.commands.PunishCommand
-import gg.airbrush.punishments.commands.PunishmentsCommand
-import gg.airbrush.punishments.commands.RevertPunishmentCommand
+import gg.airbrush.punishments.commands.*
 import gg.airbrush.punishments.events.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.ConfigUtils
@@ -28,22 +26,14 @@ import net.minestom.server.event.EventNode
 import java.time.Instant
 
 data class Punishment(
-	val reason: String,
+	val shortReason: String,
+	val longReason: String = shortReason,
 	val action: String,
 	val duration: String?
 )
 
 data class PunishmentsConfig(
-	val hate: Punishment,
-	val flood: Punishment,
-	val filter: Punishment,
-	val nsfw: Punishment,
-	val ad: Punishment,
-	val grief: Punishment,
-	val arguing: Punishment,
-	val dox: Punishment,
-	val death: Punishment,
-	val under13: Punishment
+	val punishments: Map<String, Punishment>
 )
 
 lateinit var punishmentConfig: PunishmentsConfig
@@ -74,6 +64,10 @@ class Punishments : Plugin() {
 	    manager.register(PunishCommand())
 	    manager.register(PunishmentsCommand())
 	    manager.register(RevertPunishmentCommand())
+		manager.register(BanCommand())
+		manager.register(KickCommand())
+		manager.register(MuteCommand())
+		manager.register(PunishmentCommand())
 
 		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
 	    PlayerEvents()

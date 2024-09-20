@@ -28,15 +28,17 @@ class Punishments {
         player: UUID,
         reason: String,
         type: Int,
-        duration: Int,
-		notes: String? = null
+        duration: Long,
+		notes: String? = null,
+        active: Boolean = true
     ): PunishmentData {
         val punishment = PunishmentData(
             moderator.toString(),
             player.toString(),
             reason,
             type,
-            Instant.now().epochSecond,
+            createdAt = Instant.now().epochSecond,
+            active = active,
             duration = duration,
 	        notes = notes
         )

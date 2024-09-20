@@ -1,9 +1,7 @@
-
-
 /*
  * This file is part of Airbrush
  *
- * Copyright (c) 2023 Airbrush Team
+ * Copyright (c) 2024 Airbrush Team
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -12,16 +10,31 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.airbrush.discord.lib
+package gg.airbrush.sdk.lib
 
-class Placeholder(val string: String, val replacement: String)
+class Placeholder(val string: String, val replacement: String) {
+    /**
+     * Returns a string representation of the [Placeholder] object.
+     */
+    override fun toString(): String {
+        return "Placeholder(string='$string', replacement='$replacement')"
+    }
+}
 
 fun String.parsePlaceholders(placeholders: List<Placeholder>): String {
     var message = this
 
     for (p in placeholders) {
-        if (message.contains(p.string)) {
-            message = message.replace(p.string, p.replacement)
+        val regex = Regex("%${p.string.replace("%", "")}(_([a-zA-Z]+))?%")
+
+        message = message.replace(regex) { matchResult ->
+            val found = matchResult.value
+            when {
+                found.endsWith("_lowercase%") -> p.replacement.lowercase()
+                found.endsWith("_uppercase%") -> p.replacement.uppercase()
+                found.endsWith("_capitalized%") -> p.replacement.capitalize()
+                else -> p.replacement
+            }
         }
     }
 

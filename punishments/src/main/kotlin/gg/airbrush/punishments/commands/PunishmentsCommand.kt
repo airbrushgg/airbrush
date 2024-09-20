@@ -1,7 +1,7 @@
 /*
  * This file is part of Airbrush
  *
- * Copyright (c) 2023 Airbrush Team
+ * Copyright (c) 2024 Airbrush Team
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -12,10 +12,17 @@
 
 package gg.airbrush.punishments.commands
 
+import gg.airbrush.punishments.Punishment
 import gg.airbrush.punishments.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.OfflinePlayer
+import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
+import gg.airbrush.sdk.lib.replaceTabs
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
@@ -27,36 +34,41 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.CommandSyntax
 import net.minestom.server.command.builder.arguments.Argument
-import net.minestom.server.utils.mojang.MojangUtils
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 
-fun timestampToRelativeTime(timestamp: Long): String {
-	val currentInstant = Instant.now()
-	val targetInstant = Instant.ofEpochMilli(timestamp)
+fun AirbrushPunishment.getReasonString(): String {
+	var text = ""
+	var reason = this.data.reason
 
-	val zoneId = ZoneId.systemDefault()
-	val currentDateTime = LocalDateTime.ofInstant(currentInstant, zoneId)
-	val targetDateTime = LocalDateTime.ofInstant(targetInstant, zoneId)
-
-	val diff = ChronoUnit.SECONDS.between(targetDateTime, currentDateTime)
-
-	fun formatAgo(diff: Long, secondsInUnit: Long, unit: String): String {
-		val time = diff / secondsInUnit
-		return "$time ${if (time > 1) unit + "s" else unit} ago"
+	if(reason.lowercase() in punishmentConfig.punishments.keys) {
+		val punishmentInfo = punishmentConfig.punishments[reason.lowercase()]!!
+		reason = punishmentInfo.shortReason
 	}
 
-	return when {
-		diff < 60 -> "Just now"
-		diff < 3600 -> formatAgo(diff, 60, "minute")
-		diff < 86400 -> formatAgo(diff, 3600, "hour")
-		diff < 604800 -> formatAgo(diff, 86400, "day")
-		else -> formatAgo(diff, 604800, "week")
+	if(this.data.active) {
+		text = if(this.data.type == PunishmentTypes.BAN.ordinal) "<red>$reason</red>"
+		else "<blue>$reason</blue>"
 	}
+
+	if (this.data.reverted != null) {
+		text = "(R) $reason"
+	}
+
+	if(text.isEmpty()) text = reason
+
+	return text
 }
 
+fun Punishment.getReasonString(): String {
+	var text = ""
+	val reason = this.shortReason
+
+	text = if(this.action.equals(PunishmentTypes.BAN.name, true)) "<red>$reason</red>"
+	else "<blue>$reason</blue>"
+
+	if(text.isEmpty()) text = reason
+
+	return text
+}
 
 class PunishmentsCommand : Command("punishments") {
 	init {
@@ -65,7 +77,7 @@ class PunishmentsCommand : Command("punishments") {
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->
-			sender.sendMessage("<s>Invalid usage.".mm())
+			sender.sendMessage("<error>Invalid usage.".mm())
 		}
 
 		addSyntax(this::apply)
@@ -76,48 +88,31 @@ class PunishmentsCommand : Command("punishments") {
 		val playerPunishments = SDK.punishments.list(offlinePlayer.uniqueId)
 
 		val pages = mutableListOf<Component>()
-		val book = Book
-			.builder()
-			.author("".mm())
-			.title("".mm())
+		val book = Book.builder().author(Component.empty()).title(Component.empty())
 
 		if(playerPunishments.isEmpty()) {
 			sender.sendMessage("<error>${offlinePlayer.username} does not have any punishments!".mm())
 			return@runBlocking
 		}
 
-		playerPunishments.forEach {
-			val type = PunishmentTypes.entries.find { t ->
-				t.ordinal == it.data.type
-			}
+		val allPunishments = playerPunishments
+			.sortedWith(compareByDescending<AirbrushPunishment> { it.data.active }
+			.thenBy { it.data.type == PunishmentTypes.BAN.ordinal })
 
-			if(type == null) {
-				sender.sendMessage("punishment type was null. (${it.data.type})")
-				return@forEach
-			}
-
-			val action = if(it.data.active) "<red>${type.name}</red>" else "<p>${type.name}</p>"
-			val occurred = timestampToRelativeTime(it.getCreatedAt().toEpochMilli())
-
-			val nameData = MojangUtils.fromUuid(it.data.moderator)
-			var moderatorName = "Console"
-
-			if(nameData !== null && nameData.isJsonObject) {
-				moderatorName = nameData.get("name").asString
-			}
-
-			val string = """
-				Action: $action
-				Occurred: <p>$occurred</p>
-				From: <p>$moderatorName</p>
-				Reason: <hover:show_text:'${it.data.reason}'><p>(hover)</hover></p>
-				${if(it.data.notes !== null) "Notes: <p>${it.data.notes}</p>" else ""}
-			
-				<p>   ${if(it.data.active) ">>> <b> <click:run_command:/revertpun ${it.data.id}>REVERT</click> </b> <<<" else ""}
-			""".trimIndent()
-
-			pages.add(string.mm())
+		val punishments = allPunishments.joinToString("<br>") {
+			val type = PunishmentTypes.entries[it.data.type]
+			val text = it.getReasonString()
+			"<hover:show_text:'<p>View ${type.name.lowercase()} information</p>'><click:run_command:/punishment ${it.data.id}>$text</click></hover>"
 		}
+
+		val translation = Translations.getString("punishments.view.all")
+		val placeholders = listOf(
+			Placeholder("%player%", offlinePlayer.username),
+			Placeholder("%punishments%", punishments)
+		)
+
+		val page = translation.parsePlaceholders(placeholders).trimIndent().replaceTabs()
+		pages.add(page.mm())
 
 		sender.openBook(book.pages(pages))
 	}

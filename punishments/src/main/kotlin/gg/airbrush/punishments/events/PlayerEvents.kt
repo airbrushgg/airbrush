@@ -14,7 +14,12 @@ package gg.airbrush.punishments.events
 
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.eventNode
+import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
+import gg.airbrush.server.lib.mm
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
 
 class PlayerEvents {
@@ -31,7 +36,19 @@ class PlayerEvents {
 		}
 
 		if(activeBan !== null) {
-			event.player.kick(activeBan.data.reason)
+			val translation = Translations.getString("punishments.playerBanned")
+			val title = Translations.getString("core.scoreboard.title")
+
+			val punishmentInfo = punishmentConfig.punishments[activeBan.data.reason.lowercase()]
+			// Nullable due to custom punishments
+			val reason = punishmentInfo?.longReason ?: activeBan.data.reason
+
+			val placeholders = listOf(
+				Placeholder("%title%", title),
+				Placeholder("%long_reason%", reason),
+			)
+
+			event.player.kick(translation.parsePlaceholders(placeholders).trimIndent().mm())
 			return
 		}
 	}
