@@ -131,7 +131,6 @@ class PunishCommand : Command("punish") {
 		val pageText = Translations.getString("punishments.confirm")
 			.parsePlaceholders(placeholders)
 			.trimIndent()
-		MinecraftServer.LOGGER.info(pageText)
 		pages.add(pageText.mm())
 
 		sender.openBook(book.pages(pages))
@@ -174,7 +173,6 @@ class PunishCommand : Command("punish") {
 			val pageText = Translations.getString("punishments.punishing")
 				.parsePlaceholders(newPlaceholders)
 				.trimIndent()
-			MinecraftServer.LOGGER.info(pageText)
 			pages.add(pageText.mm())
 		}
 
