@@ -24,7 +24,7 @@ private val db = Database.get()
 data class RevertedData(
 	val revertedBy: String,
 	val revertedAt: Long = Instant.now().epochSecond,
-	val revertedReason: String = "",
+	val revertedReason: String = "No reason specified",
 )
 
 data class PunishmentData(

@@ -14,10 +14,13 @@ package gg.airbrush.punishments.commands
 
 import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.punishments.lib.getReasonInfo
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.classes.punishments.RevertedData
+import gg.airbrush.sdk.lib.Placeholder
 import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -55,10 +58,19 @@ class RevertPunishmentCommand : Command("revertpun") {
 	}
 
 	private fun sendLog(punishment: AirbrushPunishment, moderator: String) {
-		val victim = getName(punishment)
+		val player = getName(punishment)
 
-		Audiences.players { p -> p.hasPermission("core.staff") }
-			.sendMessage(Translations.translate("core.punish.reversion", moderator, victim).mm())
+		val translation = Translations.getString("punishments.reversion")
+		val (shortReason) = getReasonInfo(punishment.data.reason)
+		val placeholders = listOf(
+			Placeholder("%moderator%", moderator),
+			Placeholder("%player%", player),
+			Placeholder("%reason%", shortReason),
+			Placeholder("%id%", punishment.data.id)
+		)
+		val message = translation.parsePlaceholders(placeholders).mm()
+
+		Audiences.players { p -> p.hasPermission("core.staff") }.sendMessage(message)
 	}
 
 	private fun apply(sender: CommandSender, context: CommandContext) {
@@ -80,7 +92,11 @@ class RevertPunishmentCommand : Command("revertpun") {
 			return
 		}
 
-		punishment.setReverted(RevertedData(sender.uuid.toString()))
+		punishment.setReverted(
+			RevertedData(
+				revertedBy = sender.uuid.toString(),
+			)
+		)
 
 		sender.sendMessage("<success>Successfully reverted punishment.".mm())
 

@@ -40,7 +40,7 @@ import java.util.*
 var nilUUID = UUID(0, 0)
 
 class PunishCommand : Command("punish") {
-	private val notesArg = ArgumentType.StringArray("notes")
+	private val confirmArg = ArgumentType.String("confirm")
 	private val typeArg = ArgumentType.String("type").setSuggestionCallback { _, context, suggestions ->
 		punishmentConfig.punishments.keys.forEach { suggestions.addEntry(SuggestionEntry(it)) }
 	}
@@ -51,10 +51,10 @@ class PunishCommand : Command("punish") {
 		}
 
 		defaultExecutor = CommandExecutor { sender, _ ->
-			sender.sendMessage("<error>/punish <player> <reason>".mm())
+			sender.sendMessage("<error>/punish <player>".mm())
 		}
 
-		addSyntax(this::punish, typeArg, notesArg)
+		addSyntax(this::punish, typeArg, confirmArg)
 		addSyntax(this::punish, typeArg)
 		addSyntax(this::baseCommand)
 	}
@@ -75,13 +75,14 @@ class PunishCommand : Command("punish") {
 
 	private fun punish(sender: CommandSender, context: CommandContext) = runBlocking {
 		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
-		val notes = context.get(notesArg)
+		val confirmArg = context.get(confirmArg)
+		val punishmentShort = context.get(typeArg)
 
 		val punishable = canPunish(offlinePlayer.uniqueId)
-/*		if(punishable) {
+		if(!punishable) {
 			sender.sendMessage("<error>You cannot punish this person!".mm())
 			return@runBlocking
-		}*/
+		}
 
 		val activePunishmentWarning = getActivePunishmentWarning(offlinePlayer)
 		if(activePunishmentWarning !== null) {
@@ -89,7 +90,6 @@ class PunishCommand : Command("punish") {
 			return@runBlocking
 		}
 
-		val punishmentShort = context.get<String>("type")
 		val punishmentInfo = punishmentConfig.punishments[punishmentShort.lowercase()]
 
 		if(punishmentInfo == null) {
@@ -98,16 +98,43 @@ class PunishCommand : Command("punish") {
 		}
 
 		val punishmentType = PunishmentTypes.valueOf(punishmentInfo.action.uppercase())
-		val punishmentNotes = if(notes !== null) notes.joinToString(" ") { it } else ""
 
-		Punishment(
-			moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
-			player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-			reason = punishmentShort.uppercase(),
-			type = punishmentType,
-			duration = punishmentInfo.duration ?: "FOREVER",
-			notes = punishmentNotes
-		).handle()
+		if(confirmArg !== null) {
+
+			if (confirmArg != "confirm") {
+			    sender.sendMessage("<error>Cancelled punishment.".mm())
+				if(sender is Player) sender.closeInventory()
+			    return@runBlocking
+			}
+
+			Punishment(
+				moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+				player = User(offlinePlayer.uniqueId, offlinePlayer.username),
+				reason = punishmentShort.uppercase(),
+				type = punishmentType,
+				duration = punishmentInfo.duration ?: "FOREVER",
+				notes = ""
+			).handle()
+			return@runBlocking
+		}
+
+		val pages = mutableListOf<Component>()
+		val book = Book.builder().author(Component.empty()).title(Component.empty())
+
+		val placeholders = listOf(
+			Placeholder("%player%", offlinePlayer.username),
+			Placeholder("%reason%", punishmentInfo.getReasonString()),
+			Placeholder("%type%", punishmentType.name),
+			Placeholder("%short%", punishmentShort),
+		)
+
+		val pageText = Translations.getString("punishments.confirm")
+			.parsePlaceholders(placeholders)
+			.trimIndent()
+		MinecraftServer.LOGGER.info(pageText)
+		pages.add(pageText.mm())
+
+		sender.openBook(book.pages(pages))
 	}
 
 	private fun baseCommand(sender: CommandSender, context: CommandContext) = runBlocking {

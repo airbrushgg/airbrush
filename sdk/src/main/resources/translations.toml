@@ -53,7 +53,7 @@ world = "<s>World: <g>%s"
 hasActivePunishment = "<error>This player already has an active punishment! Click <click:run_command:/punishment %id%><u>here</u></click> to view it."
 punishment = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red> [%duration_uppercase%]"
 kickedPlayer = "<gray><p>%moderator%</p> %type% <p>%player%</p> - <red>%short_reason%</red>"
-reversion = "<gray><p>%moderator%</p> reverted the punishment of <p>%player%</p>."
+reversion = "<hover:show_text:'<p>View punishment</p>'><click:run_command:/punishment %id%><gray><p>%moderator%</p> reverted <p>%player%</p> - <red>%reason%</red>"
 playerMuted = """
         <s>%long_reason%. Expires in <p>%duration_lowercase%</p>.
 
@@ -78,8 +78,28 @@ punishing = """
              <#9248df>What are you punishing for? (p.%current_page%)</#9248df>
              %punishments%
 """
+confirm = """
+             <#9248df>Username:</#9248df>
+             %player%
+
+             <#9248df>You are punishing this player for:</#9248df>
+             %reason% <em>%type%</em>
+
+             <#9248df>Confirm & Issue:</#9248df>
+
+             <dark_green><click:run_command:/punish %player% %short% confirm %notes%>ISSUE</click></dark_green>
+
+             <dark_red><click:run_command:/punish %player% %short% cancel>CANCEL</click></dark_red>
+"""
 
 [en.punishments.view]
+all = """
+            <#9248df>Username:</#9248df>
+            %player%
+
+            <#9248df>Punishments:</#9248df>
+            %punishments%
+"""
 overview = """
             <#9248df>Username:</#9248df>
             %player%
@@ -94,7 +114,7 @@ overview = """
             <hover:show_text:'<p>Expires at'>Exp</hover>: %expires_at%
             Status: %status_capitalized%
 
-            <em>< <hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover>
+                <#9248df><hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover> <gray>|</gray> <hover:show_text:'<p>Revert this punishment'><click:run_command:/revertpun %id%>Revert</hover>
 """
 notes = """
             <#9248df>Notes:</#9248df>

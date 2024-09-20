@@ -83,7 +83,8 @@ class PunishmentCommand : Command("punishment") {
             Placeholder("%type%", punishmentType.name),
             Placeholder("%issued_at%", issuedAt),
             Placeholder("%expires_at%", expiresAt),
-            Placeholder("%status%", status)
+            Placeholder("%status%", status),
+            Placeholder("%id%", punishment.data.id)
         )
 
         val overviewPage = Translations.getString("punishments.view.overview")

@@ -12,12 +12,16 @@
 
 package gg.airbrush.punishments.commands
 
+import gg.airbrush.punishments.Punishment
 import gg.airbrush.punishments.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.OfflinePlayer
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.sdk.lib.replaceTabs
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
@@ -54,6 +58,18 @@ fun AirbrushPunishment.getReasonString(): String {
 	return text
 }
 
+fun Punishment.getReasonString(): String {
+	var text = ""
+	val reason = this.shortReason
+
+	text = if(this.action.equals(PunishmentTypes.BAN.name, true)) "<red>$reason</red>"
+	else "<blue>$reason</blue>"
+
+	if(text.isEmpty()) text = reason
+
+	return text
+}
+
 class PunishmentsCommand : Command("punishments") {
 	init {
 		setCondition { sender, _ ->
@@ -83,20 +99,19 @@ class PunishmentsCommand : Command("punishments") {
 			.sortedWith(compareByDescending<AirbrushPunishment> { it.data.active }
 			.thenBy { it.data.type == PunishmentTypes.BAN.ordinal })
 
-		val punishments = allPunishments.joinToString("\n") {
+		val punishments = allPunishments.joinToString("<br>") {
 			val type = PunishmentTypes.entries[it.data.type]
 			val text = it.getReasonString()
 			"<hover:show_text:'<p>View ${type.name.lowercase()} information</p>'><click:run_command:/punishment ${it.data.id}>$text</click></hover>"
 		}
 
-		val page = """
-			<p>Username:</p>
-			${offlinePlayer.username}
-			
-			<p>Punishments:</p>
-			$punishments
-		""".replaceTabs()
+		val translation = Translations.getString("punishments.view.all")
+		val placeholders = listOf(
+			Placeholder("%player%", offlinePlayer.username),
+			Placeholder("%punishments%", punishments)
+		)
 
+		val page = translation.parsePlaceholders(placeholders).trimIndent().replaceTabs()
 		pages.add(page.mm())
 
 		sender.openBook(book.pages(pages))

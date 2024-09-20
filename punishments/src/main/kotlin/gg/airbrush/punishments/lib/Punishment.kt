@@ -70,10 +70,24 @@ fun canPunish(uuid: UUID): Boolean {
     val playerExists = SDK.players.exists(uuid)
     if(!playerExists) return true
     val offenderRank = SDK.players.get(uuid).getRank()
-    return offenderRank.getData().permissions.find { it.key == "core.staff" } !== null
+    return offenderRank.getData().permissions.find { it.key == "core.staff" } === null
 }
 
 data class User(val uuid: UUID, val name: String)
+
+fun getReasonInfo(reason: String): Pair<String, String> {
+    var shortReason = reason
+    var longReason = reason
+
+    if(reason.lowercase() in punishmentConfig.punishments.keys) {
+        println("Is a predefined punishment, getting info from config")
+        val punishmentInfo = punishmentConfig.punishments[reason.lowercase()]!!
+        shortReason = punishmentInfo.shortReason.capitalize()
+        longReason = punishmentInfo.longReason
+    } else println("Is not a predefined punishment, using reason as-is")
+
+    return Pair(shortReason, longReason)
+}
 
 data class Punishment(
     /** The moderator who is applying the punishment */
@@ -108,22 +122,8 @@ data class Punishment(
         return translation.parsePlaceholders(placeholders).trimIndent().mm()
     }
 
-    private fun getReasonInfo(): Pair<String, String> {
-        var shortReason = this.reason
-        var longReason = this.reason
-
-        if(this.reason.lowercase() in punishmentConfig.punishments.keys) {
-            println("Is a predefined punishment, getting info from config")
-            val punishmentInfo = punishmentConfig.punishments[this.reason.lowercase()]!!
-            shortReason = punishmentInfo.shortReason.capitalize()
-            longReason = punishmentInfo.longReason
-        } else println("Is not a predefined punishment, using reason as-is")
-
-        return Pair(shortReason, longReason)
-    }
-
     private fun getPlaceholders(): List<Placeholder> {
-        val (shortReason, longReason) = getReasonInfo()
+        val (shortReason, longReason) = getReasonInfo(this.reason)
 
         val placeholders = listOf(
             Placeholder("%moderator%", this.moderator.name),
@@ -143,7 +143,7 @@ data class Punishment(
         val discordLogChannel = bot.getTextChannelById(discordConfig.channels.log.toLong())
             ?: throw Exception("Failed to find #punish-logs channel")
 
-        val (shortReason) = getReasonInfo()
+        val (shortReason) = getReasonInfo(this.reason)
 
         val logEmbed = EmbedBuilder().setTitle("${this.player.name} was ${getPluralType()}")
             .setColor(Color.decode("#ff6e6e"))
@@ -181,6 +181,7 @@ data class Punishment(
         }
 
         val logPlaceholders = this.getPlaceholders()
+            .plus(Placeholder("%id%", punishment.id))
 
         val key = if(this.type == PunishmentTypes.KICK) "punishments.kickedPlayer" else "punishments.punishment"
         val logString = Translations.getString(key).parsePlaceholders(logPlaceholders).trimIndent()
