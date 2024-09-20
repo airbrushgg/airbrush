@@ -87,7 +87,7 @@ confirm = """
 
              <#9248df>Confirm & Issue:</#9248df>
 
-             <dark_green><click:run_command:/punish %player% %short% confirm %notes%>ISSUE</click></dark_green>
+             <dark_green><click:run_command:/punish %player% %short% confirm>ISSUE</click></dark_green>
 
              <dark_red><click:run_command:/punish %player% %short% cancel>CANCEL</click></dark_red>
 """
