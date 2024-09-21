@@ -18,10 +18,11 @@ import gg.airbrush.punishments.lib.getReasonInfo
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.classes.punishments.RevertedData
-import gg.airbrush.sdk.lib.Placeholder
-import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.Input
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.parsePlaceholders
+import gg.airbrush.sdk.lib.Placeholder
+import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -101,6 +102,7 @@ class RevertPunishmentCommand : Command("revertpun") {
 		discordLogChannel.sendMessageEmbeds(logEmbed).queue()
 	}
 
+
 	private fun apply(sender: CommandSender, context: CommandContext) {
 		if(sender !is Player) return
 
@@ -121,12 +123,21 @@ class RevertPunishmentCommand : Command("revertpun") {
 		}
 
 		sender.sendMessage("<s>Please enter a reason for the revert:".mm())
-		fetchInput {
+
+		val input: Input = fetchInput {
 			player = sender
-			handler = { input ->
-				if(input.isEmpty()) sender.sendMessage("<error>You must provide a reason!".mm())
-				else handleRevert(punishment, sender, input)
+			handler = { text ->
+				when {
+					text.equals("cancel", ignoreCase = true) -> {
+						sender.sendMessage("<s>Revert cancelled.".mm())
+					}
+					else -> {
+						handleRevert(punishment, sender, text)
+					}
+				}
 			}
-		}.prompt()
+		}
+
+		input.prompt()
 	}
 }
