@@ -104,6 +104,8 @@ class PunishCommand : Command("punish") {
 			val punishmentInstances = SDK.punishments.list(offlinePlayer.uniqueId)
 				.filter { punishmentShort.equals(it.data.reason, true) }
 
+			if(punishmentInstances.size >= punishmentInfo.duration.size) return punishmentInfo.duration.last()
+
 			return punishmentInfo.duration[punishmentInstances.size]
 		}
 
