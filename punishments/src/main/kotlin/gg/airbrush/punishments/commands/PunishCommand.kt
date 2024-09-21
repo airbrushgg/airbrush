@@ -104,10 +104,7 @@ class PunishCommand : Command("punish") {
 			val punishmentInstances = SDK.punishments.list(offlinePlayer.uniqueId)
 				.filter { punishmentShort.equals(it.data.reason, true) }
 
-			val duration = punishmentInfo.duration[punishmentInstances.size]
-			if(duration.equals("FOREVER", true)) return "FOREVER"
-
-			return duration
+			return punishmentInfo.duration[punishmentInstances.size]
 		}
 
 		if(confirmArg !== null) {
