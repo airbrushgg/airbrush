@@ -20,6 +20,7 @@ import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.classes.punishments.RevertedData
 import gg.airbrush.sdk.lib.Placeholder
 import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
@@ -73,28 +74,11 @@ class RevertPunishmentCommand : Command("revertpun") {
 		Audiences.players { p -> p.hasPermission("core.staff") }.sendMessage(message)
 	}
 
-	private fun apply(sender: CommandSender, context: CommandContext) {
-		if(sender !is Player) return
-
-		val punishmentId = context.get<UUID>("punishment")
-
-		val punishmentExists = SDK.punishments.exists(punishmentId)
-
-		if(!punishmentExists) {
-			sender.sendMessage("<error>A punishment with that ID does not exist!".mm())
-			return
-		}
-
-		val punishment = SDK.punishments.get(punishmentId)
-
-		if(!punishment.data.active) {
-			sender.sendMessage("<error>That punishment is not active!".mm())
-			return
-		}
-
+	private fun handleRevert(punishment: AirbrushPunishment, sender: Player, reason: String) {
 		punishment.setReverted(
 			RevertedData(
 				revertedBy = sender.uuid.toString(),
+				revertedReason = reason
 			)
 		)
 
@@ -115,5 +99,34 @@ class RevertPunishmentCommand : Command("revertpun") {
 			.build()
 
 		discordLogChannel.sendMessageEmbeds(logEmbed).queue()
+	}
+
+	private fun apply(sender: CommandSender, context: CommandContext) {
+		if(sender !is Player) return
+
+		val punishmentId = context.get<UUID>("punishment")
+
+		val punishmentExists = SDK.punishments.exists(punishmentId)
+
+		if(!punishmentExists) {
+			sender.sendMessage("<error>A punishment with that ID does not exist!".mm())
+			return
+		}
+
+		val punishment = SDK.punishments.get(punishmentId)
+
+		if(!punishment.data.active) {
+			sender.sendMessage("<error>That punishment is not active!".mm())
+			return
+		}
+
+		sender.sendMessage("<s>Please enter a reason for the revert:".mm())
+		fetchInput {
+			player = sender
+			handler = { input ->
+				if(input.isEmpty()) sender.sendMessage("<error>You must provide a reason!".mm())
+				else handleRevert(punishment, sender, input)
+			}
+		}.prompt()
 	}
 }
