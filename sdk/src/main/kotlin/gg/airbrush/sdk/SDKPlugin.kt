@@ -16,15 +16,22 @@ import gg.airbrush.sdk.commands.ReloadCommand
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.MinecraftServer
+import net.minestom.server.event.EventNode
 import org.slf4j.LoggerFactory
+
+internal val eventNode = EventNode.all("SDK")
 
 class SDKPlugin : Plugin() {
     override fun setup() {
+		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+
 		// TODO: Disable logging for MongoDB driver
 	    val manager = MinecraftServer.getCommandManager()
 	    manager.register(ReloadCommand())
 	    // Triggers an initialization to create the language files
 	    Translations.reload()
 	}
-    override fun teardown() {}
+    override fun teardown() {
+		MinecraftServer.getGlobalEventHandler().removeChild(eventNode)
+	}
 }
