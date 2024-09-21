@@ -114,7 +114,7 @@ overview = """
             <hover:show_text:'<p>Expires at'>Exp</hover>: %expires_at%
             Status: %status_capitalized%
 
-                <#9248df><hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover> <gray>|</gray> <hover:show_text:'<p>Revert this punishment'><click:run_command:/revertpun %id%>Revert</hover>
+                 <#9248df><hover:show_text:'<p>View all punishments of %player%'><click:run_command:/punishments %player%>Go back</hover> <gray>|</gray> <hover:show_text:'<p>Manage this punishment'><click:run_command:/editpunishment %id%>Edit</hover>
 """
 notes = """
             <#9248df>Notes:</#9248df>
