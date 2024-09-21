@@ -29,7 +29,7 @@ data class Punishment(
 	val shortReason: String,
 	val longReason: String = shortReason,
 	val action: String,
-	val duration: String?
+	val duration: List<String>? = null,
 )
 
 data class PunishmentsConfig(

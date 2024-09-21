@@ -105,7 +105,7 @@ data class Punishment(
     /** Duration string (ex: "1h") */
     val duration: String = "FOREVER",
     /** Notes to be attached to the punishment */
-    val notes: String,
+    val notes: String = "",
 ) {
     private fun getDisconnectMessage(): Component {
         var longReason = this.reason

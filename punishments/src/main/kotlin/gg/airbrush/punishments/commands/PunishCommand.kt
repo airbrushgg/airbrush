@@ -72,7 +72,6 @@ class PunishCommand : Command("punish") {
 
 		return translation.parsePlaceholders(placeholders).mm()
 	}
-
 	private fun punish(sender: CommandSender, context: CommandContext) = runBlocking {
 		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
 		val confirmArg = context.get(confirmArg)
@@ -99,6 +98,17 @@ class PunishCommand : Command("punish") {
 
 		val punishmentType = PunishmentTypes.valueOf(punishmentInfo.action.uppercase())
 
+		fun getPunishmentDuration(): String {
+			if(punishmentInfo.duration === null) return "FOREVER"
+
+			val punishmentInstances = SDK.punishments.list(offlinePlayer.uniqueId)
+				.filter { punishmentShort.equals(it.data.reason, true) }
+
+			if(punishmentInstances.size >= punishmentInfo.duration.size) return punishmentInfo.duration.last()
+
+			return punishmentInfo.duration[punishmentInstances.size]
+		}
+
 		if(confirmArg !== null) {
 			if (confirmArg != "confirm") {
 			    sender.sendMessage("<error>Cancelled punishment.".mm())
@@ -112,8 +122,7 @@ class PunishCommand : Command("punish") {
 					player = User(offlinePlayer.uniqueId, offlinePlayer.username),
 					reason = punishmentShort.uppercase(),
 					type = punishmentType,
-					duration = punishmentInfo.duration ?: "FOREVER",
-					notes = ""
+					duration = getPunishmentDuration()
 				).handle()
 			} catch (e: Exception) {
 				sender.sendMessage("<error>Failed to punish player.\n<error>${e.message}".mm())
@@ -139,7 +148,6 @@ class PunishCommand : Command("punish") {
 
 		sender.openBook(book.pages(pages))
 	}
-
 	private fun baseCommand(sender: CommandSender, context: CommandContext) = runBlocking {
 		val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
 		val punishable = canPunish(offlinePlayer.uniqueId)
