@@ -30,11 +30,11 @@ data class RevertedData(
 data class PunishmentData(
 	val moderator: String,
 	val player: String,
-	val reason: String,
+	var reason: String,
 	val type: Int,
 	val createdAt: Long = Instant.now().epochSecond,
 	val updatedAt: Long = createdAt,
-	val duration: Long?,
+	var duration: Long,
 	var active: Boolean = true,
 	val id: String = UUID.randomUUID().toString(),
 	var notes: String? = null,
@@ -63,6 +63,16 @@ class AirbrushPunishment(id: UUID) {
         return Instant.ofEpochSecond(data.updatedAt)
     }
 
+	fun setDuration(duration: Long) {
+		val now = Instant.now().epochSecond
+		val expiry = duration + now
+
+		setActive(expiry > now)
+
+		col.updateOne(query, Updates.set(PunishmentData::duration.name, duration))
+		data.duration = duration
+	}
+
 	fun setActive(active: Boolean) {
 		col.updateOne(query, Updates.set(PunishmentData::active.name, active))
 		data.active = active
@@ -74,13 +84,24 @@ class AirbrushPunishment(id: UUID) {
 		data.reverted = reverted
 	}
 
-	fun setNotes(notes: String) {
+	fun setNotes(notes: String?) {
+		if(notes == null) {
+			col.updateOne(query, Updates.unset(PunishmentData::notes.name))
+			data.notes = null
+			return
+		}
+
 		col.updateOne(query, Updates.set(PunishmentData::notes.name, notes))
 		data.notes = notes
 	}
 
+	fun setReason(reason: String) {
+		col.updateOne(query, Updates.set(PunishmentData::reason.name, reason))
+		data.reason = reason
+	}
+
 	fun getExpiry(): Instant {
-		val combined = data.createdAt + data.duration!!
+		val combined = data.createdAt + data.duration
 
 		if (data.duration >= Instant.MAX.epochSecond || combined >= Instant.MAX.epochSecond) {
 			return Instant.MAX

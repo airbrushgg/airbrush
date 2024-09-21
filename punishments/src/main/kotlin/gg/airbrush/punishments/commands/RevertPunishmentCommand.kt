@@ -124,18 +124,8 @@ class RevertPunishmentCommand : Command("revertpun") {
 
 		sender.sendMessage("<s>Please enter a reason for the revert:".mm())
 
-		val input: Input = fetchInput {
-			player = sender
-			handler = { text ->
-				when {
-					text.equals("cancel", ignoreCase = true) -> {
-						sender.sendMessage("<s>Revert cancelled.".mm())
-					}
-					else -> {
-						handleRevert(punishment, sender, text)
-					}
-				}
-			}
+		val input: Input = fetchInput(sender) {
+			handleRevert(punishment, sender, it)
 		}
 
 		input.prompt()

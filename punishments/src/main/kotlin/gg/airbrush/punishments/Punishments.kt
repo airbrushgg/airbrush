@@ -68,6 +68,7 @@ class Punishments : Plugin() {
 		manager.register(KickCommand())
 		manager.register(MuteCommand())
 		manager.register(PunishmentCommand())
+		manager.register(EditPunishmentCommand())
 
 		MinecraftServer.getGlobalEventHandler().addChild(eventNode)
 	    PlayerEvents()
@@ -76,9 +77,9 @@ class Punishments : Plugin() {
 	    setInterval(60 * 1000) {
 		    val now = Instant.now().epochSecond
 
-		    val allPunishments = SDK.punishments.getAll().filter { it.data.duration !== null && it.data.active }
+		    val allPunishments = SDK.punishments.getAll().filter { it.data.active }
 		    allPunishments.forEach {
-				val duration = it.data.duration ?: return@forEach
+				val duration = it.data.duration
 			    val expiry = duration + it.getCreatedAt().epochSecond
 
 			    if(expiry < now) {

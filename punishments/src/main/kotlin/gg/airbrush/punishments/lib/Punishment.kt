@@ -38,7 +38,13 @@ private fun getNumericValue(input: String): Pair<Int, String> {
     return Pair(numericValue.toInt(), timeUnit)
 }
 
-private fun convertDate(input: String): Long {
+/**
+ *  Converts a duration string to seconds.
+ *
+ *  @param input Duration string (ex: "1h")
+ *  @return Duration in seconds
+ */
+fun convertDate(input: String): Long {
     if(input.lowercase() == "forever") return Instant.MAX.epochSecond
 
     val (numericValue, timeUnit) = getNumericValue(input)

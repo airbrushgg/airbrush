@@ -21,6 +21,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	compileOnly(project(":server"))
 	compileOnly(project(":sdk"))
+    compileOnly(project(":pocket"))
 	compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 	compileOnly("cc.ekblad:4koma:1.2.0")
 	compileOnly(project(":core"))

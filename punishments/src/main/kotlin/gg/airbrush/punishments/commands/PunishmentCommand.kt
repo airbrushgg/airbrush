@@ -19,7 +19,6 @@ import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -95,10 +94,13 @@ class PunishmentCommand : Command("punishment") {
 
         val notes = punishment.data.notes
         if(!notes.isNullOrEmpty()) {
+            val notesPlaceholder = Placeholder("%notes%", notes.replace("\n", "<br>"))
+
             val notesPage = Translations.getString("punishments.view.notes")
-                .parsePlaceholders(placeholders.plus(Placeholder("%notes%", notes)))
+                .parsePlaceholders(placeholders.plus(notesPlaceholder))
                 .trimIndent()
                 .replaceTabs()
+
             pages.add(notesPage.mm())
         }
 

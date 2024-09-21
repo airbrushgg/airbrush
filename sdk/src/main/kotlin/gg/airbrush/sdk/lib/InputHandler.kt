@@ -13,11 +13,14 @@
 package gg.airbrush.sdk.lib
 
 import gg.airbrush.sdk.eventNode
+import gg.airbrush.server.lib.mm
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventListener
 import net.minestom.server.event.player.PlayerChatEvent
 
 typealias PromptHandler = (String) -> Unit
+
+fun isConfirmed (input: String): Boolean = input.equals("yes", true) || input.equals("y", true) || input.equals("confirm", true)
 
 class Input {
     /**
@@ -35,11 +38,13 @@ class Input {
     fun prompt() {
         lateinit var inputHandler: EventListener<PlayerChatEvent>
         inputHandler = EventListener.of(PlayerChatEvent::class.java) { event ->
-            if (event.player == player) {
-                event.isCancelled = true
-                handler(event.message)
-                eventNode.removeListener(inputHandler)
-            }
+            if (event.player != player) return@of
+
+            event.isCancelled = true
+            if(!event.message.equals("cancel", ignoreCase = true)) handler(event.message)
+            else event.player.sendMessage("<s>Input cancelled.".mm())
+
+            eventNode.removeListener(inputHandler)
         }
 
         eventNode.addListener(inputHandler)
@@ -51,8 +56,9 @@ class Input {
  *
  * @return An [Input] object.
  */
-fun fetchInput(init: Input.() -> Unit): Input {
+fun fetchInput(player: Player, handler: PromptHandler): Input {
     val input = Input()
-    input.init()
+    input.handler = handler
+    input.player = player
     return input
 }
