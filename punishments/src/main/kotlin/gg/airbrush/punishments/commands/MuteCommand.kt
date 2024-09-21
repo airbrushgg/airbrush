@@ -38,10 +38,10 @@ class MuteCommand : Command("mute") {
         }
 
         defaultExecutor = CommandExecutor { sender, _ ->
-            sender.sendMessage("<error>/mute <player> [reason] [duration] [notes...]".mm())
+            sender.sendMessage("<error>/mute <player> [duration] [reason]".mm())
         }
 
-        addSyntax(this::apply, reasonArg, durationArg)
+        addSyntax(this::apply, durationArg, reasonArg)
         addSyntax(this::apply, reasonArg)
         addSyntax(this::apply)
     }
@@ -63,14 +63,19 @@ class MuteCommand : Command("mute") {
             return@runBlocking
         }
 
-        Punishment(
-            moderator = if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
-            player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-            reason = reason.joinToString(" "),
-            type = PunishmentTypes.MUTE,
-            duration = duration,
-            notes = ""
-        ).handle()
+       try {
+            Punishment(
+                moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+                player = User(offlinePlayer.uniqueId, offlinePlayer.username),
+                reason = reason.joinToString(" "),
+                type = PunishmentTypes.MUTE,
+                duration = duration,
+                notes = ""
+            ).handle()
+        } catch (e: Exception) {
+            sender.sendMessage("<error>Failed to mute player.\n<error>${e.message}".mm())
+            return@runBlocking
+        }
     }
 
     override fun addSyntax(

@@ -100,21 +100,25 @@ class PunishCommand : Command("punish") {
 		val punishmentType = PunishmentTypes.valueOf(punishmentInfo.action.uppercase())
 
 		if(confirmArg !== null) {
-
 			if (confirmArg != "confirm") {
 			    sender.sendMessage("<error>Cancelled punishment.".mm())
 				if(sender is Player) sender.closeInventory()
 			    return@runBlocking
 			}
 
-			Punishment(
-				moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
-				player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-				reason = punishmentShort.uppercase(),
-				type = punishmentType,
-				duration = punishmentInfo.duration ?: "FOREVER",
-				notes = ""
-			).handle()
+			try {
+				Punishment(
+					moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+					player = User(offlinePlayer.uniqueId, offlinePlayer.username),
+					reason = punishmentShort.uppercase(),
+					type = punishmentType,
+					duration = punishmentInfo.duration ?: "FOREVER",
+					notes = ""
+				).handle()
+			} catch (e: Exception) {
+				sender.sendMessage("<error>Failed to punish player.\n<error>${e.message}".mm())
+			}
+
 			return@runBlocking
 		}
 

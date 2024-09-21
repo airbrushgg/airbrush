@@ -53,13 +53,19 @@ class KickCommand : Command("kick") {
             return@runBlocking
         }
 
-        Punishment(
-            moderator = if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
-            player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-            reason = reason.joinToString(" "),
-            type = PunishmentTypes.KICK,
-            notes = ""
-        ).handle()
+       try {
+            Punishment(
+                moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+                player = User(offlinePlayer.uniqueId, offlinePlayer.username),
+                reason = reason.joinToString(" "),
+                type = PunishmentTypes.KICK,
+                duration = "FOREVER",
+                notes = ""
+            ).handle()
+        } catch (e: Exception) {
+            sender.sendMessage("<error>Failed to kick player.\n<error>${e.message}".mm())
+            return@runBlocking
+        }
     }
 
     override fun addSyntax(
