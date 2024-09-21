@@ -34,7 +34,6 @@ class TestColors : Command("testcolors"), CommandExecutor {
 
     override fun apply(sender: CommandSender, context: CommandContext) {
         val message = context.get(messageArg)
-        sender.sendMessage("Hello, world!")
         sender.sendMessage(message.joinToString(" ") { it }.mm())
     }
 }

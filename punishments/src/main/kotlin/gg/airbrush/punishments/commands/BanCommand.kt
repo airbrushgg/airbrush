@@ -63,14 +63,19 @@ class BanCommand : Command("ban") {
             return@runBlocking
         }
 
-        Punishment(
-            moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
-            player = User(offlinePlayer.uniqueId, offlinePlayer.username),
-            reason = reason.joinToString(" "),
-            type = PunishmentTypes.BAN,
-            duration = duration,
-            notes = ""
-        ).handle()
+        try {
+            Punishment(
+                moderator =  if(sender is Player) User(sender.uuid, sender.username) else User(nilUUID, "Console"),
+                player = User(offlinePlayer.uniqueId, offlinePlayer.username),
+                reason = reason.joinToString(" "),
+                type = PunishmentTypes.BAN,
+                duration = duration,
+                notes = ""
+            ).handle()
+        } catch (e: Exception) {
+            sender.sendMessage("<error>Failed to ban player.\n<error>${e.message}".mm())
+            return@runBlocking
+        }
     }
 
     override fun addSyntax(
