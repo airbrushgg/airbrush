@@ -15,6 +15,13 @@ allprojects {
     kotlin {
         jvmToolchain(21)
     }
+
+    tasks.register<BuildAndPublishTask>("buildAndPublish") {
+        group = "build"
+        description = "Build and publish to Maven Local"
+
+        dependsOn("build", "publishToMavenLocal")
+    }
 }
 
 subprojects {
@@ -22,14 +29,26 @@ subprojects {
     apply(plugin = "maven-publish")
 
     publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                groupId = "gg.airbrush"
-                artifactId = project.name
-                version = "${project.version}"
+        afterEvaluate {
+            publications {
+                create<MavenPublication>("maven") {
+                    groupId = "gg.airbrush"
+                    artifactId = project.name
+                    version = "${project.version}"
 
-                from(components["java"])
+                    from(components["java"])
+                }
             }
         }
     }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+}
+
+abstract class BuildAndPublishTask : DefaultTask() {
+    @TaskAction
+    fun action() {}
 }
