@@ -1,9 +1,0 @@
-[en.core]
-welcome = """
-
-        <s>Welcome to <p>Airbrush</p>, <p>{username}</p>!
-
-        <s>To paint, <p>right-click</p> with the <p>Paintbrush</p>
-        <s>To select a block to paint with, <p>left-click</p> with the <p>Paintbrush</p>
-
-"""
