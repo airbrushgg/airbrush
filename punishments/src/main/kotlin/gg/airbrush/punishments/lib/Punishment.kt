@@ -49,18 +49,18 @@ fun convertDate(input: String): Long {
 
     val (numericValue, timeUnit) = getNumericValue(input)
 
-    val minute = 60
+    val minute = 60L
     val hour = minute * 60
     val day = hour * 24
     val week = day * 7
     val month = week * 4
 
     val timeUnits: Map<String, Long> = mapOf(
-        "min" to minute.toLong(),
-        "h" to hour.toLong(),
-        "d" to day.toLong(),
-        "w" to week.toLong(),
-        "mo" to month.toLong()
+        "min" to minute,
+        "h" to hour,
+        "d" to day,
+        "w" to week,
+        "mo" to month
     )
 
     val secondValue =
