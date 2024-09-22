@@ -36,7 +36,6 @@ object ServerProperties {
         }
     }
 
-    val serverPort by Field("server-port", Int::class.java, 25565)
     val maxPlayers by Field("max-players", Int::class.java, 10)
-    val motd by Field("motd", String::class.java, "A Minecraft Server")
+    val motd by Field("motd", String::class.java, "A Minestom Server")
 }

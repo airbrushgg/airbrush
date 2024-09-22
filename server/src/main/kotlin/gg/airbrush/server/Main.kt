@@ -15,6 +15,8 @@ package gg.airbrush.server
 import gg.airbrush.server.commands.Plugins
 import gg.airbrush.server.commands.Stop
 import gg.airbrush.server.lib.OperatorSender
+import gg.airbrush.server.lib.ServerProperties
+import gg.airbrush.server.lib.mm
 import gg.airbrush.server.plugins.PluginManager
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import net.minestom.server.MinecraftServer
@@ -145,6 +147,8 @@ fun registerEvents() {
     eventHandler.addListener(ServerListPingEvent::class.java) { event ->
         event.responseData = ResponseData().apply {
             favicon = encodedFavicon
+            description = ServerProperties.motd.mm()
+            maxPlayer = ServerProperties.maxPlayers
         }
     }
 
