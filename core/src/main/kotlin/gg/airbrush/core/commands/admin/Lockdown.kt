@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -31,7 +29,7 @@ class Lockdown : Command("lockdown"), CommandExecutor {
         locked = !locked
 
         sender.sendMessage(
-	        Translations.translate("core.commands.lockdown", if(locked) "disabled" else "enabled").mm()
+	        Translations.translate("core.commands.lockdown", if(locked) "enabled" else "disabled").mm()
         )
     }
 
