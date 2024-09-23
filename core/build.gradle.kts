@@ -29,6 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     compileOnly("dev.hollowcube:polar:1.11.2")
     compileOnly("cc.ekblad:4koma:1.2.0")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.1.0")

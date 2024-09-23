@@ -15,6 +15,7 @@
 package gg.airbrush.core.commands.history
 
 import gg.airbrush.core.lib.Constants
+import gg.airbrush.core.lib.getCurrentWorldID
 import gg.airbrush.core.lib.prettify
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.PlayerUtils
@@ -76,9 +77,10 @@ class History : Command("history"), CommandExecutor {
         )
 
         player.sendMessage("<p>Loading pixel data for this pixel...".mm())
+        val world = player.getCurrentWorldID()
 
         val limit = context.get(limitArgument) ?: 5
-        val pixelData = SDK.pixels.getHistoryAt(blockPos, limit)
+        val pixelData = SDK.pixels.getHistoryAt(blockPos, limit, world)
         if (pixelData.isEmpty()) {
             sender.sendMessage("<error>Could not fetch pixel data for location".mm())
             return

@@ -17,50 +17,44 @@ import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import gg.airbrush.sdk.Database
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import org.bson.codecs.pojo.annotations.BsonId
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 class Pixels {
     private val db = Database.get()
     private val col = db.getCollection<Pixel>("pixels")
 
-    fun paint(position: Point, player: UUID, material: Material, world: String) = runBlocking<Unit> {
-        val pixel = Pixel(
-            position = position.to(),
-            player = player,
-            material = material.name(),
-            timestamp = System.currentTimeMillis(),
-            worldId = world
-        )
-        launch { col.insertOne(pixel) }
-    }
-
-    fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) = runBlocking<Unit> {
+    suspend fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) {
         val now = System.currentTimeMillis()
 
-        launch {
-            positions.map { pos ->
-                Pixel(pos.to(), player, material.name(), now, world)
-            }.let { col.insertMany(it) }
+        withContext(Dispatchers.IO) {
+            val time = measureTimeMillis {
+                positions.map { pos ->
+                    Pixel(pos.to(), player, material.name(), now, world)
+                }.let { col.insertMany(it) }
+            }
+            println("[SDK] Pixels#paintMulti took $time ms, painted ${positions.size} pixels.")
         }
     }
 
-    fun getPixelAt(position: Point): Pixel? {
-        val filter = Filters.eq(Pixel::position.name, position.to())
-        return col.find(filter).sort(Sorts.descending(Pixel::timestamp.name)).firstOrNull()
-    }
-
-    fun getHistoryAt(position: Point, limit: Int): List<Pixel> {
-        val filter = Filters.eq(Pixel::position.name, position.to())
+    fun getHistoryAt(position: Point, limit: Int, world: String): List<Pixel> {
+        val filter = Filters.and(
+            Filters.eq(Pixel::position.name, position.to()),
+            Filters.eq(Pixel::worldId.name, world)
+        )
         return col.find(filter).sort(Sorts.descending(Pixel::timestamp.name)).limit(limit).toList()
     }
 
-    fun getPixelCount(player: UUID): Int {
-        return col.countDocuments(Filters.eq(Pixel::player.name, player)).toInt()
+    suspend fun wipeHistoryForWorld(world: String) {
+        val filter = Filters.eq(Pixel::worldId.name, world)
+        withContext(Dispatchers.IO) {
+            col.deleteMany(filter)
+        }
     }
 
     data class MaterialPair(@BsonId val id: String, val count: Int)

@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -16,8 +14,12 @@ package gg.airbrush.core.commands.admin
 
 import dev.flavored.bamboo.SchematicReader
 import gg.airbrush.core.lib.Constants
+import gg.airbrush.core.lib.format
+import gg.airbrush.core.lib.getCurrentWorldID
+import gg.airbrush.sdk.SDK
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
+import kotlinx.coroutines.*
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -25,8 +27,9 @@ import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentLiteral
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
+import kotlin.system.measureTimeMillis
 
-class Reset : Command("resetworld"), CommandExecutor {
+class Reset : Command("resetspawn"), CommandExecutor {
     private val schematicReader = SchematicReader()
 
     init {
@@ -53,14 +56,25 @@ class Reset : Command("resetworld"), CommandExecutor {
             return
         }
 
-        val center = Pos(0.0, 4.0, 0.0)
-        val schematic = schematicReader.fromPath(schematicFile.toPath())
-        schematic.paste(instance, center, true)
+        sender.sendMessage("<p>Resetting the spawn world...".mm())
 
-        instance.saveChunksToStorage().join()
-        sender.sendMessage("<success>The spawn world was reset.".mm())
+        CoroutineScope(Dispatchers.IO).launch {
+            val timeTaken = measureTimeMillis {
+                SDK.pixels.wipeHistoryForWorld(sender.getCurrentWorldID())
 
-        instance.players.forEach { player -> player.teleport(center.add(0.0, 2.0, 0.0)) }
+                val center = Pos(0.0, 4.0, 0.0)
+                val schematic = schematicReader.fromPath(schematicFile.toPath())
+                schematic.paste(instance, center, true)
+
+                runBlocking {
+                    instance.saveChunksToStorage().join()
+                }
+
+                instance.players.forEach { player -> player.teleport(center.add(0.0, 2.0, 0.0)) }
+            }
+
+            sender.sendMessage("<success>The spawn world was reset in ${timeTaken.format()}ms.".mm())
+        }
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
