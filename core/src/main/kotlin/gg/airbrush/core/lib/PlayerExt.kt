@@ -19,6 +19,7 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
 import net.minestom.server.entity.Player
+import net.minestom.server.tag.Tag
 
 fun Player.getXPThreshold(): Int {
     val sdkPlayer = SDK.players.get(uuid)
@@ -37,4 +38,40 @@ fun Player.teleportToCanvas(canvasUUID: String) {
 
 fun Player.teleportToSpawn() {
     this.instance = WorldManager.defaultInstance
+}
+
+fun Player.getCurrentWorldName(): String {
+    val instance = this.instance
+
+    val internalWorldName = instance.getTag(Tag.String("PersistentWorld")) ?: null
+    val canvasId = instance.getTag(Tag.String("CanvasUUID")) ?: null
+
+    if (internalWorldName == null && canvasId == null) return "spawn"
+
+    if (canvasId != null) {
+        val world = SDK.worlds.getByUUID(canvasId) ?: return "Unknown World"
+        return world.data.name
+    }
+
+    if(internalWorldName != null) return internalWorldName
+
+    return "Unknown World"
+}
+
+fun Player.getCurrentWorldID(): String {
+    val instance = this.instance
+
+    val internalWorldName = instance.getTag(Tag.String("PersistentWorld")) ?: null
+    val canvasId = instance.getTag(Tag.String("CanvasUUID")) ?: null
+
+    if (internalWorldName == null && canvasId == null) return "spawn_world"
+
+    if (canvasId != null) {
+        val world = SDK.worlds.getByUUID(canvasId) ?: return "unknown_world"
+        return world.data.id
+    }
+
+    if(internalWorldName != null) return internalWorldName
+
+    return "unknown_world"
 }

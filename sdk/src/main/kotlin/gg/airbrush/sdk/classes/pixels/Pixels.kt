@@ -28,14 +28,24 @@ class Pixels {
     private val db = Database.get()
     private val col = db.getCollection<Pixel>("pixels")
 
-    fun paint(position: Point, player: UUID, material: Material) = runBlocking<Unit> {
-        launch { col.insertOne(Pixel(position.to(), player, material.name(), System.currentTimeMillis())) }
+    fun paint(position: Point, player: UUID, material: Material, world: String) = runBlocking<Unit> {
+        val pixel = Pixel(
+            position = position.to(),
+            player = player,
+            material = material.name(),
+            timestamp = System.currentTimeMillis(),
+            worldId = world
+        )
+        launch { col.insertOne(pixel) }
     }
 
-    fun paintMulti(positions: List<Point>, player: UUID, material: Material) = runBlocking<Unit> {
+    fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) = runBlocking<Unit> {
         val now = System.currentTimeMillis()
+
         launch {
-            positions.map { pos -> Pixel(pos.to(), player, material.name(), now) }.let { col.insertMany(it) }
+            positions.map { pos ->
+                Pixel(pos.to(), player, material.name(), now, world)
+            }.let { col.insertMany(it) }
         }
     }
 

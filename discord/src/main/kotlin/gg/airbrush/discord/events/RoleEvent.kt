@@ -65,7 +65,7 @@ object RoleEvent : ListenerAdapter() {
 		val sdkPlayer = SDK.players.get(UUID.fromString(playerData.uuid))
 		val donatorRank = SDK.ranks.list().find {
 			it.getData().name.lowercase() == role
-		} ?: throw Exception("[RoleEvent > onGuildMemberRoleAdd] Failed to find donator rank for $role!")
+		} ?: throw Exception("[RoleEvent > onGuildMemberRoleAdd] Failed to find Star rank for $role!")
 
 		sdkPlayer.setRank(donatorRank.getData().name)
 

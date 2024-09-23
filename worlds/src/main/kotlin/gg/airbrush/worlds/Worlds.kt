@@ -13,11 +13,13 @@
 package gg.airbrush.worlds
 
 import gg.airbrush.server.plugins.Plugin
+import gg.airbrush.server.plugins.PluginInfo
 import gg.airbrush.worlds.listener.GlobalEventListeners
 import net.minestom.server.MinecraftServer
 
 class Worlds : Plugin() {
     override fun setup() {
+        pluginInfo = this.info
         WorldManager.initialize()
         WorldManager.loadDefaultInstance()
 
@@ -31,5 +33,9 @@ class Worlds : Plugin() {
     }
 
     override fun teardown() {
+    }
+
+    companion object {
+        var pluginInfo: PluginInfo? = null
     }
 }
