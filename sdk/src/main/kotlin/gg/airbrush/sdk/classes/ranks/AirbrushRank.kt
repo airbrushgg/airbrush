@@ -25,6 +25,7 @@ data class RankData(
     var name: String,
     var prefix: String,
     var permissions: List<PermissionData>,
+    var weight: Int = 0,
     var parent: String?,
     val id: String = UUID.randomUUID().toString(),
 )
@@ -81,6 +82,15 @@ class AirbrushRank(id: UUID) {
             return null
 
         return SDK.ranks.get(UUID.fromString(data.parent))
+    }
+
+    fun getWeight(): Int {
+        return data.weight
+    }
+
+    fun setWeight(weight: Int) {
+        col.updateOne(query, Updates.set(RankData::weight.name, weight))
+        data.weight = weight
     }
 
     fun setPrefix(prefix: String) {

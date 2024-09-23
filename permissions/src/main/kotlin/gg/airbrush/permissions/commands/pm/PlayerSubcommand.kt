@@ -36,6 +36,7 @@ object PlayerSubcommand : Command("player") {
         val rank = Literal("rank")
         addSyntax(this::getRank, rank, get)
         addSyntax(this::setRank, rank, set, RankArgument("new-rank"))
+        addSyntax(this::trySetRank, rank, Literal("trySet"), RankArgument("new-rank"))
     }
 
     private fun getRank(executor: CommandSender, context: CommandContext) = runBlocking {
@@ -62,6 +63,27 @@ object PlayerSubcommand : Command("player") {
 
         player.setRank(name)
         executor.sendMessage("<s>Set the rank of <p>${offlinePlayer.username}</p> to <p>$name</p>.".mm())
+    }
+
+    private fun trySetRank(executor: CommandSender, context: CommandContext) = runBlocking {
+        val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
+        val newRank = context.get<AirbrushRank>("new-rank")
+
+        if (!SDK.players.exists(offlinePlayer.uniqueId))
+            SDK.players.create(offlinePlayer.uniqueId)
+
+        val player = SDK.players.get(offlinePlayer.uniqueId)
+        val newRankName = newRank.getData().name
+        val rank = player.getRank()
+
+        if (rank.getData().name == newRankName)
+            return@runBlocking executor.sendMessage("<s><p>${offlinePlayer.username}</p> already has that rank.".mm())
+
+        if (newRank.getWeight() < rank.getWeight())
+            return@runBlocking executor.sendMessage("<s><p>${offlinePlayer.username}</p> has a higher weighted rank.".mm())
+
+        player.setRank(newRankName)
+        executor.sendMessage("<s>Set the rank of <p>${offlinePlayer.username}</p> to <p>$newRankName</p>.".mm())
     }
 
     override fun addSyntax(

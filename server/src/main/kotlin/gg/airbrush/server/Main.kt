@@ -48,31 +48,36 @@ val pluginManager = PluginManager()
 private lateinit var defaultInstance: Instance
 
 fun main() {
-    val start = System.nanoTime()
-    Thread.currentThread().name = "Server thread"
+    try {
+        val start = System.nanoTime()
+        Thread.currentThread().name = "Server thread"
 
-    MinecraftServer.getExceptionManager().setExceptionHandler { e ->
-        logger.error(e.message, e)
+        MinecraftServer.getExceptionManager().setExceptionHandler { e ->
+            logger.error(e.message, e)
+        }
+
+        registerEvents()
+        registerCommands()
+        registerVelocity()
+
+        pluginManager.registerPlugins()
+        pluginManager.setupPlugins()
+
+        Runtime.getRuntime().addShutdownHook(Thread {
+            pluginManager.teardownPlugins()
+        })
+
+        val port = System.getenv("SERVER_PORT") ?: "25565"
+
+        server.start("0.0.0.0", port.toInt())
+        consoleThread = setupConsole()
+
+        val time = System.nanoTime() - start
+        logger.info("Done ({})! For help, type \"help\"", String.format(Locale.ROOT, "%.3fs", time.toDouble() / 1.0E9))
+    } catch (exception: Exception) {
+        logger.error("Airbrush has caught an exception! It may have crashed.")
+        exception.printStackTrace()
     }
-
-    registerEvents()
-    registerCommands()
-    registerVelocity()
-
-    pluginManager.registerPlugins()
-    pluginManager.setupPlugins()
-
-    Runtime.getRuntime().addShutdownHook(Thread {
-        pluginManager.teardownPlugins()
-    })
-
-    val port = System.getenv("SERVER_PORT") ?: "25565"
-
-    server.start("0.0.0.0", port.toInt())
-    consoleThread = setupConsole()
-
-    val time = System.nanoTime() - start
-    logger.info("Done ({})! For help, type \"help\"", String.format(Locale.ROOT, "%.3fs", time.toDouble() / 1.0E9))
 }
 
 fun registerVelocity() {

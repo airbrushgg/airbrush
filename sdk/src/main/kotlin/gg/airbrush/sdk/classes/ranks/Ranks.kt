@@ -35,7 +35,7 @@ class Ranks {
 
         if(exists) throw Exception("Rank names must be unique.")
 
-        val rank = RankData(name, name, listOf(), null)
+        val rank = RankData(name, name, listOf(), 0, null)
 
         col.insertOne(rank)
 
