@@ -75,7 +75,8 @@ class Core : Plugin() {
 		    Mask(),
 			MakeMeTiny(),
 			Ad(),
-			Boost()
+			Boost(),
+			Broadcast()
 	    )
 
 	    // On start

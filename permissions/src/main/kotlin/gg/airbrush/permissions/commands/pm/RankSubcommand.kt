@@ -45,6 +45,10 @@ object RankSubcommand : Command("rank") {
          addSyntax(this::setParent, parent, set, RankArgument("new-parent"))
          addSyntax(this::getParent, parent, get)
 
+         val weight = Literal("weight")
+         addSyntax(this::setWeight, weight, set, Integer("new-weight"))
+         addSyntax(this::getWeight, weight, get)
+
          val prefix = Literal("prefix")
          addSyntax(this::setPrefix, prefix, set, String("new-prefix"))
          addSyntax(this::getPrefix, prefix, get)
@@ -96,6 +100,21 @@ object RankSubcommand : Command("rank") {
         }
 
         sender.sendMessage("<s>Rank <p>${parent.getData().name}</p> is the parent of rank <p>$name</p>.".mm())
+    }
+
+    private fun setWeight(sender: CommandSender, context: CommandContext) {
+        val (name, rank) = getRank(context)
+        val weight = context.get<Int>("new-weight")
+
+        rank.setWeight(weight)
+        sender.sendMessage("<s>Set weight of rank <p>$name</p> to <p>$weight</p>.".mm())
+    }
+
+    private fun getWeight(sender: CommandSender, context: CommandContext) {
+        val (name, rank) = getRank(context)
+        val weight = rank.getWeight()
+
+        sender.sendMessage("<s>Rank <p>$name</p> has a weight of <p>$weight</p>.".mm())
     }
 
     private fun checkParent(rank: AirbrushRank, checked: MutableList<UUID>): AirbrushRank? {
