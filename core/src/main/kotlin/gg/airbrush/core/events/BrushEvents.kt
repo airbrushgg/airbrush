@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -48,6 +46,8 @@ import net.minestom.server.timer.TaskSchedule
 import java.util.*
 import kotlin.math.roundToInt
 
+val BLOCKED_Y_LEVELS = listOf(3.0, 157.0)
+
 private class PixelManager {
     private val countMap = HashMap<UUID, Int>()
 
@@ -76,8 +76,8 @@ class BrushEvents {
     init {
         val eventHandler = EventNode.event("PaintableWorlds", EventFilter.INSTANCE) {
             it.instance == WorldManager.defaultInstance ||
-            it.instance.getTag(Tag.String("PersistentWorld")) == "star_world" ||
-            it.instance.hasTag(Tag.String("CanvasUUID"))
+                    it.instance.getTag(Tag.String("PersistentWorld")) == "star_world" ||
+                    it.instance.hasTag(Tag.String("CanvasUUID"))
         }
         eventNode.addChild(eventHandler)
 
@@ -128,20 +128,19 @@ class BrushEvents {
 
         val world = player.getCurrentWorldID()
         val targetPosition = player.getTargetBlockPosition(Constants.RANGE) ?: return
-	    val currentMask = PlayerDataCache.getBlockMask(player.uuid)
+        val currentMask = PlayerDataCache.getBlockMask(player.uuid)
 
-	    val brushRadius = sdkPlayer.getData().brushRadius.current
+        val brushRadius = sdkPlayer.getData().brushRadius.current
         val blocksToPaint = fillSphere(targetPosition, brushRadius)
             .filterNot { pos ->
                 // Filter out any blocks that should not get painted.
                 val block = instance.getBlock(pos)
-	            val exclusions = block.isAir
+                val exclusions = block.isAir
                         || block.compare(chosenBlock)
                         || block.compare(Material.BARRIER.block())
-                        // TODO(cal): Improve this with potential region system?
-                        || pos.y() == 3.0
-	            val mask = (currentMask != null) && !block.compare(currentMask)
-	            mask || exclusions
+                        || pos.y() in BLOCKED_Y_LEVELS
+                val mask = (currentMask != null) && !block.compare(currentMask)
+                mask || exclusions
             }
 
         // If there are no blocks to paint, return early.
@@ -165,31 +164,31 @@ class BrushEvents {
         PlayerDataCache.incrementBlockCount(player.uuid, blocksToPaint.size)
         pixels.updateBlockCount(player.uuid, blocksToPaint.size) // Update block count as well.
 
-	    // Alert the player a mask is enabled
-	    if (currentMask !== null) {
-			player.sendActionBar(Translations.translate("core.commands.mask.alert", currentMask.name().prettify()).mm())
-		}
+        // Alert the player a mask is enabled
+        if (currentMask !== null) {
+            player.sendActionBar(Translations.translate("core.commands.mask.alert", currentMask.name().prettify()).mm())
+        }
 
         // Don't award any experience if using the eraser.
         if (isEraser) {
             return
         }
 
-	    // Only update EXP and Level if their brush radius is less than or equal to five.
-	    if (brushRadius <= 5) {
-		    val xp = sdkPlayer.getExperience() + (1 * Boost.getMultiplier()).roundToInt()
-		    val xpThreshold = player.getXPThreshold()
-		    sdkPlayer.setExperience(xp)
+        // Only update EXP and Level if their brush radius is less than or equal to five.
+        if (brushRadius <= 5) {
+            val xp = sdkPlayer.getExperience() + (1 * Boost.getMultiplier()).roundToInt()
+            val xpThreshold = player.getXPThreshold()
+            sdkPlayer.setExperience(xp)
 
-		    if (xp >= xpThreshold) {
-			    sdkPlayer.setExperience(xp - xpThreshold)
-			    sdkPlayer.setLevel(sdkPlayer.getLevel() + 1)
-			    EventDispatcher.call(LevelUpEvent(player, sdkPlayer.getLevel()))
-		    }
+            if (xp >= xpThreshold) {
+                sdkPlayer.setExperience(xp - xpThreshold)
+                sdkPlayer.setLevel(sdkPlayer.getLevel() + 1)
+                EventDispatcher.call(LevelUpEvent(player, sdkPlayer.getLevel()))
+            }
 
-		    player.level = sdkPlayer.getLevel()
-		    player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
-		}
+            player.level = sdkPlayer.getLevel()
+            player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
+        }
 
         val sidebar = sidebars[player.uuid] ?: return
         sidebar.updateLineContent("level", getLevelLine(player))
