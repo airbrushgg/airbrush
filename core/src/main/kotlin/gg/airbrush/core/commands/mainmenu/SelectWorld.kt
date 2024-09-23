@@ -25,6 +25,7 @@ import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -74,8 +75,8 @@ fun openWorldGUI(p: Player) {
         p.teleportToSpawn()
     }
 
-    val donatorWorld = ItemStack.builder(Material.WARPED_SIGN)
-        .customName("<p>Donator World".mm())
+    val starWorld = ItemStack.builder(Material.WARPED_SIGN)
+        .customName("<p>Star World".mm())
         .lore(
             "<s>This is an <donator>exclusive</donator> canvas only for donators!".mm(),
             "<s>Buy a <donator>[⭐]</donator> or <donator>[⭐⭐]</donator> rank in the shop for access.".mm(),
@@ -83,19 +84,20 @@ fun openWorldGUI(p: Player) {
             "<#ffb5cf> • <#ffd4e3>Click to teleport!".mm()
         )
         .build()
-    inventory.put('d', donatorWorld) {
+    inventory.put('d', starWorld) {
 		if(!p.hasPermission("core.donor")) {
-			p.sendMessage("<error>You're not a donator, so you can't access this world!".mm())
+			p.sendMessage("<error>You don't have Star access, so you can't access this world!".mm())
 			return@put
 		}
 
-        val donatorInstance = WorldManager.getPersistentWorld("donator_world")
-        if (donatorInstance == null) {
+        val starWorldInstance = WorldManager.getPersistentWorld("star_world")
+        if (starWorldInstance == null) {
+            MinecraftServer.LOGGER.error("Failed to fetch Star world!")
             p.sendMessage("<error>A problem occurred teleporting to this world!".mm())
             return@put
         }
-        p.sendMessage("<s>Teleporting you to the donator world!".mm())
-        p.setInstance(donatorInstance)
+        p.sendMessage("<s>Teleporting you to the Star world!".mm())
+        p.setInstance(starWorldInstance)
     }
 
     val yourWorld = ItemStack.builder(Material.CHERRY_HANGING_SIGN)

@@ -42,7 +42,7 @@ fun getWorldLine(player: Player): Component {
             return "Spawn"
         }
 
-        if (internalWorldName == "donator_world") {
+        if (internalWorldName == "star_world") {
             return "<y>★"
         }
 

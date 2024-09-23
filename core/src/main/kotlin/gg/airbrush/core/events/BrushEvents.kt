@@ -27,6 +27,9 @@ import gg.airbrush.sdk.events.LevelUpEvent
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
@@ -73,7 +76,7 @@ class BrushEvents {
     init {
         val eventHandler = EventNode.event("PaintableWorlds", EventFilter.INSTANCE) {
             it.instance == WorldManager.defaultInstance ||
-            it.instance.getTag(Tag.String("PersistentWorld")) == "donator_world" ||
+            it.instance.getTag(Tag.String("PersistentWorld")) == "star_world" ||
             it.instance.hasTag(Tag.String("CanvasUUID"))
         }
         eventNode.addChild(eventHandler)
@@ -123,6 +126,7 @@ class BrushEvents {
             Material.WHITE_CONCRETE.block()
         }
 
+        val world = player.getCurrentWorldID()
         val targetPosition = player.getTargetBlockPosition(Constants.RANGE) ?: return
 	    val currentMask = PlayerDataCache.getBlockMask(player.uuid)
 
@@ -153,7 +157,9 @@ class BrushEvents {
         batch.apply(instance, null)
 
         // Add the pixels to the database.
-        SDK.pixels.paintMulti(blocksToPaint, player.uuid, chosenBlock.registry().material()!!)
+        CoroutineScope(Dispatchers.IO).launch {
+            SDK.pixels.paintMulti(blocksToPaint, player.uuid, chosenBlock.registry().material()!!, world)
+        }
 
         // Update the local block count.
         PlayerDataCache.incrementBlockCount(player.uuid, blocksToPaint.size)
