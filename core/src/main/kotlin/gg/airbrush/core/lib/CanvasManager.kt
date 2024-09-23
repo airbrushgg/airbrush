@@ -16,9 +16,9 @@ package gg.airbrush.core.lib
 
 import gg.airbrush.core.events.sidebars
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.delay
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
-import gg.airbrush.worlds.events.InstanceReadyEvent
 import net.hollowcube.polar.PolarLoader
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
@@ -31,16 +31,19 @@ object CanvasManager {
 
     fun create(player: Player) {
         if (SDK.worlds.getByOwner(player.uuid.toString()) != null) {
-            player.sendMessage("<error>You already have a player canvas!")
+            player.sendMessage("<error>You already have a player canvas!".mm())
             return
         }
 
+        player.sendMessage("<p>Creating your very own canvas world...</p>".mm())
+
         val sdkWorld = SDK.worlds.create("${player.username}'s World", player.uuid)
         val instance = createInstance(sdkWorld.data.id)
-        instance.eventNode().addListener(InstanceReadyEvent::class.java) {
-            sidebars[player.uuid]?.updateLineContent("world", getWorldLine(player))
+
+        delay(500) {
             player.sendMessage("<p>Teleporting you to <s>${player.username}'s World</s>...</p>".mm())
-            player.setInstance(it.instance)
+            player.setInstance(instance)
+            sidebars[player.uuid]?.updateLineContent("world", getWorldLine(player))
         }
     }
 

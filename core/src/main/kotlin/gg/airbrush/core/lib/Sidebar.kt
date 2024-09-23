@@ -32,29 +32,8 @@ fun getLevelLine(player: Player): Component {
 }
 
 fun getWorldLine(player: Player): Component {
-    val instance = player.instance
-
-    val internalWorldName = instance.getTag(Tag.String("PersistentWorld")) ?: null
-    val canvasId = instance.getTag(Tag.String("CanvasUUID")) ?: null
-
-    fun getWorldName(): String {
-        if (internalWorldName == null && canvasId == null) {
-            return "Spawn"
-        }
-
-        if (internalWorldName == "star_world") {
-            return "<y>★"
-        }
-
-        if (canvasId != null) {
-            val world = SDK.worlds.getByUUID(canvasId) ?: return "Unknown World"
-            return world.data.name
-        }
-
-        return "Unknown World"
-    }
-
-    return Translations.translate("core.scoreboard.world", getWorldName()).mm()
+    val worldName = player.getCurrentWorldName()
+    return Translations.translate("core.scoreboard.world", worldName).mm()
 }
 
 // This is going to be removed for now as updating it would suck.

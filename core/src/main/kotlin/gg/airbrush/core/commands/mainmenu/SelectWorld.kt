@@ -71,6 +71,11 @@ fun openWorldGUI(p: Player) {
         .build()
 
     inventory.put('s', spawnWorld) {
+        if(p.instance.uniqueId == WorldManager.defaultInstance.uniqueId) {
+            p.sendMessage("<error>You are already in this world!".mm())
+            return@put
+        }
+
         p.sendMessage("<s>Teleporting you to the spawn world!".mm())
         p.teleportToSpawn()
     }
@@ -96,8 +101,16 @@ fun openWorldGUI(p: Player) {
             p.sendMessage("<error>A problem occurred teleporting to this world!".mm())
             return@put
         }
+
+        if(p.instance.uniqueId == starWorldInstance.uniqueId) {
+            p.sendMessage("<error>You are already in this world!".mm())
+            return@put
+        }
+
         p.sendMessage("<s>Teleporting you to the Star world!".mm())
+
         p.setInstance(starWorldInstance)
+        p.closeInventory()
     }
 
     val yourWorld = ItemStack.builder(Material.CHERRY_HANGING_SIGN)

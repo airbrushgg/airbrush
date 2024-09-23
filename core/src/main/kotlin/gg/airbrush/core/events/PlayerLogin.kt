@@ -160,5 +160,7 @@ class PlayerLogin {
 
         if (player !in sidebar.viewers)
             sidebar.addViewer(player)
+
+        sidebar.updateLineContent("world", getWorldLine(player))
     }
 }

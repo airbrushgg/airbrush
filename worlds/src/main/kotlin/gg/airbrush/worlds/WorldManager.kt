@@ -18,7 +18,6 @@ import cc.ekblad.toml.tomlMapper
 import dev.flavored.bamboo.SchematicReader
 import gg.airbrush.sdk.lib.ConfigUtils
 import gg.airbrush.server.registerDefaultInstance
-import gg.airbrush.worlds.events.InstanceReadyEvent
 import net.hollowcube.polar.PolarLoader
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
@@ -88,10 +87,6 @@ object WorldManager {
 
         val position = Pos(0.0, 4.0, 0.0)
         schematic.paste(instance, position, true)
-
-        // TODO: We should only send the event when the schematic has been fully pasted.
-        val readyEvent = InstanceReadyEvent(instance)
-        instance.eventNode().call(readyEvent)
 
         return instance
     }
@@ -170,8 +165,6 @@ object WorldManager {
             val schematic = reader.fromPath(Path.of(world.schematic))
             schematic.paste(instance, Pos(0.0, 4.0, 0.0))
 
-            // TODO: We should only send the event when the schematic has been fully pasted.
-            instance.eventNode().call(InstanceReadyEvent(instance))
             instance.saveChunksToStorage().join()
         }
     }
