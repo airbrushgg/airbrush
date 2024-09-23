@@ -16,8 +16,10 @@ package gg.airbrush.core.lib
 
 import gg.airbrush.core.events.sidebars
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.capitalize
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
+import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.tag.Tag
 
@@ -27,16 +29,27 @@ fun Player.getXPThreshold(): Int {
 }
 
 fun Player.teleportToCanvas(canvasUUID: String) {
+    MinecraftServer.LOGGER.info("Teleporting player ${this.username} to canvas $canvasUUID")
     val instance = CanvasManager.get(canvasUUID)
     if (instance == null) {
-        sendMessage("<error>A problem occurred teleporting to this world!".mm())
+        this.sendMessage("<error>A problem occurred teleporting to this world!".mm())
         return
     }
-    sidebars[uuid]?.updateLineContent("world", getWorldLine(this))
-    setInstance(instance)
+
+    if(this.instance.uniqueId == instance.uniqueId) {
+        this.sendMessage("<error>You are already in this world!".mm())
+        return
+    }
+
+    MinecraftServer.LOGGER.info("Updating player ${this.username} world line")
+    sidebars[this.uuid]?.updateLineContent("world", getWorldLine(this))
+    this.setInstance(instance)
+
+    if(this.openInventory != null) this.closeInventory()
 }
 
 fun Player.teleportToSpawn() {
+    if(this.openInventory != null) this.closeInventory()
     this.instance = WorldManager.defaultInstance
 }
 
@@ -46,14 +59,17 @@ fun Player.getCurrentWorldName(): String {
     val internalWorldName = instance.getTag(Tag.String("PersistentWorld")) ?: null
     val canvasId = instance.getTag(Tag.String("CanvasUUID")) ?: null
 
-    if (internalWorldName == null && canvasId == null) return "spawn"
+    if (internalWorldName == null && canvasId == null) return "Spawn"
 
     if (canvasId != null) {
         val world = SDK.worlds.getByUUID(canvasId) ?: return "Unknown World"
         return world.data.name
     }
 
-    if(internalWorldName != null) return internalWorldName
+    if(internalWorldName != null) {
+        if(internalWorldName.equals("star_world", true)) return "<donator><b>⭐"
+        return internalWorldName.replace("_", " ").capitalize()
+    }
 
     return "Unknown World"
 }

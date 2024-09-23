@@ -32,8 +32,6 @@ class Create : Command("create"), CommandExecutor {
 
     override fun apply(sender: CommandSender, context: CommandContext) {
         val player = sender as Player
-
-        sender.sendMessage("<p>Creating your very own canvas world...</p>".mm())
         CanvasManager.create(player)
     }
 }
