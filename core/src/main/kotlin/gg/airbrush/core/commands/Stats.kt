@@ -54,9 +54,9 @@ class Stats : Command("statistics", "stats"), CommandExecutor {
 
         sender.sendMessage("""
             
-            <green>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><green>:
+            <g>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><g>:
                 <s>Level: <${TextColor.color(levelColor).asHexString()}>[${sdkPlayer.getLevel()}]
-                <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall}<s>) 
+                <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall.format()}<s>) 
                 <s>Join Date: <p>${joinDate}
                 <s>Playtime: <p>${timePlayed}
                 <s>Total Blocks Painted: <p>${blocksCount.format()}
