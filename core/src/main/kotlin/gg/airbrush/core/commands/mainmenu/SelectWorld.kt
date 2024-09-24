@@ -119,7 +119,7 @@ fun openWorldGUI(p: Player) {
     inventory.put('v', yourWorld) {
         val playerWorld = SDK.worlds.getByOwner(p.uuid.toString())
         if (playerWorld == null) {
-            p.sendMessage("<s>You do not have a player world! If you are a donator, you can create one with <p>/create<s>.".mm())
+            p.sendMessage("<s>You do not have a player world! If you are a Superstar, you can create one with <p>/create<s>.".mm())
             return@put
         }
 
