@@ -57,7 +57,7 @@ fun openPlayerSettings(player: Player) {
         .build()
     gui.put('w', worldPrivacy) { event ->
         if (playerWorld == null) {
-            player.sendMessage("<s>You do not have a player world! If you are a donator, you can create one with <p>/create<s>.".mm())
+            player.sendMessage("<s>You do not have a player world! If you are a Superstar, you can create one with <p>/create<s>.".mm())
             player.closeInventory()
             return@put
         }
