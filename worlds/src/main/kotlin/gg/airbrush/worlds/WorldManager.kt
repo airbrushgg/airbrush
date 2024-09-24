@@ -26,8 +26,10 @@ import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.tag.Tag
 import net.minestom.server.world.DimensionType
 import java.io.File
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.nio.file.Path
+import kotlin.io.path.absolute
 import kotlin.io.path.exists
 import kotlin.io.path.notExists
 
@@ -35,10 +37,10 @@ object WorldManager {
     private val MANAGED_TAG = Tag.Boolean("ManagedInstance")
     private val PERSISTENT_TAG = Tag.String("PersistentWorld")
 
-    private var config: WorldConfig
+    private val logger = LoggerFactory.getLogger(WorldManager::class.java)
     private val instanceManager = MinecraftServer.getInstanceManager()
-
     private val reader = SchematicReader()
+    private var config: WorldConfig
 
     private lateinit var _defaultInstance: InstanceContainer
     val defaultInstance get() = _defaultInstance
@@ -62,7 +64,7 @@ object WorldManager {
             config = mapper.decode<WorldConfig>(configPath)
         } catch (e: TomlException) {
             // We don't want to disable the plugin since it is essential. Instead, we load the default config.
-            MinecraftServer.LOGGER.error("[Worlds] Failed to load worlds config, loading default.", e)
+            logger.error("[Worlds] Failed to load worlds config, loading default.", e)
 
             val stream = Worlds::class.java.getResourceAsStream("/worlds.toml")!!
             stream.use { config = mapper.decode(it) }
@@ -158,11 +160,11 @@ object WorldManager {
     private fun loadPersistentWorlds() {
         val persistentWorlds = config.persistentWorlds.orEmpty()
 
-        MinecraftServer.LOGGER.info("[Worlds] Loading ${persistentWorlds.size} persistent worlds...")
+        logger.info("[Worlds] Loading ${persistentWorlds.size} persistent worlds...")
 
         persistentWorlds.forEach { world ->
             if (persistentWorlds.singleOrNull() == null) {
-                MinecraftServer.LOGGER.info("[Worlds] ERROR! Config file contains multiple worlds with the name: ${world.name}")
+                logger.error("[Worlds] Config file contains multiple worlds with the name: ${world.name}")
                 return@forEach
             }
 
@@ -175,7 +177,13 @@ object WorldManager {
 
             if (worldPath.exists()) return
 
-            val schematic = reader.fromPath(Path.of(world.schematic))
+            val schematicPath = Path.of(world.schematic)
+            if (schematicPath.notExists()) {
+                logger.error("[Worlds] The schematic (path={}) for world '${world.name}' does not exist. Skipping...", schematicPath.absolute())
+                return@forEach
+            }
+
+            val schematic = reader.fromPath(schematicPath)
             schematic.paste(instance, Pos(0.0, 4.0, 0.0))
 
             instance.saveChunksToStorage().join()
