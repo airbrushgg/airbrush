@@ -78,7 +78,8 @@ class ChatFilter {
 
     companion object {
         // This is hard-coded for now. Ideally, we would want to fetch these from an API endpoint.
-        private const val WORDLIST_URL: String = "https://gist.githubusercontent.com/AppleFlavored/b04bc246d0dc7361c53c27228f1592b4/raw/0d01f7b51e5d6530b58ad4b604c58dac6126943e/wordlist.txt"
+        /*private const val WORDLIST_URL: String = "https://gist.githubusercontent.com/AppleFlavored/b04bc246d0dc7361c53c27228f1592b4/raw/0d01f7b51e5d6530b58ad4b604c58dac6126943e/wordlist.txt"*/
+        private const val WORDLIST_URL = "https://imperialb.in/r/geeuefyk"
         private val client = HttpClient.newHttpClient()
 
         private fun fetchWordList(): List<String> {
