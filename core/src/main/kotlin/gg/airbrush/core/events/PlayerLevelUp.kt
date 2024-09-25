@@ -62,7 +62,7 @@ class PlayerLevelUp {
             val radiusAfterLevelUp = sdkPlayer.getData().brushRadius.max
 
             if(radiusAfterLevelUp > radiusBeforeLevelUp) {
-                player.sendMessage(Translations.translate("core.leveling.new_max_radius", radiusBeforeLevelUp, radiusAfterLevelUp).mm())
+                player.sendMessage(Translations.translate("core.leveling.new_max_radius", radiusAfterLevelUp).mm())
 
                 // TODO(cal): Figure out applicable sound for this.
                 player.playSound(
