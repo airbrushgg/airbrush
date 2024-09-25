@@ -17,10 +17,12 @@ package gg.airbrush.core.events
 import gg.airbrush.core.eventNode
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.classes.players.AirbrushPlayer
 import gg.airbrush.sdk.classes.players.PaletteType
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.minestom.server.MinecraftServer
+import net.minestom.server.entity.Player
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
@@ -51,14 +53,8 @@ class PlayerLogin {
         ) { event: PlayerSpawnEvent -> executeSpawn(event) }
     }
 
-    private fun execute(event: PlayerSpawnEvent) {
-        val player = event.player
-
-        val playerExists = SDK.players.exists(player.uuid)
-        if (!playerExists) SDK.players.create(player.uuid)
-
-        val sdkPlayer = SDK.players.get(player.uuid)
-        val currentPaletteType = PaletteType.entries[sdkPlayer.getData().palette]
+    private fun Player.giveItems(player: AirbrushPlayer) {
+        val currentPaletteType = PaletteType.entries[player.getData().palette]
 
         val paletteSelector = ItemStack.builder(PaletteUtil.getIconBlock(currentPaletteType))
             .customName(Constants.paletteSelectorName)
@@ -80,16 +76,25 @@ class PlayerLogin {
             .set(Constants.airbrushToolTag, Constants.ERASER_TOOL)
             .build()
 
-	    val eyedropper = ItemStack.builder(Material.ARROW)
-		    .customName(Constants.eyedropperName)
+        val eyedropper = ItemStack.builder(Material.ARROW)
+            .customName(Constants.eyedropperName)
             .set(Constants.airbrushToolTag, Constants.EYEDROPPER_TOOL)
-		    .build()
+            .build()
 
-	    player.inventory.setItemStack(2, eyedropper)
-        player.inventory.setItemStack(3, paletteSelector)
-        player.inventory.setItemStack(4, airbrush)
-        player.inventory.setItemStack(5, compass)
-        player.inventory.setItemStack(6, eraser)
+        inventory.setItemStack(2, eyedropper)
+        inventory.setItemStack(3, paletteSelector)
+        inventory.setItemStack(4, airbrush)
+        inventory.setItemStack(5, compass)
+        inventory.setItemStack(6, eraser)
+    }
+
+    private fun execute(event: PlayerSpawnEvent) {
+        val player = event.player
+
+        val playerExists = SDK.players.exists(player.uuid)
+        if (!playerExists) SDK.players.create(player.uuid)
+
+        val sdkPlayer = SDK.players.get(player.uuid)
 
         val prefix = sdkPlayer.getRank().getData().prefix
         if (prefix.isNotEmpty()) {
@@ -99,6 +104,8 @@ class PlayerLogin {
         player.isAllowFlying = true
 
         if (event.isFirstSpawn) {
+            player.giveItems(sdkPlayer)
+
             val joinInfo = Translations.translate("core.welcome", player.username)
             player.sendMessage(joinInfo.mm())
 
