@@ -62,7 +62,7 @@ class Core : Plugin() {
 			StaffChat(),
 			Vanish(),
 			Lockdown(),
-			Reset(),
+			ResetSpawn(),
 			AddBooster(),
 			Tpa(),
 			TpAccept(),
