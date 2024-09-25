@@ -94,6 +94,13 @@ class BrushEvents {
         ) { event: ItemDropEvent -> event.isCancelled = true }
     }
 
+    private fun updateSidebar(player: Player) {
+        val sidebar = sidebars[player.uuid] ?: return
+        sidebar.updateLineContent("level", getLevelLine(player))
+        sidebar.updateLineContent("blocks", getBlocksLine(player))
+        sidebar.updateLineContent("xp", getXPLine(player))
+    }
+
     private fun execute(event: PlayerUseItemEvent) {
         val player = event.player
         val toolType = player.itemInMainHand.getTag(Constants.airbrushToolTag) ?: return
@@ -171,29 +178,31 @@ class BrushEvents {
 
         // Don't award any experience if using the eraser.
         if (isEraser) {
+            updateSidebar(player)
             return
         }
 
         // Only update EXP and Level if their brush radius is less than or equal to five.
-        if (brushRadius <= 5) {
-            val xp = sdkPlayer.getExperience() + (1 * Boost.getMultiplier()).roundToInt()
-            val xpThreshold = player.getXPThreshold()
+        if (brushRadius > 5) return
+
+        val xp = sdkPlayer.getExperience() + (1 * Boost.getMultiplier()).roundToInt()
+        val xpThreshold = player.getXPThreshold()
+
+        CoroutineScope(Dispatchers.IO).launch {
             sdkPlayer.setExperience(xp)
-
-            if (xp >= xpThreshold) {
-                sdkPlayer.setExperience(xp - xpThreshold)
-                sdkPlayer.setLevel(sdkPlayer.getLevel() + 1)
-                EventDispatcher.call(LevelUpEvent(player, sdkPlayer.getLevel()))
-            }
-
-            player.level = sdkPlayer.getLevel()
-            player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
         }
 
-        val sidebar = sidebars[player.uuid] ?: return
-        sidebar.updateLineContent("level", getLevelLine(player))
-        sidebar.updateLineContent("blocks", getBlocksLine(player))
-        sidebar.updateLineContent("xp", getXPLine(player))
+        if (xp >= xpThreshold) {
+            CoroutineScope(Dispatchers.IO).launch {
+                sdkPlayer.setExperience(xp - xpThreshold)
+            }
+            sdkPlayer.setLevel(sdkPlayer.getLevel() + 1)
+            EventDispatcher.call(LevelUpEvent(player, sdkPlayer.getLevel()))
+        }
+
+        player.level = sdkPlayer.getLevel()
+        player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
+        updateSidebar(player)
     }
 
     private fun useEyedropperTool(player: Player) {

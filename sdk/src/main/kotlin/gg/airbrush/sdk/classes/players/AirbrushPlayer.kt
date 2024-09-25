@@ -21,8 +21,8 @@ import gg.airbrush.sdk.Database
 import gg.airbrush.sdk.classes.boosters.BoosterData
 import gg.airbrush.sdk.classes.palettes.Palettes
 import gg.airbrush.sdk.classes.ranks.PermissionData
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 
 import java.util.UUID
@@ -74,12 +74,8 @@ private val db = Database.get()
 class AirbrushPlayer(uuid: UUID) {
     private val col = db.getCollection<PlayerData>("players")
     private val query = Filters.eq(PlayerData::uuid.name, uuid.toString())
-    private val data: PlayerData
-
-    init {
-        data = col.find(query).firstOrNull()
-            ?: throw NotFoundException("Player with UUID of $uuid not found.")
-    }
+    private val data: PlayerData = col.find(query).firstOrNull()
+        ?: throw NotFoundException("Player with UUID of $uuid not found.")
 
     fun getData(): PlayerData {
         return data
@@ -93,13 +89,6 @@ class AirbrushPlayer(uuid: UUID) {
         col.updateOne(query, Updates.set(PlayerData::level.name, level))
         data.level = level
     }
-
-	@Suppress("unused")
-	fun incrementBlockCount() = runBlocking<Unit> {
-		val newCount = data.blockCount + 1
-		data.blockCount = newCount
-        launch { col.updateOne(query, Updates.set(PlayerData::blockCount.name, newCount)) }
-	}
 
 	fun setPronouns(pronouns: String) {
 		col.updateOne(query, Updates.set(PlayerData::pronouns.name, pronouns))
@@ -133,9 +122,11 @@ class AirbrushPlayer(uuid: UUID) {
         return data.experience
     }
 
-    fun setExperience(experience: Int) = runBlocking<Unit> {
-        data.experience = experience
-        launch { col.updateOne(query, Updates.set(PlayerData::experience.name, experience)) }
+    suspend fun setExperience(experience: Int) {
+        withContext(Dispatchers.IO) {
+            data.experience = experience
+            col.updateOne(query, Updates.set(PlayerData::experience.name, experience))
+        }
     }
 
 	fun setDiscordId(discordId: Long) {
