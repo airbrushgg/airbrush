@@ -17,6 +17,7 @@ broadcasts = """
 [en.core.leveling]
 level_up = "<s>You have leveled up to <p>level %s</p>!"
 new_block = "<s>You have unlocked the <p>%s</p> block palette!"
+new_max_radius = "<s>You have unlocked a new max radius of <p>%s</p>!"
 
 [en.core.brush_gui]
 title = "Brush Settings"
