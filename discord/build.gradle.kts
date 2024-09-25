@@ -28,6 +28,8 @@ dependencies {
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
     compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 
+    compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
+
 	implementation("me.santio.Coffee:jda:85d9b1e6d5")
 }
 
