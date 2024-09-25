@@ -13,6 +13,7 @@
 package gg.airbrush.discord.discordCommands
 
 import gg.airbrush.discord.lib.answer
+import gg.airbrush.discord.lib.generateNoPermissionMessage
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.PlayerUtils
 import me.santio.coffee.common.annotations.Command
@@ -26,10 +27,20 @@ import net.dv8tion.jda.api.Permission as JDAPermission
 
 @Command
 class WhitelistCommand {
+    private fun SlashCommandInteractionEvent.hasPermission(permission: JDAPermission): Boolean {
+        val member = this.member ?: return false
+        return member.hasPermission(permission)
+    }
+
     @Description("List all whitelisted players")
-    @Permission(JDAPermission.MESSAGE_MANAGE)
     fun list(e: SlashCommandInteractionEvent) {
         e.deferReply(true).queue()
+
+        val permission = e.hasPermission(JDAPermission.MESSAGE_MANAGE)
+        if(!permission) {
+            e.answer(generateNoPermissionMessage("MANAGE_MESSAGES"))
+            return
+        }
 
         val whitelistedPlayers = SDK.whitelist.list()
 
@@ -54,9 +65,14 @@ class WhitelistCommand {
     }
 
     @Description("Add a player to the whitelist")
-    @Permission(JDAPermission.ADMINISTRATOR)
     fun add(e: SlashCommandInteractionEvent, username: String) {
         e.deferReply(true).queue()
+
+        val permission = e.hasPermission(JDAPermission.ADMINISTRATOR)
+        if(!permission) {
+            e.answer(generateNoPermissionMessage("ADMINISTRATOR"))
+            return
+        }
 
         val uuid = PlayerUtils.getUUID(username)
         // NOTE: This is fetched separately, rather than using the username
@@ -77,6 +93,12 @@ class WhitelistCommand {
     @Permission(JDAPermission.ADMINISTRATOR)
     fun remove(e: SlashCommandInteractionEvent, username: String) {
         e.deferReply(true).queue()
+
+        val permission = e.hasPermission(JDAPermission.ADMINISTRATOR)
+        if(!permission) {
+            e.answer(generateNoPermissionMessage("ADMINISTRATOR"))
+            return
+        }
 
         val uuid = PlayerUtils.getUUID(username)
         // NOTE: This is fetched separately, rather than using the username
