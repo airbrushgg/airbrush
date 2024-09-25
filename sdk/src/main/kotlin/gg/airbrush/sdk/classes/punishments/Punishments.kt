@@ -15,7 +15,11 @@ package gg.airbrush.sdk.classes.punishments
 import com.mongodb.client.model.Filters
 import gg.airbrush.sdk.Database
 import gg.airbrush.sdk.NotFoundException
+import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
+import net.minestom.server.event.EventFilter
+import net.minestom.server.event.EventNode
+import net.minestom.server.event.player.PlayerDisconnectEvent
 import java.time.Instant
 import java.util.*
 
@@ -45,6 +49,8 @@ class Punishments {
 
         col.insertOne(punishment)
 
+        punishmentCache.remove(player)
+
         return punishment
     }
 
@@ -59,18 +65,15 @@ class Punishments {
         return col.find(Filters.eq(PunishmentData::id.name, id.toString())).firstOrNull() != null
     }
 
-    fun list(player: Player): List<AirbrushPunishment> {
-        return col
-            .find(Filters.eq(PunishmentData::player.name, player.uuid.toString()))
-            .map { AirbrushPunishment(UUID.fromString(it.id)) }
-            .toList()
-    }
+    fun list(player: Player) = list(player.uuid)
 
 	fun list(playerUUID: UUID): List<AirbrushPunishment> {
-		return col
-			.find(Filters.eq(PunishmentData::player.name, playerUUID.toString()))
-			.map { AirbrushPunishment(UUID.fromString(it.id)) }
-			.toList()
+        return punishmentCache.computeIfAbsent(playerUUID) {
+            col
+                .find(Filters.eq(PunishmentData::player.name, playerUUID))
+                .map { AirbrushPunishment(UUID.fromString(it.id)) }
+                .toList()
+        }
 	}
 
 	fun getAll(): List<AirbrushPunishment> {
@@ -85,5 +88,18 @@ class Punishments {
 
         val data = col.find(Filters.eq(PunishmentData::id.name, id.toString())).first()
         return AirbrushPunishment(UUID.fromString(data.id))
+    }
+
+    companion object {
+        /* player UUID -> list of punishments */
+        private val punishmentCache = HashMap<UUID, List<AirbrushPunishment>>()
+
+        init {
+            val eventNode = EventNode.type("Player Cache", EventFilter.PLAYER)
+            eventNode.addListener(PlayerDisconnectEvent::class.java) { event ->
+                punishmentCache.remove(event.player.uuid)
+            }
+            MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+        }
     }
 }
