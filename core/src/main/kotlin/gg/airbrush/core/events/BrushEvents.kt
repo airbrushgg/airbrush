@@ -175,7 +175,9 @@ class BrushEvents {
         }
 
         // Only update EXP and Level if their brush radius is less than or equal to five.
-        if (brushRadius <= 5) {
+        if (brushRadius > 5) return
+
+        CoroutineScope(Dispatchers.IO).launch {
             val xp = sdkPlayer.getExperience() + (1 * Boost.getMultiplier()).roundToInt()
             val xpThreshold = player.getXPThreshold()
             sdkPlayer.setExperience(xp)
