@@ -29,7 +29,7 @@ import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 import kotlin.system.measureTimeMillis
 
-class Reset : Command("resetspawn"), CommandExecutor {
+class ResetSpawn : Command("resetspawn"), CommandExecutor {
     private val schematicReader = SchematicReader()
 
     init {
@@ -78,6 +78,6 @@ class Reset : Command("resetspawn"), CommandExecutor {
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
-        sender.sendMessage("<p><em>This is an irreversible action!</em> <s>To reset the world, do <p>/resetworld confirm<s>.".mm())
+        sender.sendMessage("<p><em>This is an irreversible action!</em> <s>To reset the world, do <p>/resetspawn confirm<s>.".mm())
     }
 }
