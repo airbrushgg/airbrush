@@ -1,7 +1,7 @@
 /*
  * This file is part of Airbrush
  *
- * Copyright (c) 2023 Airbrush Team
+ * Copyright (c) Airbrush Team
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -10,17 +10,15 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.airbrush.discord.discordCommands
+package gg.airbrush.discord.lib
 
-import me.santio.coffee.common.annotations.Command
-import me.santio.coffee.jda.annotations.Description
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-@Command
-@Description("Get a free cookie")
-class CookieCommand {
-	fun main(e: SlashCommandInteractionEvent) {
-		e.reply("Here you go! 🍪").queue()
-	}
+fun SlashCommandInteractionEvent.answer(msg: String) {
+    return this.hook.sendMessage(msg).queue()
 }
 
+fun SlashCommandInteractionEvent.answer(msg: MessageEmbed) {
+    return this.hook.sendMessageEmbeds(msg).queue()
+}

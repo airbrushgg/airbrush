@@ -77,7 +77,6 @@ object PlayerChat : ListenerAdapter() {
 
 		val plainText = PlainTextComponentSerializer.plainText().serialize(parsedMsg)
 
-		// TODO(cal): Test.
 		MinecraftServer.LOGGER.info(plainText)
 
 		MinecraftServer.getConnectionManager().onlinePlayers.forEach {

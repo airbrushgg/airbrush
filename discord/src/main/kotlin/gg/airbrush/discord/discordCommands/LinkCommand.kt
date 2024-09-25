@@ -13,6 +13,7 @@
 package gg.airbrush.discord.discordCommands
 
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.lib.answer
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.linking.Linking
 import gg.airbrush.sdk.lib.Placeholder
@@ -27,10 +28,6 @@ import net.minestom.server.MinecraftServer
 @Command
 @Description("Link your Discord account to your Minecraft account")
 class LinkCommand {
-	private fun SlashCommandInteractionEvent.answer(msg: String) {
-		return this.hook.sendMessage(msg).queue()
-	}
-
 	fun main(e: SlashCommandInteractionEvent, username: String) {
 		val playerUUID = PlayerUtils.getUUID(username)
 		e.deferReply(true).queue()

@@ -12,6 +12,7 @@
 
 package gg.airbrush.discord.discordCommands
 
+import gg.airbrush.discord.lib.answer
 import gg.airbrush.sdk.SDK
 import me.santio.coffee.common.annotations.Command
 import me.santio.coffee.jda.annotations.Description
@@ -21,10 +22,6 @@ import java.util.*
 @Command
 @Description("Unlink your Minecraft account")
 class UnlinkCommand {
-	private fun SlashCommandInteractionEvent.answer(msg: String) {
-		return this.hook.sendMessage(msg).queue()
-	}
-
 	fun main(e: SlashCommandInteractionEvent) {
 		e.deferReply(true).queue()
 
