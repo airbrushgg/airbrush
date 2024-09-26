@@ -1,53 +1,92 @@
-[punishments.hate]
-shortReason = "Discrimination"
-longReason = "You were banned for discrimination / hate speech"
-action = "ban"
-
-[punishments.flood]
-shortReason = "Flooding / Spamming"
-longReason = "You were muted for flooding / spamming"
+[punishments.spam]
+shortReason = "Spam/Flood"
+longReason = "You were muted for spamming/flooding"
 action = "mute"
-duration = "12h"
+duration = ["3h","12h","1d","3d","1w","1mo","forever"]
 
-[punishments.filter]
-shortReason = "Bypassing Filter"
-longReason = "You were banned for bypassing our chat filter"
-action = "ban"
-duration = "24h"
+[punishments.argue]
+shortReason = "Instigating Drama"
+longReason = "You were muted for instigating/continuing arguments, being disrespectul to others, or trying to evade rules"
+action = "mute"
+duration = ["3h","12h","1d","3d","1w","1mo","forever"]
 
-[punishments.nsfw]
-shortReason = "NSFW Content"
-longReason = "You were banned for drawing NSFW content."
-action = "ban"
+[punishments.swear]
+shortReason = "Swearing/Bypassing Filter"
+longReason = "You were muted for swearing or bypassing the filter"
+action = "mute"
+duration = ["3h","12h","1d","3d","1w","1mo","forever"]
 
 [punishments.ad]
 shortReason = "Advertising"
 longReason = "You were muted for advertising"
 action = "mute"
-duration = "12h"
+duration = ["12h","1d","3d","1w","1mo","forever"]
+
+[punishments.evademute]
+shortReason = "Mute Evasion"
+longReason = "You were muted for evading an existing mute"
+action = "mute"
 
 [punishments.grief]
-shortReason = "Griefing Artwork"
-longReason = "You were banned for griefing artwork"
+shortReason = "Griefing"
+longReason = "You were banned for griefing"
 action = "ban"
+duration = ["1w","1mo","forever"]
 
-[punishments.arguing]
-shortReason = "Arguing"
-longReason = "You were muted for arguing"
-action = "mute"
-duration = "1h"
+[punishments.nsfw]
+shortReason = "NSFW Content"
+longReason = "You were banned for NSFW content or inappropriate behavior"
+action = "ban"
+duration = ["1w","1mo","forever"]
+
+[punishments.harass]
+shortReason = "Harassment"
+longReason = "You were muted for harassing others"
+action = "ban"
+duration = ["1w","1mo","forever"]
+
+[punishments.impersonate]
+shortReason = "Impersonation"
+longReason = "You were banned for impersonating Minehut/GamerSafer or Airbrush staff"
+action = "ban"
+duration = ["1w","1mo","forever"]
+
+[punishments.hate]
+shortReason = "Discrimination"
+longReason = "You were muted for discrimination/hate speech."
+action = "ban"
 
 [punishments.dox]
 shortReason = "DOX/DDOS Threats"
-longReason = "You were banned for DOX/DDOS Threats"
+longReason = "You were banned for DOX/DDOSing others or threatening to"
 action = "ban"
 
 [punishments.death]
 shortReason = "Death Threats"
-longReason = "You were banned for Threatening or Inciting Violence"
+longReason = "You were banned for threatening to kill or harm others"
+action = "ban"
+
+[punishments.wishes]
+shortReason = "Death Wishes"
+longReason = "You were banned for encouraging others to kill or harm themselves or others"
+action = "ban"
+
+[punishments.predatory]
+shortReason = "Predatory/Explicit"
+longReason = "You were banned for predatory behavior and/or explicit content"
+action = "ban"
+
+[punishments.profile]
+shortReason = "Inappropriate Name/Skin"
+longReason = "You were banned for having an inappropriate username or skin"
 action = "ban"
 
 [punishments.under13]
-shortReason = "Under 13"
-longReason = "You were banned for violating Minehuts rules on age policies."
+shortReason = "Underage"
+longReason = "You were banned for violating Minehut's age policies (you must be 13 years or older to play)"
+action = "ban"
+
+[punishments.evadeban]
+shortReason = "Ban Evasion"
+longReason = "You were banned for evading an existing ban"
 action = "ban"
