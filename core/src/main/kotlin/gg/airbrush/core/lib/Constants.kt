@@ -16,6 +16,7 @@ package gg.airbrush.core.lib
 
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.tag.Tag
 import java.io.File
 
@@ -38,4 +39,6 @@ object Constants {
 
     const val RANGE: Int = 20
     const val EXTENDED_RANGE: Int = 40
+
+    val CENTER = Pos(0.0, 4.0, 0.0)
 }

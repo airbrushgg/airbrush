@@ -27,6 +27,6 @@ class GlobalEventListeners {
     private fun handlePlayerSpawn(event: PlayerSpawnEvent) {
         // TODO: Allow user to define spawn point in worlds.toml
         val player = event.player
-        player.teleport(Pos(0.0, 4.0, 0.0))
+        player.teleport(Pos(0.0, 6.0, 0.0))
     }
 }
