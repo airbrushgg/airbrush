@@ -28,6 +28,7 @@ import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.system.measureTimeMillis
 
 class Players {
@@ -83,42 +84,41 @@ class Players {
         })
     }
 
-    suspend fun updateCache(player: AirbrushPlayer, type: String? = null) {
-       withContext(Dispatchers.IO) {
-           println("Updating player cache for ${player.getData().uuid} (${type ?: "all"})")
+    fun updateCache(player: AirbrushPlayer, type: String? = null) {
+        println("[${Thread.currentThread().name}] Updating player cache for ${player.getData().uuid} (${type ?: "all"})")
 
-           val filter = Filters.eq(PlayerData::uuid.name, player.getData().uuid)
-           val cachedData = player.getData()
+        val filter = Filters.eq(PlayerData::uuid.name, player.getData().uuid)
+        val cachedData = player.getData()
 
-           val updates = listOf(
-               PlayerData::level,
-               PlayerData::experience,
-               PlayerData::timePlayed,
-               PlayerData::rank,
-               PlayerData::palette,
-               PlayerData::progressedPalette,
-               PlayerData::chosenBlock,
-               PlayerData::paletteProgression,
-               PlayerData::ownedBoosters,
-               PlayerData::pronouns,
-               PlayerData::brushRadius
-           ).mapNotNull { field ->
-               val value = field.get(cachedData) ?: return@mapNotNull null
-               Updates.set(field.name, value)
-           }
+        val updates = listOf(
+            PlayerData::level,
+            PlayerData::experience,
+            PlayerData::timePlayed,
+            PlayerData::rank,
+            PlayerData::palette,
+            PlayerData::progressedPalette,
+            PlayerData::chosenBlock,
+            PlayerData::paletteProgression,
+            PlayerData::ownedBoosters,
+            PlayerData::pronouns,
+            PlayerData::brushRadius
+        ).mapNotNull { field ->
+            val value = field.get(cachedData) ?: return@mapNotNull null
+            Updates.set(field.name, value)
+        }
 
-           col.updateOne(filter, Updates.combine(updates))
-       }
+        col.updateOne(filter, Updates.combine(updates))
     }
 
-    suspend fun updateCaches() {
+    fun updateCaches() {
+        println("[${Thread.currentThread().name}] Updating ${playerCache.size} player caches (${playerCache.keys})")
         playerCache.forEach {
             updateCache(it.value, "automatic")
         }
     }
 
     companion object {
-        private val playerCache = HashMap<UUID, AirbrushPlayer>()
+        val playerCache = ConcurrentHashMap<UUID, AirbrushPlayer>()
 
         init {
             val eventNode = EventNode.type("Player Cache", EventFilter.PLAYER)
@@ -129,19 +129,15 @@ class Players {
                 val cache = playerCache[uuid] ?: return@addListener
                 playerCache.remove(uuid)
 
-                println("Removed player from cache: ${cache.getData().uuid} (${playerCache.size} players in cache ${playerCache.keys})")
+                println("[${Thread.currentThread().name}] Removed player from cache: ${cache.getData().uuid} (${playerCache.size} players in cache ${playerCache.keys})")
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    Players().updateCache(cache, "disconnect")
-                }
+                Players().updateCache(cache, "disconnect")
             }
 
             MinecraftServer.getGlobalEventHandler().addChild(eventNode)
 
             setInterval(5 * 1000) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    Players().updateCaches()
-                }
+                Players().updateCaches()
             }
         }
     }
