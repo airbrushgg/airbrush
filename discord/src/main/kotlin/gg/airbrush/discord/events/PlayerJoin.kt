@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter
 object PlayerJoin {
 	init {
         eventNode.addListener(PlayerSpawnEvent::class.java) { event ->
+			if(!event.isFirstSpawn) return@addListener
             handle(event.player, type = "join")
         }
 
