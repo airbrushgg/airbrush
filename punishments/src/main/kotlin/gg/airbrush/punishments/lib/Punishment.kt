@@ -117,7 +117,7 @@ data class Punishment(
     private fun getDisconnectMessage(): Component {
         var longReason = this.reason
 
-        if(this.reason in punishmentConfig.punishments.keys) {
+        if(this.reason.lowercase() in punishmentConfig.punishments.keys) {
             val punishmentInfo = punishmentConfig.punishments[this.reason.lowercase()]!!
             longReason = punishmentInfo.longReason
         }
