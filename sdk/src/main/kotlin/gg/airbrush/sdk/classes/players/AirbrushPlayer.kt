@@ -21,8 +21,6 @@ import gg.airbrush.sdk.Database
 import gg.airbrush.sdk.classes.boosters.BoosterData
 import gg.airbrush.sdk.classes.palettes.Palettes
 import gg.airbrush.sdk.classes.ranks.PermissionData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 
 import java.util.UUID
@@ -81,22 +79,17 @@ class AirbrushPlayer(uuid: UUID) {
         return data
     }
 
-    fun getLevel(): Int {
-        return data.level
-    }
+    fun getLevel() = data.level
 
     fun setLevel(level: Int) {
-        col.updateOne(query, Updates.set(PlayerData::level.name, level))
         data.level = level
     }
 
 	fun setPronouns(pronouns: String) {
-		col.updateOne(query, Updates.set(PlayerData::pronouns.name, pronouns))
 		data.pronouns = pronouns
 	}
 
 	fun setProgressionPalette(type: PaletteType) {
-		col.updateOne(query, Updates.set(PlayerData::progressedPalette.name, type.ordinal))
 		data.progressedPalette = type.ordinal
 	}
 
@@ -105,8 +98,6 @@ class AirbrushPlayer(uuid: UUID) {
             throw Exception("Invalid radius. Radii must be between 1 and 5.")
 
         data.brushRadius.current = radius
-
-        col.updateOne(query, Updates.set(PlayerData::brushRadius.name, data.brushRadius))
     }
 
     fun setMaxRadius(radius: Int) {
@@ -114,24 +105,21 @@ class AirbrushPlayer(uuid: UUID) {
             throw Exception("Invalid radius. Radii must be between 1 and 5.")
 
         data.brushRadius.max = radius
-
-        col.updateOne(query, Updates.set(PlayerData::brushRadius.name, data.brushRadius))
     }
 
     fun getExperience(): Int {
         return data.experience
     }
 
-    suspend fun setExperience(experience: Int) {
-        withContext(Dispatchers.IO) {
-            data.experience = experience
-            col.updateOne(query, Updates.set(PlayerData::experience.name, experience))
-        }
+    fun setExperience(experience: Int) {
+        data.experience = experience
     }
 
 	fun setDiscordId(discordId: Long) {
-		col.updateOne(query, Updates.set(PlayerData::discordId.name, discordId))
 		data.discordId = discordId
+
+        val query = Filters.eq(PlayerData::discordId.name, data.discordId)
+        col.updateOne(query, Updates.set(PlayerData::discordId.name, data.discordId))
 	}
 
 	fun wipeDiscordId() {
@@ -153,13 +141,10 @@ class AirbrushPlayer(uuid: UUID) {
         val rankData = SDK.ranks.get(name)
         val rankId = rankData.getData().id
 
-        col.updateOne(query, Updates.set(PlayerData::rank.name, rankId))
-
         data.rank = rankId
     }
 
     fun setPalette(type: PaletteType) {
-        col.updateOne(query, Updates.set(PlayerData::palette.name, type.ordinal))
         data.palette = type.ordinal
 
         val hasProgression = getPaletteProgression(type)
@@ -175,7 +160,7 @@ class AirbrushPlayer(uuid: UUID) {
             )
         )
 
-        col.updateOne(query, Updates.set(PlayerData::paletteProgression.name, list))
+        data.paletteProgression = list
     }
 
     // If this method returns null, then the player does not own the palette.
@@ -212,13 +197,10 @@ class AirbrushPlayer(uuid: UUID) {
             }
         }
 
-        col.updateOne(query, Updates.set(PlayerData::paletteProgression.name, data.paletteProgression))
-
         return true
     }
 
     fun setChosenBlock(block: String) {
-        col.updateOne(query, Updates.set(PlayerData::chosenBlock.name, block))
         data.chosenBlock = block
     }
 
@@ -231,14 +213,12 @@ class AirbrushPlayer(uuid: UUID) {
 
     fun addBooster(booster: BoosterData) {
         data.ownedBoosters = data.ownedBoosters.plus(booster)
-        col.updateOne(query, Updates.addToSet(PlayerData::ownedBoosters.name, booster))
     }
 
     fun removeBooster(booster: BoosterData) {
         val newList = data.ownedBoosters.toMutableList()
         if (newList.remove(booster)) {
             data.ownedBoosters = newList
-            col.updateOne(query, Updates.set(PlayerData::ownedBoosters.name, data.ownedBoosters))
         }
     }
 
@@ -248,6 +228,5 @@ class AirbrushPlayer(uuid: UUID) {
 
     fun addPlaytime(duration: Long) {
         data.timePlayed += duration
-        col.updateOne(query, Updates.set(PlayerData::timePlayed.name, data.timePlayed))
     }
 }

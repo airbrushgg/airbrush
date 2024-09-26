@@ -18,13 +18,17 @@ import com.mongodb.client.model.Updates
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.Database
 import gg.airbrush.sdk.classes.palettes.Palettes
+import gg.airbrush.sdk.lib.setInterval
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import java.util.UUID
+import kotlin.system.measureTimeMillis
 
 class Players {
     private val db = Database.get()
@@ -69,14 +73,47 @@ class Players {
         return player
     }
 
-    fun updateBlockCounts(counts: HashMap<UUID, Int>) = runBlocking<Unit> {
-        launch {
-            col.bulkWrite(counts.map { (uuid, delta) ->
-                UpdateOneModel(
-                    Filters.eq(PlayerData::uuid.name, uuid.toString()),
-                    Updates.inc(PlayerData::blockCount.name, delta)
-                )
-            })
+    fun updateBlockCounts(counts: HashMap<UUID, Int>)  {
+        println("[SDK] Updating block counts")
+        col.bulkWrite(counts.map { (uuid, delta) ->
+            UpdateOneModel(
+                Filters.eq(PlayerData::uuid.name, uuid.toString()),
+                Updates.inc(PlayerData::blockCount.name, delta)
+            )
+        })
+    }
+
+    suspend fun updateCache(player: AirbrushPlayer, type: String? = null) {
+       withContext(Dispatchers.IO) {
+           println("Updating player cache for ${player.getData().uuid} (${type ?: "all"})")
+
+           val filter = Filters.eq(PlayerData::uuid.name, player.getData().uuid)
+           val cachedData = player.getData()
+
+           val updates = listOf(
+               PlayerData::level,
+               PlayerData::experience,
+               PlayerData::timePlayed,
+               PlayerData::rank,
+               PlayerData::palette,
+               PlayerData::progressedPalette,
+               PlayerData::chosenBlock,
+               PlayerData::paletteProgression,
+               PlayerData::ownedBoosters,
+               PlayerData::pronouns,
+               PlayerData::brushRadius
+           ).mapNotNull { field ->
+               val value = field.get(cachedData) ?: return@mapNotNull null
+               Updates.set(field.name, value)
+           }
+
+           col.updateOne(filter, Updates.combine(updates))
+       }
+    }
+
+    suspend fun updateCaches() {
+        playerCache.forEach {
+            updateCache(it.value, "automatic")
         }
     }
 
@@ -85,12 +122,27 @@ class Players {
 
         init {
             val eventNode = EventNode.type("Player Cache", EventFilter.PLAYER)
+            // Removes the player from the cache so that we can refresh their data when they join again.
+            // also pushes any cached data that hasn't been updated on the database yet.
             eventNode.addListener(PlayerDisconnectEvent::class.java) { event ->
-                // Remove the player from the cache so that we can refresh their data when they join again.
-                playerCache.remove(event.player.uuid)
+                val uuid = event.player.uuid
+                val cache = playerCache[uuid] ?: return@addListener
+                playerCache.remove(uuid)
+
+                println("Removed player from cache: ${cache.getData().uuid} (${playerCache.size} players in cache ${playerCache.keys})")
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    Players().updateCache(cache, "disconnect")
+                }
             }
 
             MinecraftServer.getGlobalEventHandler().addChild(eventNode)
+
+            setInterval(5 * 1000) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    Players().updateCaches()
+                }
+            }
         }
     }
 }

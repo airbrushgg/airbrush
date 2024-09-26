@@ -55,6 +55,7 @@ private class PixelManager {
         MinecraftServer.getSchedulerManager().scheduleTask({
             if (countMap.isEmpty()) return@scheduleTask
             synchronized(countMap) {
+                MinecraftServer.LOGGER.info("Updating block counts")
                 SDK.players.updateBlockCounts(countMap)
                 countMap.clear()
             }

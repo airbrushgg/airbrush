@@ -15,11 +15,11 @@ package gg.airbrush.punishments
 import cc.ekblad.toml.decode
 import cc.ekblad.toml.model.TomlException
 import cc.ekblad.toml.tomlMapper
-import gg.airbrush.core.lib.setInterval
 import gg.airbrush.punishments.commands.*
 import gg.airbrush.punishments.events.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.ConfigUtils
+import gg.airbrush.sdk.lib.setInterval
 import gg.airbrush.server.plugins.Plugin
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventNode
