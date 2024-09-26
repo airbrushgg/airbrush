@@ -115,21 +115,8 @@ data class Punishment(
     val notes: String = "",
 ) {
     private fun getDisconnectMessage(): Component {
-        var longReason = this.reason
-
-        if(this.reason.lowercase() in punishmentConfig.punishments.keys) {
-            val punishmentInfo = punishmentConfig.punishments[this.reason.lowercase()]!!
-            longReason = punishmentInfo.longReason
-        }
-
         val translation = Translations.getString("punishments.${if(this.type == PunishmentTypes.BAN) "playerBanned" else "playerKicked"}")
-        val title = Translations.getString("core.scoreboard.title")
-
-        val placeholders = listOf(
-            Placeholder("%title%", title),
-            Placeholder("%long_reason%", longReason),
-        )
-
+        val placeholders = this.getPlaceholders()
         return translation.parsePlaceholders(placeholders).trimIndent().mm()
     }
 
