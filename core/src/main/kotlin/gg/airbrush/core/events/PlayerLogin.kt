@@ -21,7 +21,10 @@ import gg.airbrush.sdk.classes.players.AirbrushPlayer
 import gg.airbrush.sdk.classes.players.PaletteType
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.color.Color
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
 import net.minestom.server.event.player.PlayerDisconnectEvent
@@ -144,8 +147,21 @@ class PlayerLogin {
         PlayerDataCache.populateCache(player.uuid)
 
         val xpThreshold = player.getXPThreshold()
-        player.level = sdkPlayer.getLevel()
+        val level = sdkPlayer.getLevel()
+        player.level = level
         player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
+
+        // Set the player's display name in the tab list.
+        val rankData = sdkPlayer.getRank().getData()
+        val levelColor = TextColor.color(ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), level))
+        val displayNameComponent = Component.text { builder ->
+            builder.append(Component.text("[$level]", levelColor))
+            builder.appendSpace()
+            if (rankData.prefix.isNotEmpty()) {
+                builder.append("<s>${rankData.prefix} ${player.username}".mm())
+            } else builder.append("<p>${player.username}".mm())
+        }
+        player.displayName = displayNameComponent
 
         if (player.uuid !in sidebars) {
             val sidebar = Sidebar(Translations.translate("core.scoreboard.title").mm())
