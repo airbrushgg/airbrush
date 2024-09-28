@@ -113,8 +113,13 @@ data class Punishment(
     /** Notes to be attached to the punishment */
     val notes: String = "",
 ) {
-    fun getDisconnectMessage(): Component {
-        val translation = Translations.getString("punishments.${if(this.type == PunishmentTypes.BAN) "playerBanned" else "playerKicked"}")
+    private fun getDisconnectMessage(): Component {
+        val key = when (this.type) {
+            PunishmentTypes.BAN -> "punishments.playerBanned"
+            PunishmentTypes.AUTO_BAN -> "punishments.playerAutoBanned"
+            else -> "punishments.playerKicked"
+        }
+        val translation = Translations.getString(key)
         val placeholders = this.getPlaceholders()
         return translation.parsePlaceholders(placeholders).trimIndent().mm()
     }
@@ -196,6 +201,7 @@ data class Punishment(
 
         when(this.type) {
             PunishmentTypes.BAN,
+            PunishmentTypes.AUTO_BAN,
             PunishmentTypes.KICK -> {
                 onlinePlayer.kick(this.getDisconnectMessage())
             }
