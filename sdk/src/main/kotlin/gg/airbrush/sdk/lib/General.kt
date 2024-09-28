@@ -12,6 +12,8 @@
 
 package gg.airbrush.sdk.lib
 
+import java.util.*
+
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 
@@ -21,6 +23,16 @@ import net.minestom.server.entity.Player
 fun delay(time: Long, block: () -> Unit) {
     Thread.sleep(time)
     block()
+}
+
+fun setInterval(interval: Long, task: () -> Unit): Timer {
+    val timer = Timer(true)
+    timer.scheduleAtFixedRate(object : TimerTask() {
+        override fun run() {
+            task()
+        }
+    }, 0, interval)
+    return timer
 }
 
 fun Player.executeCommand(command: String) {
