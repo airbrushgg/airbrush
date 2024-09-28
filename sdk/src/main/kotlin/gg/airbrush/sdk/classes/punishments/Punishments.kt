@@ -94,6 +94,10 @@ class Punishments {
         /* player UUID -> list of punishments */
         private val punishmentCache = HashMap<UUID, List<AirbrushPunishment>>()
 
+        fun clearCache(uuid: UUID) {
+            punishmentCache.remove(uuid)
+        }
+
         init {
             val eventNode = EventNode.type("Player Cache", EventFilter.PLAYER)
             eventNode.addListener(PlayerDisconnectEvent::class.java) { event ->
