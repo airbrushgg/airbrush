@@ -113,7 +113,7 @@ data class Punishment(
     /** Notes to be attached to the punishment */
     val notes: String = "",
 ) {
-    private fun getDisconnectMessage(): Component {
+    fun getDisconnectMessage(): Component {
         val key = when (this.type) {
             PunishmentTypes.BAN -> "punishments.playerBanned"
             PunishmentTypes.AUTO_BAN -> "punishments.playerAutoBanned"
@@ -221,7 +221,7 @@ data class Punishment(
      *  @example "kick" -> "kicked"
      */
     private fun getPluralType(): String {
-        return this.type.name.lowercase().toPluralForm()
+        return this.type.toString().lowercase().toPluralForm()
     }
 
     /**

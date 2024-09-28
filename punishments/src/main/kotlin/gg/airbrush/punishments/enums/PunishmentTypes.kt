@@ -17,5 +17,9 @@ enum class PunishmentTypes {
 	MUTE,
 	KICK,
 	BAN,
-	AUTO_BAN,
+	AUTO_BAN;
+
+	override fun toString(): String {
+		return if (this == AUTO_BAN) "automatically ban" else super.toString()
+	}
 }
