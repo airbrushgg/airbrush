@@ -24,7 +24,6 @@ dependencies {
     compileOnly(project(":pocket"))
 	compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
 	compileOnly("cc.ekblad:4koma:1.2.0")
-	compileOnly(project(":core"))
 	compileOnly(project(":discord"))
 	compileOnly("net.dv8tion:JDA:5.1.0")
 }
