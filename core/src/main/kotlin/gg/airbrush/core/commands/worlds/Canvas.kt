@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -12,7 +10,7 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.airbrush.core.commands
+package gg.airbrush.core.commands.worlds
 
 import gg.airbrush.core.lib.Constants
 import gg.airbrush.core.lib.teleportToCanvas
@@ -24,9 +22,6 @@ import net.minestom.server.command.builder.arguments.ArgumentString
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 
-
-// TODO: Add support for fetching World by UUID.
-//  Then we can check private status, fetch name, etc.
 class Canvas : Command("canvas"), CommandExecutor {
     private val canvasId: ArgumentString = ArgumentType.String("canvas-id")
 
@@ -42,9 +37,7 @@ class Canvas : Command("canvas"), CommandExecutor {
 
     private fun run(sender: CommandSender, context: CommandContext) {
         val player = sender as Player
-
         val canvasUUID = context.get(canvasId)
-
         player.teleportToCanvas(canvasUUID)
     }
 

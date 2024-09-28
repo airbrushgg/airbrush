@@ -16,11 +16,11 @@ import gg.airbrush.pocket.GUI
 import gg.airbrush.punishments.lib.convertDate
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.Input
+import gg.airbrush.sdk.lib.executeCommand
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.isConfirmed
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -83,7 +83,7 @@ class EditPunishmentCommand : Command("editpunishment") {
             }
 
             it.player.closeInventory()
-            MinecraftServer.getCommandManager().execute(it.player, "revertpun $punishmentId")
+            it.player.executeCommand("revertpun $punishmentId")
         }
 
         val reasonInput: Input = fetchInput(sender) {

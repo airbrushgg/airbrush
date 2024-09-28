@@ -12,10 +12,32 @@
 
 package gg.airbrush.sdk.lib
 
+import net.minestom.server.MinecraftServer
+import net.minestom.server.entity.Player
+
 /**
  * Runs the given code after the given time.
  */
 fun delay(time: Long, block: () -> Unit) {
     Thread.sleep(time)
+    block()
+}
+
+fun Player.executeCommand(command: String) {
+    val manager = MinecraftServer.getCommandManager()
+    manager.execute(this, command)
+}
+
+fun debounce(time: Long, identifier: String, block: () -> Unit) {
+    val cooldown = handleCooldown {
+        key = "debounce-${identifier}"
+        duration = time
+    }
+
+    MinecraftServer.LOGGER.info("Creating debounce for ${cooldown.key} | ${cooldown.duration}")
+
+    if(cooldown.isActive()) return
+
+    cooldown.startCooldown()
     block()
 }

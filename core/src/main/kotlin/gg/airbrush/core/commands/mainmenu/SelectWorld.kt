@@ -66,7 +66,7 @@ fun openWorldGUI(p: Player) {
         .lore(
             "<s>This is the public canvas world for all players!".mm(),
             "".mm(),
-            "<#ffb5cf> • <#ffd4e3>Click to teleport!".mm()
+            "<#ffb5cf> ➜ <#ffd4e3>Click to teleport!".mm()
         )
         .build()
 
@@ -86,7 +86,7 @@ fun openWorldGUI(p: Player) {
             "<s>This is an <donator>exclusive</donator> canvas only for donators!".mm(),
             "<s>Buy a <donator>[⭐]</donator> or <donator>[⭐⭐]</donator> rank in the shop for access.".mm(),
             "".mm(),
-            "<#ffb5cf> • <#ffd4e3>Click to teleport!".mm()
+            "<#ffb5cf> ➜ <#ffd4e3>Click to teleport!".mm()
         )
         .build()
     inventory.put('d', starWorld) {
