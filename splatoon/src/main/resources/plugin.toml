@@ -1,0 +1,5 @@
+id = "splatoon"
+name = "Splatoon"
+description = "Splatoon! Splatoon! Splatoon!"
+version = "0.1.0"
+mainClass = "gg.airbrush.splatoon.Splatoon"

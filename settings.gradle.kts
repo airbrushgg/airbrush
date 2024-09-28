@@ -20,5 +20,6 @@ include(
     "sdk",
     "server",
 //    "template",
-    "worlds"
+    "worlds",
+    "splatoon"
 )
