@@ -16,5 +16,6 @@ package gg.airbrush.punishments.enums
 enum class PunishmentTypes {
 	MUTE,
 	KICK,
-	BAN
+	BAN,
+	AUTO_BAN,
 }
