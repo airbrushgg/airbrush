@@ -37,8 +37,8 @@ class Punishments {
         active: Boolean = true
     ): PunishmentData {
         val punishment = PunishmentData(
-            moderator.toString(),
-            player.toString(),
+            moderator,
+            player,
             reason,
             type,
             createdAt = Instant.now().epochSecond,

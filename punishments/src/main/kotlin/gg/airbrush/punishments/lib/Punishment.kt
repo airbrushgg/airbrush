@@ -64,7 +64,7 @@ fun convertDate(input: String): Long {
     )
 
     val secondValue =
-        timeUnits[timeUnit] ?: throw IllegalArgumentException("Invalid time unit specified")
+        timeUnits[timeUnit] ?: throw IllegalArgumentException("Invalid time unit specified $timeUnit")
 
     return numericValue * secondValue
 }
@@ -91,11 +91,10 @@ fun getReasonInfo(reason: String): Pair<String, String> {
     var longReason = reason
 
     if(reason.lowercase() in punishmentConfig.punishments.keys) {
-        println("Is a predefined punishment, getting info from config")
         val punishmentInfo = punishmentConfig.punishments[reason.lowercase()]!!
         shortReason = punishmentInfo.shortReason.capitalize()
         longReason = punishmentInfo.longReason
-    } else println("Is not a predefined punishment, using reason as-is")
+    }
 
     return Pair(shortReason, longReason)
 }
@@ -114,7 +113,7 @@ data class Punishment(
     /** Notes to be attached to the punishment */
     val notes: String = "",
 ) {
-    private fun getDisconnectMessage(): Component {
+    fun getDisconnectMessage(): Component {
         val translation = Translations.getString("punishments.${if(this.type == PunishmentTypes.BAN) "playerBanned" else "playerKicked"}")
         val placeholders = this.getPlaceholders()
         return translation.parsePlaceholders(placeholders).trimIndent().mm()
@@ -237,7 +236,7 @@ data class Punishment(
             "d" -> "day"
             "w" -> "week"
             "mo" -> "month"
-            else -> throw Exception("Invalid time unit specified")
+            else -> throw Exception("Invalid time unit specified $timeUnit")
         }
         if(numericValue > 1) unit += "s"
 
