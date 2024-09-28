@@ -69,6 +69,13 @@ playerBanned = """
 
         <s>Think this is a mistake? Join https://discord.gg/yAgCb9AHM8 to appeal.
 """
+playerAutoBanned = """
+        <br><s>You were automatically <#FB7D6D>banned</#FB7D6D> from <p>Airbrush <s>by our chat filter for <error>%short_reason% <#B0B0B0>[%duration%]<s>.<br><br>
+
+        <p>Description:<s> %long_reason% <br><br>
+
+        If you believe our filter falsely flagged and banned you, you may appeal on our <click:open_url:https://discord.gg/yAgCb9AHM8><#7289da><u>Discord</u></click> <s>server in the <p>#tickets <s>channel.
+"""
 playerKicked = """
         <p>Kicked from</p> %title%.
 
