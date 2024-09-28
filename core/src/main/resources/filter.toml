@@ -1,4 +1,11 @@
-logChannel = ""
-
 [root]
-blockMessage = "<error>Uh oh! Your message was blocked."
+# The default message that will be sent when a message is blocked.
+message = "<error>Uh oh! Your message was blocked."
+logChannel = "1178153995588612226"
+
+## Sample ruleset.
+#[[ruleset]]
+#priority = 100 # The highest priority ruleset determines the action to take.
+#action = "block" # The default action is "block". Other options include: "ban"
+#path = "severe_words.txt" # The path to the file containing the words to block. Each word must be separated by a newline.
+#regex = false # Whether the words are regex patterns. The default is false.

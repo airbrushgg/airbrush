@@ -61,25 +61,29 @@ class PlayerChat {
         }
 
         val filterResult = chatFilterInstance.validateMessage(player, event.message)
-        if (filterResult.action == FilterAction.BLOCK) {
+        val filterRuleset = filterResult.ruleset
+
+        if (filterRuleset?.action == FilterAction.BLOCK || filterRuleset?.action == FilterAction.BAN) {
             event.isCancelled = true
 
-            // TODO(cal): This should be better.
-            val filterLogs = bot.getTextChannelById(chatFilterInstance.logChannel)
-                ?: throw Exception("Failed to find respective logs channel")
+            bot.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
+                val firstToken = filterResult.failedTokens.first()
 
-            val firstToken = filterResult.failedTokens.first()
-            val formattedMessage = event.message
-                .replace("`", "\\`")
-                .replaceFirst(firstToken.value, "`${firstToken.value}`")
+                val formattedMessage = event.message
+                    .replace("`", "\\`")
+                    .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
 
-            // TODO: Eventually get the filter rule they triggered? idk, that's an @apple thing
-            val logEmbed = EmbedBuilder().setTitle("${event.player.username} triggered the filter")
-                .setColor(java.awt.Color.decode("#ff6e6e"))
-                .addField(MessageEmbed.Field("Message", formattedMessage, false))
-                .build()
+                val logEmbed = EmbedBuilder()
+                    .setTitle("`${event.player.username}` triggered the filter")
+                    .setColor(java.awt.Color.decode("#ff6e6e"))
+                    .addField(MessageEmbed.Field("Message", formattedMessage, false))
+                    .addField(MessageEmbed.Field("Action", filterResult.ruleset.action.toString(), false))
+                    .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority})")
+                    .build()
 
-            filterLogs.sendMessageEmbeds(logEmbed).queue()
+                logChannel.sendMessageEmbeds(logEmbed).queue()
+            }
+
             return
         }
 

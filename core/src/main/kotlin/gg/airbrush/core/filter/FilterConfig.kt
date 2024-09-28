@@ -15,8 +15,18 @@
 package gg.airbrush.core.filter
 
 data class FilterConfig(
-    val logChannel: String,
-    val root: Root
+    val root: Root,
+    val rulesets: List<Ruleset>?
 ) {
-    data class Root(val blockMessage: String)
+    data class Root(
+        val message: String = "Uh oh! Your message was blocked.",
+        val logChannel: String?
+    )
+
+    data class Ruleset(
+        val priority: Int = 1,
+        val action: FilterAction = FilterAction.BLOCK,
+        val path: String,
+        val regex: Boolean = false
+    )
 }
