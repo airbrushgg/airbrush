@@ -71,17 +71,20 @@ class AirbrushPunishment(id: UUID) {
 
 		col.updateOne(query, Updates.set(PunishmentData::duration.name, duration))
 		data.duration = duration
+		Punishments.clearCache(data.player)
 	}
 
 	fun setActive(active: Boolean) {
 		col.updateOne(query, Updates.set(PunishmentData::active.name, active))
 		data.active = active
+		Punishments.clearCache(data.player)
 	}
 
 	fun setReverted(reverted: RevertedData) {
 		setActive(false)
 		col.updateOne(query, Updates.set(PunishmentData::reverted.name, reverted))
 		data.reverted = reverted
+		Punishments.clearCache(data.player)
 	}
 
 	fun setNotes(notes: String?) {
@@ -93,11 +96,15 @@ class AirbrushPunishment(id: UUID) {
 
 		col.updateOne(query, Updates.set(PunishmentData::notes.name, notes))
 		data.notes = notes
+
+		Punishments.clearCache(data.player)
 	}
 
 	fun setReason(reason: String) {
 		col.updateOne(query, Updates.set(PunishmentData::reason.name, reason))
 		data.reason = reason
+
+		Punishments.clearCache(data.player)
 	}
 
 	fun getExpiry(): Instant {
