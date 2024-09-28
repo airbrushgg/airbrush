@@ -14,13 +14,20 @@ package gg.airbrush.punishments.events
 
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.eventNode
+import gg.airbrush.punishments.lib.Punishment
+import gg.airbrush.punishments.lib.User
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.Placeholder
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.server.lib.mm
+import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 class PlayerEvents {
 	init {
@@ -31,24 +38,21 @@ class PlayerEvents {
 
 	private fun executePreLogin(event: AsyncPlayerPreLoginEvent) {
 		val punishments = SDK.punishments.list(event.player)
+
 		val activeBan = punishments.find {
 			it.data.active && it.data.type == PunishmentTypes.BAN.ordinal
 		}
 
 		if(activeBan !== null) {
-			val translation = Translations.getString("punishments.playerBanned")
-			val title = Translations.getString("core.scoreboard.title")
-
-			val punishmentInfo = punishmentConfig.punishments[activeBan.data.reason.lowercase()]
-			// Nullable due to custom punishments
-			val reason = punishmentInfo?.longReason ?: activeBan.data.reason
-
-			val placeholders = listOf(
-				Placeholder("%title%", title),
-				Placeholder("%long_reason%", reason),
+			val punishment = Punishment(
+				moderator = User(activeBan.data.moderator, "Console"),
+				player = User(event.player.uuid, event.player.username),
+				reason = activeBan.data.reason,
+				type = PunishmentTypes.BAN,
 			)
 
-			event.player.kick(translation.parsePlaceholders(placeholders).trimIndent().mm())
+			event.player.kick(punishment.getDisconnectMessage())
+
 			return
 		}
 	}

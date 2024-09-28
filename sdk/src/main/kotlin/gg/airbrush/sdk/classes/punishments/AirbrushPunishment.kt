@@ -28,8 +28,8 @@ data class RevertedData(
 )
 
 data class PunishmentData(
-	val moderator: String,
-	val player: String,
+	val moderator: UUID,
+	val player: UUID,
 	var reason: String,
 	val type: Int,
 	val createdAt: Long = Instant.now().epochSecond,
@@ -48,11 +48,11 @@ class AirbrushPunishment(id: UUID) {
         ?: throw NotFoundException("Punishment with ID of $id not found.")
 
     fun getModerator(): UUID {
-        return UUID.fromString(data.moderator)
+        return data.moderator
     }
 
     fun getPlayer(): UUID {
-        return UUID.fromString(data.player)
+        return data.player
     }
 
     fun getCreatedAt(): Instant {
