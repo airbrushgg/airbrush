@@ -14,7 +14,7 @@
 
 package gg.airbrush.core.commands
 
-import gg.airbrush.core.commands.history.timestampToRelativeTime
+import gg.airbrush.core.lib.toRelativeTime
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.PlayerUtils
 import gg.airbrush.server.lib.mm
@@ -49,7 +49,7 @@ class Whitelist : Command("whitelist") {
             val message = Component.join(
                 JoinConfiguration.newlines(),
                 entries.map { entry ->
-                    val time = timestampToRelativeTime(entry.addedAt)
+                    val time = entry.addedAt.toRelativeTime()
                     val playerUUID = UUID.fromString(entry.uuid)
                     val player = PlayerUtils.getName(playerUUID)
                     "<p><s>$player</s> added <s>$time".mm()

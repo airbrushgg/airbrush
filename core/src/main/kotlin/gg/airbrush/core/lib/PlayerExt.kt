@@ -1,5 +1,3 @@
-
-
 /*
  * This file is part of Airbrush
  *
@@ -19,7 +17,6 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.capitalize
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
-import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.tag.Tag
 
@@ -29,7 +26,6 @@ fun Player.getXPThreshold(): Int {
 }
 
 fun Player.teleportToCanvas(canvasUUID: String) {
-    MinecraftServer.LOGGER.info("Teleporting player ${this.username} to canvas $canvasUUID")
     val instance = CanvasManager.get(canvasUUID)
     if (instance == null) {
         this.sendMessage("<error>A problem occurred teleporting to this world!".mm())
@@ -41,7 +37,6 @@ fun Player.teleportToCanvas(canvasUUID: String) {
         return
     }
 
-    MinecraftServer.LOGGER.info("Updating player ${this.username} world line")
     sidebars[this.uuid]?.updateLineContent("world", getWorldLine(this))
     this.setInstance(instance)
 

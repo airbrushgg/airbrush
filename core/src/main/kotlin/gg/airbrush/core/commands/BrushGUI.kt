@@ -24,6 +24,7 @@ import gg.airbrush.sdk.NotFoundException
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.PaletteType
 import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.debounce
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -75,28 +76,30 @@ fun openBrushGUI(p: Player) {
     }
 
     fun changeRadius(increment: Boolean, clickedSlot: Int) {
-        val radiusInfo = playerData.brushRadius
-        val newRadius = if(increment) radiusInfo.current + 1 else radiusInfo.current - 1
+       debounce(500, "brush-radius-${if(increment) "decrease" else "increase"}-${p.uuid}") {
+           val radiusInfo = playerData.brushRadius
+           val newRadius = if(increment) radiusInfo.current + 1 else radiusInfo.current - 1
 
-        if(newRadius < 1  || newRadius > 5) return
+           if(newRadius < 1  || newRadius > 5) return@debounce
 
-        if(newRadius > radiusInfo.max) {
-            p.sendMessage(Translations.translate("core.brush_gui.locked_radius", newRadius).mm())
-            return
-        }
+           if(newRadius > radiusInfo.max) {
+               p.sendMessage(Translations.translate("core.brush_gui.locked_radius", newRadius).mm())
+               return@debounce
+           }
 
-        val inventory = p.openInventory ?: return
-        val prevDecreaseSlot = if (increment) clickedSlot - 1 else clickedSlot
-        val prevIncreaseSlot = if (increment) clickedSlot else clickedSlot + 1
+           val inventory = p.openInventory ?: return@debounce
+           val prevDecreaseSlot = if (increment) clickedSlot - 1 else clickedSlot
+           val prevIncreaseSlot = if (increment) clickedSlot else clickedSlot + 1
 
-        inventory.replaceItemStack(prevDecreaseSlot) { stack -> stack.withAmount(newRadius) }
-        inventory.replaceItemStack(prevIncreaseSlot) { stack -> stack.withAmount(newRadius) }
+           inventory.replaceItemStack(prevDecreaseSlot) { stack -> stack.withAmount(newRadius) }
+           inventory.replaceItemStack(prevIncreaseSlot) { stack -> stack.withAmount(newRadius) }
 
-        try {
-            sdkPlayer.setRadius(newRadius)
-        } catch (ex: Exception) {
-            p.sendMessage("<error>${ex.message}".mm())
-        }
+           try {
+               sdkPlayer.setRadius(newRadius)
+           } catch (ex: Exception) {
+               p.sendMessage("<error>${ex.message}".mm())
+           }
+       }
     }
 
     fun getBorderMaterial(): Material? {
