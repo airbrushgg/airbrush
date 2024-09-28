@@ -25,6 +25,7 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.tag.Tag
 import net.minestom.server.world.DimensionType
+import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -103,6 +104,18 @@ object WorldManager {
      */
     fun getWorlds(): List<Instance> {
         return instanceManager.instances.filter { instance -> instance.hasTag(MANAGED_TAG) }
+    }
+
+    fun deleteCanvas(canvasId: String) {
+        val instance = getWorlds().find { it.getTag(Tag.String("CanvasUUID")) == canvasId } ?: return
+        instanceManager.unregisterInstance(instance)
+        val filePath = "canvases/$canvasId.polar"
+        val file = File(filePath)
+
+        if (file.exists() && file.isFile) {
+            val success = file.delete()
+            if (!success) MinecraftServer.LOGGER.error("[Worlds] Failed to delete canvas file: $filePath")
+        } else MinecraftServer.LOGGER.error("[Worlds] Canvas file does not exist: $filePath")
     }
 
     /**

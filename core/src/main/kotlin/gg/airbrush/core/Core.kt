@@ -25,6 +25,7 @@ import gg.airbrush.server.plugins.Plugin
 import gg.airbrush.core.commands.mainmenu.MainMenu
 import gg.airbrush.core.commands.mainmenu.SelectWorld
 import gg.airbrush.core.commands.worlds.Canvas
+import gg.airbrush.core.commands.worlds.WorldSettings
 import gg.airbrush.core.events.PlayerLogin
 import gg.airbrush.core.events.BrushEvents
 import gg.airbrush.core.events.PlayerChat
@@ -77,7 +78,8 @@ class Core : Plugin() {
 			MakeMeTiny(),
 			Ad(),
 			Boost(),
-			Broadcast()
+			Broadcast(),
+			WorldSettings(),
 	    )
 
 	    // On start

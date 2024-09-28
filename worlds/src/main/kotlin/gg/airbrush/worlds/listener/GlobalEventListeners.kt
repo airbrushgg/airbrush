@@ -14,6 +14,7 @@ package gg.airbrush.worlds.listener
 
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
+import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.PlayerSpawnEvent
 
 class GlobalEventListeners {
@@ -28,5 +29,11 @@ class GlobalEventListeners {
         // TODO: Allow user to define spawn point in worlds.toml
         val player = event.player
         player.teleport(Pos(0.0, 6.0, 0.0))
+
+        // Prevents creative carrying over from previous worlds
+        if (player.gameMode !== GameMode.SURVIVAL) {
+            player.gameMode = GameMode.SURVIVAL
+            player.isAllowFlying = true
+        }
     }
 }

@@ -35,7 +35,7 @@ class Input {
     /**
      * Waits for the player to input a message, and then calls the handler with the input.
      */
-    fun prompt() {
+    fun prompt(): Input {
         lateinit var inputHandler: EventListener<PlayerChatEvent>
         inputHandler = EventListener.of(PlayerChatEvent::class.java) { event ->
             if (event.player != player) return@of
@@ -48,6 +48,8 @@ class Input {
         }
 
         eventNode.addListener(inputHandler)
+
+        return this
     }
 }
 

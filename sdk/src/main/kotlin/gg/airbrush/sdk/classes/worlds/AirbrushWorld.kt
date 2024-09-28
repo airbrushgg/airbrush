@@ -47,4 +47,8 @@ class AirbrushWorld(uuid: UUID) {
         data.visibility = visibility
         col.replaceOne(Filters.eq(WorldData::id.name, data.id), data)
     }
+
+    fun delete() {
+        col.deleteOne(Filters.eq(WorldData::id.name, data.id))
+    }
 }
