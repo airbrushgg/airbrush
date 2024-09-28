@@ -80,6 +80,7 @@ class Core : Plugin() {
 			Boost(),
 			Broadcast(),
 			WorldSettings(),
+			Admin(),
 	    )
 
 	    // On start

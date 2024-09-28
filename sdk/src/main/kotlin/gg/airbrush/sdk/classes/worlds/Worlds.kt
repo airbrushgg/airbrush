@@ -47,4 +47,8 @@ class Worlds {
 			AirbrushWorld(UUID.fromString(data.id))
 		}
 	}
+
+    fun getByUUID(uuid: UUID): AirbrushWorld? {
+        return getByUUID(uuid.toString())
+    }
 }

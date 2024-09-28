@@ -14,10 +14,7 @@ package gg.airbrush.core.commands.worlds
 
 import gg.airbrush.core.commands.mainmenu.openMainMenu
 import gg.airbrush.core.events.sidebars
-import gg.airbrush.core.lib.CanvasManager
-import gg.airbrush.core.lib.GUIItems
-import gg.airbrush.core.lib.getWorldLine
-import gg.airbrush.core.lib.teleportToCanvas
+import gg.airbrush.core.lib.*
 import gg.airbrush.pocket.GUI
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.worlds.WorldVisibility
@@ -254,8 +251,8 @@ class WorldSettings : Command("worldsettings", "world"), CommandExecutor {
 
             val canvasInstance = CanvasManager.get(playerWorld.data.id)!!
 
-            if(player.instance.uniqueId == canvasInstance.uniqueId) {
-                player.setInstance(WorldManager.defaultInstance)
+            canvasInstance.players.forEach { p ->
+                p.teleportToSpawn()
             }
 
             delay(500) {
