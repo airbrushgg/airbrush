@@ -40,7 +40,7 @@ class Filter : Command("filter"), CommandExecutor {
     private fun runReload(sender: CommandSender, context: CommandContext) {
         when (context.get(action)) {
             Action.RELOAD -> {
-                chatFilterInstance.clearAndFetchWordList()
+                chatFilterInstance.reloadFilterConfiguration()
                 sender.sendMessage("<success>Reloaded filter configuration!".mm())
             }
             else -> {

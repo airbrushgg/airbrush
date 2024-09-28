@@ -28,34 +28,34 @@ class Tokenizer {
                 while (current.isPunctuation() && current == first) {
                     position++
                 }
-                tokens.add(TokenSpan(source.substring(start, position), Tag.PUNCTUATION))
+                tokens.add(TokenSpan(source.substring(start, position), Tag.PUNCTUATION, position))
                 continue
             }
 
             if (current.isLetter()) {
                 position++
                 val tag = scanWord()
-                tokens.add(TokenSpan(source.substring(start, position), tag))
+                tokens.add(TokenSpan(source.substring(start, position), tag, position))
                 continue
             }
 
             if (current.isDigit()) {
                 position++
                 val tag = scanNumber()
-                tokens.add(TokenSpan(source.substring(start, position), tag))
+                tokens.add(TokenSpan(source.substring(start, position), tag, position))
                 continue
             }
 
             if (current.isLetterOrDigit()) {
                 position++
                 val tag = scanMixedWord()
-                tokens.add(TokenSpan(source.substring(start, position), tag))
+                tokens.add(TokenSpan(source.substring(start, position), tag, position))
                 continue
             }
 
             // Handle unknown case.
             position++
-            tokens.add(TokenSpan(source.substring(start..position), Tag.UNKNOWN))
+            tokens.add(TokenSpan(source.substring(start..position), Tag.UNKNOWN, position))
         }
 
         return tokens
