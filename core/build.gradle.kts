@@ -22,6 +22,7 @@ dependencies {
     compileOnly(project(":pocket"))
     compileOnly(project(":server"))
     compileOnly(project(":worlds"))
+    compileOnly(project(":punishments"))
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
     compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
     compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")

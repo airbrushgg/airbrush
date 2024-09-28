@@ -15,12 +15,14 @@
 package gg.airbrush.core.events
 
 import gg.airbrush.core.commands.admin.Lockdown
-import gg.airbrush.core.filter.ChatFilter
 import gg.airbrush.core.filter.FilterAction
-import gg.airbrush.core.filter.FilterResult
 import gg.airbrush.core.filter.chatFilterInstance
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.discord.bot
+import gg.airbrush.punishments.commands.nilUUID
+import gg.airbrush.punishments.enums.PunishmentTypes
+import gg.airbrush.punishments.lib.Punishment
+import gg.airbrush.punishments.lib.User
 import gg.airbrush.sdk.SDK
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
@@ -65,6 +67,15 @@ class PlayerChat {
 
         if (filterRuleset?.action == FilterAction.BLOCK || filterRuleset?.action == FilterAction.BAN) {
             event.isCancelled = true
+
+            if (filterRuleset.action == FilterAction.BAN) {
+                Punishment(
+                    User(nilUUID, "Console"),
+                    User(player.uuid, player.username),
+                    "hate",
+                    PunishmentTypes.AUTO_BAN
+                ).handle()
+            }
 
             bot.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
                 val firstToken = filterResult.failedTokens.first()
