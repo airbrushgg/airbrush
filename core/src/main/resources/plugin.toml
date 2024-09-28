@@ -3,4 +3,4 @@ name = "Core"
 description = "The core plugin for Airbrush"
 version = "0.1.0"
 mainClass = "gg.airbrush.core.Core"
-dependencies = ["pocket", "sdk", "worlds", "discord"]
+dependencies = ["pocket", "sdk", "worlds", "discord", "punishments"]
