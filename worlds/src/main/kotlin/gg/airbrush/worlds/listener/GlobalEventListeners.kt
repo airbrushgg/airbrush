@@ -29,11 +29,11 @@ class GlobalEventListeners {
         // TODO: Allow user to define spawn point in worlds.toml
         val player = event.player
         player.teleport(Pos(0.0, 6.0, 0.0))
+        player.inventory.clear()
 
         // Prevents creative carrying over from previous worlds
         if (player.gameMode !== GameMode.SURVIVAL) {
             player.gameMode = GameMode.SURVIVAL
-            player.isAllowFlying = true
         }
     }
 }

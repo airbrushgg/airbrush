@@ -102,10 +102,9 @@ class PlayerLogin {
         }
 
         player.isAllowFlying = true
+        player.giveItems(sdkPlayer)
 
         if (event.isFirstSpawn) {
-            player.giveItems(sdkPlayer)
-
             val joinInfo = Translations.translate("core.welcome", player.username)
             player.sendMessage(joinInfo.mm())
 
