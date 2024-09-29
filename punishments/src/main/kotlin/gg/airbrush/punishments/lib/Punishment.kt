@@ -81,7 +81,8 @@ fun canPunish(uuid: UUID): Boolean {
     val playerExists = SDK.players.exists(uuid)
     if(!playerExists) return true
     val offenderRank = SDK.players.get(uuid).getRank()
-    return offenderRank.getData().permissions.find { it.key == "core.staff" } === null
+    val offenderPermissions = offenderRank.getData().permissions
+    return offenderPermissions.find { it.key == "core.staff" || it.key == "*" } === null
 }
 
 data class User(val uuid: UUID, val name: String)
