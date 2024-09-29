@@ -35,7 +35,7 @@ class Pixels {
         withContext(Dispatchers.IO) {
             val time = measureTimeMillis {
                 positions.map { pos ->
-                    Pixel(pos.to(), player, material.name(), now, world)
+                    Pixel(pos.to(), player, material.id(), now, world)
                 }.let { col.insertMany(it) }
             }
             println("[SDK] Pixels#paintMulti took $time ms, painted ${positions.size} pixels.")

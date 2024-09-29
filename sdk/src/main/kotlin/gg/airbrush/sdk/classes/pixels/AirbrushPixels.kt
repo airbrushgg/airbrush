@@ -29,19 +29,10 @@ data class Pixel(
     val position: Location,
     /* The UUID of the player who painted the pixel. */
     val player: UUID,
-    /* The material of the pixel. */
-    val material: String,
+    /* The material ID of the pixel. */
+    val material: Int,
     /* The UNIX timestamp of the pixel. */
     val timestamp: Long,
     /* The world ID this player painted in. */
     val worldId: String,
 )
-
-//    fun getTopPixels(): List<Material> {
-//        val materialGroups = data.pixels
-//            .groupBy { it.from().material }
-//            .map { (k, v) -> v.count() to k }
-//            .sortedBy { it.first }
-//
-//        return materialGroups.take(3).map { it.second }
-//    }
