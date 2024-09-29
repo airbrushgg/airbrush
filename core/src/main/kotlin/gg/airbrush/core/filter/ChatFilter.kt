@@ -66,11 +66,7 @@ class ChatFilter {
     fun validateMessage(player: Player, message: String): FilterResult {
         val tokens = tokenizer.tokenize(message)
         for (wordList in wordLists) {
-            logger.info("Checking ${wordList.ruleset.path}")
-            tokens.firstOrNull {
-                logger.info("Checking token: $it")
-                return@firstOrNull wordList.test(it)
-            }?.let { failedToken ->
+            tokens.firstOrNull {wordList.test(it) }?.let { failedToken ->
                 return FilterResult(wordList.ruleset, listOf(failedToken))
             }
         }
