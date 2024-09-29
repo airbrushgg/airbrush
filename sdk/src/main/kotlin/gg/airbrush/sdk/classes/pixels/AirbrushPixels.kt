@@ -24,15 +24,19 @@ fun Point.to(): Location {
     return Location(blockX(), blockY(), blockZ())
 }
 
-data class Pixel(
-    /* The position of the pixel. */
-    val position: Location,
+data class History(
     /* The UUID of the player who painted the pixel. */
     val player: UUID,
     /* The material ID of the pixel. */
     val material: Int,
     /* The UNIX timestamp of the pixel. */
     val timestamp: Long,
+)
+
+data class Pixel(
+    /* The position of the pixel. */
+    val position: Location,
     /* The world ID this player painted in. */
     val worldId: String,
+    val changes: List<History>
 )
