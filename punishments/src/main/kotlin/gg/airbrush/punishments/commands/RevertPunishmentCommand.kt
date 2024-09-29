@@ -12,8 +12,8 @@
 
 package gg.airbrush.punishments.commands
 
-import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.useBot
 import gg.airbrush.punishments.lib.getReasonInfo
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
@@ -86,20 +86,23 @@ class RevertPunishmentCommand : Command("revertpun") {
 		sender.sendMessage("<success>Successfully reverted punishment.".mm())
 
 		this.sendLog(punishment, sender.username)
-		val discordLogChannel = bot.getTextChannelById(discordConfig.channels.log.toLong())
-			?: throw Exception("Failed to find logs channel")
 
-		val victim = getName(punishment)
+		useBot {
+			val discordLogChannel = it.getTextChannelById(discordConfig.channels.log.toLong())
+				?: throw Exception("Failed to find logs channel")
 
-		val logEmbed = EmbedBuilder().setTitle("Punishment for $victim reverted")
-			.setColor(Color.decode("#ff6e6e"))
-			.setThumbnail("https://crafatar.com/renders/head/${punishment.getPlayer()}")
-			.addField(MessageEmbed.Field("Reverted by", sender.username, false))
-			.addField(MessageEmbed.Field("Punishment ID", punishment.data.id, false))
-			.setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
-			.build()
+			val victim = getName(punishment)
 
-		discordLogChannel.sendMessageEmbeds(logEmbed).queue()
+			val logEmbed = EmbedBuilder().setTitle("Punishment for $victim reverted")
+				.setColor(Color.decode("#ff6e6e"))
+				.setThumbnail("https://crafatar.com/renders/head/${punishment.getPlayer()}")
+				.addField(MessageEmbed.Field("Reverted by", sender.username, false))
+				.addField(MessageEmbed.Field("Punishment ID", punishment.data.id, false))
+				.setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
+				.build()
+
+			discordLogChannel.sendMessageEmbeds(logEmbed).queue()
+		}
 	}
 
 

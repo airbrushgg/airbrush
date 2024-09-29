@@ -1,7 +1,7 @@
 package gg.airbrush.core.commands.admin
 
-import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.useBot
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.minestom.server.adventure.audience.Audiences
@@ -30,11 +30,14 @@ class Broadcast : Command("broadcast"), CommandExecutor {
         Audiences.all().sendMessage(message)
 
         val timestamp = DateTimeFormatter.ofPattern("HH:mm:ss z").format(ZonedDateTime.now())
-        val chatChannel = bot.getTextChannelById(discordConfig.channels.main)
-            ?: return
 
-        val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
-            .replace("`", "'")
-        chatChannel.sendMessage("`[$timestamp] $plainMessage`").queue()
+        useBot {
+            val chatChannel = it.getTextChannelById(discordConfig.channels.main)
+                ?: return@useBot
+
+            val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
+                .replace("`", "'")
+            chatChannel.sendMessage("`[$timestamp] $plainMessage`").queue()
+        }
     }
 }

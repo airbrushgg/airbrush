@@ -18,7 +18,7 @@ import gg.airbrush.core.commands.admin.Lockdown
 import gg.airbrush.core.filter.FilterAction
 import gg.airbrush.core.filter.chatFilterInstance
 import gg.airbrush.core.lib.ColorUtil
-import gg.airbrush.discord.bot
+import gg.airbrush.discord.useBot
 import gg.airbrush.punishments.commands.nilUUID
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.Punishment
@@ -77,22 +77,24 @@ class PlayerChat {
                 ).handle()
             }
 
-            bot.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
-                val firstToken = filterResult.failedTokens.first()
+            useBot {
+               it.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
+                   val firstToken = filterResult.failedTokens.first()
 
-                val formattedMessage = event.message
-                    .replace("`", "\\`")
-                    .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
+                   val formattedMessage = event.message
+                       .replace("`", "\\`")
+                       .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
 
-                val logEmbed = EmbedBuilder()
-                    .setTitle("`${event.player.username}` triggered the filter")
-                    .setColor(java.awt.Color.decode("#ff6e6e"))
-                    .addField(MessageEmbed.Field("Message", formattedMessage, false))
-                    .addField(MessageEmbed.Field("Action", filterResult.ruleset.action.toString(), false))
-                    .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority})")
-                    .build()
+                   val logEmbed = EmbedBuilder()
+                       .setTitle("`${event.player.username}` triggered the filter")
+                       .setColor(java.awt.Color.decode("#ff6e6e"))
+                       .addField(MessageEmbed.Field("Message", formattedMessage, false))
+                       .addField(MessageEmbed.Field("Action", filterResult.ruleset.action.toString(), false))
+                       .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority})")
+                       .build()
 
-                logChannel.sendMessageEmbeds(logEmbed).queue()
+                   logChannel.sendMessageEmbeds(logEmbed).queue()
+               }
             }
 
             return
