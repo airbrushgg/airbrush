@@ -26,6 +26,7 @@ data class FilterConfig(
     data class Ruleset(
         val priority: Int = 1,
         val action: FilterAction = FilterAction.BLOCK,
+        val banReason: String = "hate",
         val path: String,
         val regex: Boolean = false
     )
