@@ -12,8 +12,8 @@
 
 package gg.airbrush.punishments.lib
 
-import gg.airbrush.discord.bot
 import gg.airbrush.discord.discordConfig
+import gg.airbrush.discord.useBot
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
@@ -143,24 +143,26 @@ data class Punishment(
     }
 
     private fun sendDiscordLog(id: String) {
-        val discordLogChannel = bot.getTextChannelById(discordConfig.channels.log.toLong())
-            ?: throw Exception("Failed to find #punish-logs channel")
+        useBot {
+            val discordLogChannel = it.getTextChannelById(discordConfig.channels.log.toLong())
+                ?: throw Exception("Failed to find #punish-logs channel")
 
-        val (shortReason) = getReasonInfo(this.reason)
+            val (shortReason) = getReasonInfo(this.reason)
 
-        val logEmbed = EmbedBuilder().setTitle("${this.player.name} was ${getPluralType()}")
-            .setColor(Color.decode("#ff6e6e"))
-            .setThumbnail("https://skins.mcstats.com/body/side/${this.player.uuid}")
-            .addField(MessageEmbed.Field("Reason", shortReason, true))
-            .addField(MessageEmbed.Field("Moderator", this.moderator.name, true))
-            .addField(MessageEmbed.Field("Punishment ID", id, false))
-            .setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
+            val logEmbed = EmbedBuilder().setTitle("${this.player.name} was ${getPluralType()}")
+                .setColor(Color.decode("#ff6e6e"))
+                .setThumbnail("https://skins.mcstats.com/body/side/${this.player.uuid}")
+                .addField(MessageEmbed.Field("Reason", shortReason, true))
+                .addField(MessageEmbed.Field("Moderator", this.moderator.name, true))
+                .addField(MessageEmbed.Field("Punishment ID", id, false))
+                .setFooter("Environment: ${if(SDK.isDev) "Development" else "Production"}")
 
-        if(this.notes.isNotEmpty()) {
-            logEmbed.addField(MessageEmbed.Field("Notes", this.notes, true))
+            if(this.notes.isNotEmpty()) {
+                logEmbed.addField(MessageEmbed.Field("Notes", this.notes, true))
+            }
+
+            discordLogChannel.sendMessageEmbeds(logEmbed.build()).queue()
         }
-
-        discordLogChannel.sendMessageEmbeds(logEmbed.build()).queue()
     }
 
     fun handle(): Punishment {

@@ -20,16 +20,16 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 
-lateinit var bot: JDA
+internal lateinit var bot: JDA
 
 object Discord {
 	fun load() {
-		bot = JDABuilder.createDefault(
-			discordConfig.botToken
-		).enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
+		bot = JDABuilder.createDefault(discordConfig.botToken)
+			.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
 			.addEventListeners(PlayerChat)
 			.setMemberCachePolicy(MemberCachePolicy.ALL)
-			.build().awaitReady()
+			.build()
+			.awaitStatus(JDA.Status.INITIALIZED)
 
 		// Attach command handler
 		bot.updateCommands().complete()
@@ -42,4 +42,6 @@ object Discord {
 		Coffee.import(CoffeeJDA(bot))
 		Coffee.brew("gg.airbrush.discord.discordCommands")
 	}
+
+	fun isConnected() = bot.status == JDA.Status.CONNECTED
 }
