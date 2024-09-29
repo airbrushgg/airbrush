@@ -24,24 +24,19 @@ fun Point.to(): Location {
     return Location(blockX(), blockY(), blockZ())
 }
 
+data class History(
+    /* The UUID of the player who painted the pixel. */
+    val player: UUID,
+    /* The material ID of the pixel. */
+    val material: Int,
+    /* The UNIX timestamp of the pixel. */
+    val timestamp: Long,
+)
+
 data class Pixel(
     /* The position of the pixel. */
     val position: Location,
-    /* The UUID of the player who painted the pixel. */
-    val player: UUID,
-    /* The material of the pixel. */
-    val material: String,
-    /* The UNIX timestamp of the pixel. */
-    val timestamp: Long,
     /* The world ID this player painted in. */
     val worldId: String,
+    val changes: List<History>
 )
-
-//    fun getTopPixels(): List<Material> {
-//        val materialGroups = data.pixels
-//            .groupBy { it.from().material }
-//            .map { (k, v) -> v.count() to k }
-//            .sortedBy { it.first }
-//
-//        return materialGroups.take(3).map { it.second }
-//    }

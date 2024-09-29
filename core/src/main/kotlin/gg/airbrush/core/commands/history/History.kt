@@ -26,6 +26,7 @@ import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
+import net.minestom.server.item.Material
 
 class History : Command("history"), CommandExecutor {
     private val limitArgument = ArgumentType.Integer("limit")
@@ -75,7 +76,8 @@ class History : Command("history"), CommandExecutor {
         pixelData.asReversed().forEach {
             val time = it.timestamp.toRelativeTime()
             val painter = PlayerUtils.getName(it.player)
-            msg.add("<p><s>$painter</s> painted <s>${it.material.prettify()}</s> ($time)")
+            val material = Material.fromId(it.material) ?: return@forEach
+            msg.add("<p><s>$painter</s> painted <s>${material.name().prettify()}</s> ($time)")
         }
 
         player.sendMessage("<p><s>${msg.size}</s> actions have occurred here.".mm())
