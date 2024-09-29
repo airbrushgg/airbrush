@@ -72,7 +72,7 @@ class PlayerChat {
                 Punishment(
                     User(nilUUID, "Console"),
                     User(player.uuid, player.username),
-                    "hate",
+                    "HATE",
                     PunishmentTypes.AUTO_BAN
                 ).handle()
             }
