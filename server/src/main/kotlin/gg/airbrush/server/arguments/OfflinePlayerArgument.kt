@@ -10,9 +10,8 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package gg.airbrush.punishments.arguments
+package gg.airbrush.server.arguments
 
-import gg.airbrush.punishments.lib.OfflinePlayer
 import kotlinx.coroutines.Deferred
 import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender

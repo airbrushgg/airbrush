@@ -12,10 +12,11 @@
 
 package gg.airbrush.punishments.commands
 
-import gg.airbrush.punishments.arguments.OfflinePlayerArgument
+import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.*
 import gg.airbrush.sdk.SDK
+import gg.airbrush.server.arguments.OfflinePlayer
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
