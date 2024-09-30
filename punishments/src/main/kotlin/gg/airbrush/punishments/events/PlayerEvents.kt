@@ -16,18 +16,8 @@ import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.eventNode
 import gg.airbrush.punishments.lib.Punishment
 import gg.airbrush.punishments.lib.User
-import gg.airbrush.punishments.punishmentConfig
 import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.lib.Placeholder
-import gg.airbrush.sdk.lib.Translations
-import gg.airbrush.sdk.lib.parsePlaceholders
-import gg.airbrush.server.lib.mm
-import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerPreLoginEvent
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 
 class PlayerEvents {
 	init {
@@ -40,7 +30,7 @@ class PlayerEvents {
 		val punishments = SDK.punishments.list(event.player)
 
 		val activeBan = punishments.find {
-			it.data.active && it.data.type == PunishmentTypes.BAN.ordinal
+			it.data.active && PunishmentTypes.isBan(it.data.type)
 		}
 
 		if(activeBan !== null) {

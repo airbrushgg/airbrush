@@ -19,7 +19,17 @@ enum class PunishmentTypes {
 	BAN,
 	AUTO_BAN;
 
+	fun isBan(): Boolean {
+		return this == BAN || this == AUTO_BAN
+	}
+
 	override fun toString(): String {
 		return if (this == AUTO_BAN) "automatically ban" else super.toString()
+	}
+
+	companion object {
+		fun isBan(type: Int): Boolean {
+			return entries[type].isBan()
+		}
 	}
 }
