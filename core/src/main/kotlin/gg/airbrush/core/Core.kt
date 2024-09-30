@@ -77,7 +77,6 @@ class Core : Plugin() {
 			Vanish(),
 			Lockdown(),
 			ResetSpawn(),
-			AddBooster(),
 			Tpa(),
 			TpAccept(),
 			TpDeny(),

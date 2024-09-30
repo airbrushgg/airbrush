@@ -12,7 +12,7 @@
 
 package gg.airbrush.punishments.commands
 
-import gg.airbrush.punishments.arguments.OfflinePlayerArgument
+import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.*
 import gg.airbrush.punishments.punishmentConfig
@@ -20,12 +20,12 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.Placeholder
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.sdk.lib.parsePlaceholders
+import gg.airbrush.server.arguments.OfflinePlayer
 import gg.airbrush.server.lib.mm
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext

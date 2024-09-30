@@ -27,6 +27,7 @@ dependencies {
     implementation("cc.ekblad:4koma:1.2.0")
     implementation("ch.qos.logback:logback-core:1.5.8")
     implementation("ch.qos.logback:logback-classic:1.5.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 application {

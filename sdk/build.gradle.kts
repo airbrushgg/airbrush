@@ -23,7 +23,7 @@ dependencies {
     compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
     compileOnly("cc.ekblad:4koma:1.2.0")
     implementation("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 	// Used for translations, needed for its lack of type-safety :kek:
 	implementation("com.moandjiezana.toml:toml4j:0.7.2")

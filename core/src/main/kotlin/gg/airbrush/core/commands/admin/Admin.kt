@@ -15,12 +15,16 @@ package gg.airbrush.core.commands.admin
 import gg.airbrush.core.lib.CanvasManager
 import gg.airbrush.core.lib.teleportToSpawn
 import gg.airbrush.sdk.SDK
+import gg.airbrush.server.arguments.OfflinePlayer
+import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.sdk.lib.PlayerUtils
 import gg.airbrush.sdk.lib.delay
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.isConfirmed
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.runBlocking
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -36,13 +40,16 @@ class Admin : Command("admin", "a"), CommandExecutor {
         setCondition { sender, _ -> sender.hasPermission("core.admin") }
         addSubcommand(WorldInfo())
         addSubcommand(DeleteWorld())
+        addSubcommand(AddBooster())
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
         if(sender !is Player) return
 
         sender.sendMessage("<s>Admin commands:".mm())
-        sender.sendMessage("<s>➜ <p>/addbooster <s>Adds a booster to a player.".mm())
+        sender.sendMessage("<s>➜ <p>/admin addbooster <s>Adds a booster to a player.".mm())
+        sender.sendMessage("<s>➜ <p>/admin worldinfo <s>View world info.".mm())
+        sender.sendMessage("<s>➜ <p>/admin deleteworld <s>Deletes a world.".mm())
     }
 
     private class WorldInfo: Command("worldinfo", "wi"), CommandExecutor {
@@ -111,12 +118,54 @@ class Admin : Command("admin", "a"), CommandExecutor {
                 }
 
                 delay(500) {
-                   world.delete()
-                   WorldManager.deleteCanvas(id.toString())
+                    world.delete()
+                    WorldManager.deleteCanvas(id.toString())
                 }
 
                 sender.sendMessage("<success>Deleted world!".mm())
             }.prompt()
+        }
+    }
+
+    private class AddBooster : Command("addbooster", "ab"), CommandExecutor {
+        private val registeredBoosters = SDK.boosters.getAvailableBoosters()
+        private val idArgument = ArgumentType.String("id")
+        private val amountArgument = ArgumentType.Integer("amount")
+        private val playerArgument = OfflinePlayerArgument("offline-player")
+
+        init {
+            defaultExecutor = CommandExecutor { sender, _ ->
+                sender.sendMessage("<error>/admin addbooster <player> <id> [amount]".mm())
+            }
+
+            addSyntax(this::apply, playerArgument, idArgument, amountArgument)
+            addSyntax(this::apply, playerArgument, idArgument)
+        }
+
+        override fun apply(sender: CommandSender, context: CommandContext) = runBlocking {
+            val offlinePlayer = context.get<Deferred<OfflinePlayer>>("offline-player").await()
+            val id = context.get<String>("id")
+            val amount = context.get<Int>("amount") ?: 1
+
+            val boosterInfo = registeredBoosters.find { b -> b.id == id }
+
+            if(boosterInfo == null) {
+                sender.sendMessage("<error>No such booster exists with that id!".mm())
+                return@runBlocking
+            }
+
+            val playerExists = SDK.players.exists(offlinePlayer.uniqueId)
+            if(!playerExists) {
+                sender.sendMessage("<error>That player has never played Airbrush!".mm())
+                return@runBlocking
+            }
+
+            val sdkPlayer = SDK.players.get(offlinePlayer.uniqueId)
+            for (i in 0 until amount) {
+                sdkPlayer.addBooster(boosterInfo)
+            }
+
+            sender.sendMessage("<success>They were given ${boosterInfo.name}!".mm())
         }
     }
 }
