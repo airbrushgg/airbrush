@@ -35,7 +35,6 @@ import gg.airbrush.core.lib.CanvasManager
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.builder.Command
@@ -84,6 +83,7 @@ class Core : Plugin() {
 			TpDeny(),
 			Rules(),
 			Stats(),
+			Shop(),
 		    Pronouns(),
 			Rollback(),
 			Teleport(),
