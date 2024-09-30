@@ -15,6 +15,8 @@
 package gg.airbrush.core.events
 
 import gg.airbrush.core.eventNode
+import gg.airbrush.core.getPlayerListFooter
+import gg.airbrush.core.getPlayerListHeader
 import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.AirbrushPlayer
@@ -162,6 +164,8 @@ class PlayerLogin {
             } else builder.append("<p>${player.username}".mm())
         }
         player.displayName = displayNameComponent
+
+        player.sendPlayerListHeaderAndFooter(getPlayerListHeader(), getPlayerListFooter())
 
         if (player.uuid !in sidebars) {
             val sidebar = Sidebar(Translations.translate("core.scoreboard.title").mm())
