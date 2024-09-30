@@ -14,7 +14,3 @@ schematic = "schematics/spawn.schem"
 [[world]]
 name = "star_world"
 schematic = "schematics/star_world.schem"
-
-[[template]]
-id = "player_canvas"
-schematic = "schematics/star_world.schem"

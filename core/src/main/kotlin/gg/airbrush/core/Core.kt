@@ -34,13 +34,26 @@ import gg.airbrush.core.events.PlayerLevelUp
 import gg.airbrush.core.lib.CanvasManager
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.builder.Command
 import net.minestom.server.event.EventNode
+import net.minestom.server.event.server.ServerTickMonitorEvent
+import net.minestom.server.monitoring.TickMonitor
 import net.minestom.server.timer.TaskSchedule
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.floor
 
 internal val eventNode = EventNode.all("Core")
+
+// TODO: Move to server
+internal var lastTick = AtomicReference<TickMonitor>()
+internal val tps: Double get() {
+	val monitor = lastTick.get() ?: return 20.0
+	return 20.0.coerceAtMost(floor(1000 / monitor.tickTime))
+}
 
 class Core : Plugin() {
 	private var commands: List<Command> = listOf()
@@ -93,11 +106,19 @@ class Core : Plugin() {
 
 		MinecraftServer.LOGGER.info("[Core] Loaded!")
 
+		eventNode.addListener(ServerTickMonitorEvent::class.java) { event ->
+			lastTick.set(event.tickMonitor)
+		}
+
 	    MinecraftServer.getSchedulerManager().scheduleTask({
 			val broadcasts = Translations.translate("core.broadcasts").trimIndent().split("\n")
 		    val message = broadcasts.random()
 		    Audiences.players().sendMessage(message.mm())
 	    }, TaskSchedule.immediate(), TaskSchedule.minutes(3))
+
+		MinecraftServer.getSchedulerManager().scheduleTask({
+			Audiences.players().sendPlayerListHeaderAndFooter(getPlayerListHeader(), getPlayerListFooter())
+		}, TaskSchedule.immediate(), TaskSchedule.seconds(10))
     }
 
     override fun teardown() {
@@ -137,4 +158,25 @@ class Core : Plugin() {
         BrushEvents()
         PlayerBlockHandler()
     }
+}
+
+fun getPlayerListHeader(): Component {
+	return """
+		<bold><#D31A15>A<#FF4800>i<#FF8000>r<#FFC800>b<#12B804>r<#2F31FF>u<#7911DF>s<#C611DF>h</bold>
+		<br><s>Airbrush.minehut.gg<br>
+	""".trimIndent().replace("\n", "").mm()
+}
+
+fun getPlayerListFooter(): Component {
+	val playerCount = MinecraftServer.getConnectionManager().onlinePlayerCount
+	val tpsString = when (tps) {
+		20.0 -> "<g>$tps"
+		else -> "<y>$tps"
+	}
+
+	return """
+		<br><p>Online Players<s>: <g>$playerCount<br><p>TPS<s>: $tpsString
+		<br><br><g>Ranks <s>+ <g>Boosters<s> at <y><u>/store</u></y><s>!
+		<br><s>Join our <#7289da><u>/discord</u></#7289da> server!
+	""".trimIndent().replace("\n", "").mm()
 }

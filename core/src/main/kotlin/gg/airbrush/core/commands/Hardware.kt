@@ -14,6 +14,7 @@
 
 package gg.airbrush.core.commands
 
+import gg.airbrush.core.tps
 import gg.airbrush.server.lib.mm
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
@@ -32,8 +33,14 @@ class Hardware : Command("hardware", "hw"), CommandExecutor {
         val maxHeapSize = runtime.maxMemory() / 1048576L
         val availableHeapSize = maxHeapSize - usedMemory
 
+        val tpsString = when (tps) {
+            20.0 -> "<g>$tps</g>"
+            else -> "<y>$tps</y>"
+        }
+
         // todo: add tps averages and cpu usage
         sender.sendMessage("""<s>
+            |TPS: $tpsString
             |Memory: <p>${usedMemory}mb</p>/<p>${maxHeapSize}mb</p> (<p>${availableHeapSize}mb</p> available)
         """.trimMargin().mm())
     }
