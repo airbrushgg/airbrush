@@ -35,6 +35,8 @@ object PlayerUtils {
     }
 
     fun getName(uuid: UUID): String {
+        if(uuid == UUID(0, 0)) return "Console"
+
         val response = HTTP.get("$NAME_URL/$uuid")
         val body = Json.decodeFromString(response.body()) as MojangResponse
         return body.name
