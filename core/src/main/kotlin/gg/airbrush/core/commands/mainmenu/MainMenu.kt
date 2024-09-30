@@ -18,7 +18,7 @@ import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.core.lib.GUIItems
 import gg.airbrush.pocket.GUI
 import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.lib.Translations
+import gg.airbrush.sdk.lib.executeCommand
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -88,14 +88,9 @@ fun openMainMenu(player: Player) {
         .lore("<s>Buy XP boosters or ranks for more perks".mm())
         .build()
     inventory.put('e', shop) {
-	    player.sendMessage(Translations.translate("core.shop").mm())
 	    player.closeInventory()
+        player.executeCommand("shop")
     }
-
-//    val rules = ItemStack.builder(Material.BOOK)
-//        .customName("<p>View server rules".mm())
-//        .build()
-//    inventory.put('r', rules) {}
 
     inventory.open(player)
 }
