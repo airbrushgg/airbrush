@@ -45,7 +45,7 @@ fun AirbrushPunishment.getReasonString(): String {
 	}
 
 	if(this.data.active) {
-		text = if(this.data.type == PunishmentTypes.BAN.ordinal) "<red>$reason</red>"
+		text = if (PunishmentTypes.isBan(this.data.type)) "<red>$reason</red>"
 		else "<blue>$reason</blue>"
 	}
 
@@ -59,13 +59,14 @@ fun AirbrushPunishment.getReasonString(): String {
 }
 
 fun Punishment.getReasonString(): String {
-	var text = ""
+	var text: String
 	val reason = this.shortReason
 
-	text = if(this.action.equals(PunishmentTypes.BAN.name, true)) "<red>$reason</red>"
-	else "<blue>$reason</blue>"
-
-	if(text.isEmpty()) text = reason
+	text = when (this.action) {
+		PunishmentTypes.BAN.name, PunishmentTypes.AUTO_BAN.name -> "<red>$reason</red>"
+		else -> "<blue>$reason</blue>"
+	}
+	if (text.isEmpty()) text = reason
 
 	return text
 }
@@ -97,7 +98,7 @@ class PunishmentsCommand : Command("punishments") {
 
 		val allPunishments = playerPunishments
 			.sortedWith(compareByDescending<AirbrushPunishment> { it.data.active }
-			.thenBy { it.data.type == PunishmentTypes.BAN.ordinal })
+			.thenBy { PunishmentTypes.isBan(it.data.type) })
 
 		val punishments = allPunishments.joinToString("<br>") {
 			val type = PunishmentTypes.entries[it.data.type]
