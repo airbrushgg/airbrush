@@ -19,7 +19,7 @@ import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.entity.Player
 
-class Shop : Command("shop"), CommandExecutor {
+class Shop : Command("shop", "store"), CommandExecutor {
     init {
         defaultExecutor = this
     }
