@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.time.Instant
 import java.util.UUID
@@ -114,6 +115,8 @@ data class Punishment(
     /** Notes to be attached to the punishment */
     val notes: String = "",
 ) {
+    private val logger = LoggerFactory.getLogger(Punishment::class.java)
+
     fun getDisconnectMessage(): Component {
         val key = when (this.type) {
             PunishmentTypes.BAN -> "punishments.playerBanned"
@@ -143,6 +146,8 @@ data class Punishment(
     }
 
     private fun sendDiscordLog(id: String) {
+        logger.info("Player ${player.name} was ${getPluralType()} by ${moderator.name} for $reason (Punishment ID: $id)")
+
         useBot {
             val discordLogChannel = it.getTextChannelById(discordConfig.channels.log.toLong())
                 ?: throw Exception("Failed to find #punish-logs channel")
@@ -182,7 +187,7 @@ data class Punishment(
         try {
             sendDiscordLog(punishment.id)
         } catch (e: Exception) {
-            MinecraftServer.LOGGER.error("[Punishments] Failed to send Discord log for punishment ${punishment.id}", e)
+            logger.error("[Punishments] Failed to send Discord log for punishment ${punishment.id}", e)
         }
 
         val logPlaceholders = this.getPlaceholders()
@@ -198,7 +203,7 @@ data class Punishment(
         }
 
         if(onlinePlayer === null) {
-            MinecraftServer.LOGGER.warn("[Punishments] Player ${player.name} was not online, but punishment was applied.")
+            logger.warn("[Punishments] Player ${player.name} was not online, but punishment was applied.")
             return this
         }
 
