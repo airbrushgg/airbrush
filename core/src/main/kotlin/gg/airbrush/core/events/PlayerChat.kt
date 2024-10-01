@@ -34,8 +34,11 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.minestom.server.MinecraftServer
 import net.minestom.server.color.Color
 import net.minestom.server.event.player.PlayerChatEvent
+import org.slf4j.LoggerFactory
 
 class PlayerChat {
+    private val logger = LoggerFactory.getLogger(PlayerChat::class.java)
+
     init {
         // NOTE: This is intentionally added to the global event handler.
         val eventHandler = MinecraftServer.getGlobalEventHandler()
@@ -67,6 +70,7 @@ class PlayerChat {
 
         if (filterRuleset?.action == FilterAction.BLOCK || filterRuleset?.action == FilterAction.BAN) {
             event.isCancelled = true
+            logger.info("${player.username} triggered the filter with message: ${event.message}")
 
             if (filterRuleset.action == FilterAction.BAN) {
                 Punishment(

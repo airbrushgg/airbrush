@@ -23,6 +23,7 @@ import gg.airbrush.core.filter.parsing.Tokenizer
 import gg.airbrush.core.filter.ruleset.RegexWordList
 import gg.airbrush.core.filter.ruleset.TextWordList
 import gg.airbrush.core.filter.ruleset.WordList
+import gg.airbrush.server.lib.mm
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import org.slf4j.LoggerFactory
@@ -67,6 +68,7 @@ class ChatFilter {
         val tokens = tokenizer.tokenize(message)
         for (wordList in wordLists) {
             tokens.firstOrNull {wordList.test(it) }?.let { failedToken ->
+                player.sendMessage(config.root.message.mm())
                 return FilterResult(wordList.ruleset, listOf(failedToken))
             }
         }
@@ -85,6 +87,7 @@ class ChatFilter {
     }
 
     private fun loadConfiguration(): FilterConfig {
+        logger.info("Loading filter configuration...")
         val maybeConfig = runCatching { mapper.decode<FilterConfig>(configPath) }
         return maybeConfig.getOrElse {
             logger.error("Failed to load filter configuration. Loading default instead.", maybeConfig.exceptionOrNull())
