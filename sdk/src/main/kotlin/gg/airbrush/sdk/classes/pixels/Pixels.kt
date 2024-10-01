@@ -34,44 +34,42 @@ class Pixels {
         val now = System.currentTimeMillis()
 
         withContext(Dispatchers.IO) {
-            val time = measureTimeMillis {
-                positions.forEach { pos ->
-                    val pixelLocation = pos.to()
+            positions.forEach { pos ->
+                val pixelLocation = pos.to()
 
-                    val existingPixel = col.find(
-                        Filters.and(
-                            Filters.eq("position", pixelLocation),
-                            Filters.eq("worldId", world)
-                        )
-                    ).firstOrNull()
+                val existingPixel = col.find(
+                    Filters.and(
+                        Filters.eq("position", pixelLocation),
+                        Filters.eq("worldId", world)
+                    )
+                ).firstOrNull()
 
-                    val updatedPixel = existingPixel?.copy(
-                        changes = existingPixel.changes + History(
+                val updatedPixel = existingPixel?.copy(
+                    changes = existingPixel.changes + History(
+                        player = player,
+                        material = material.id(),
+                        timestamp = now
+                    )
+                ) ?: Pixel(
+                    position = pixelLocation,
+                    worldId = world,
+                    changes = listOf(
+                        History(
                             player = player,
                             material = material.id(),
                             timestamp = now
                         )
-                    ) ?: Pixel(
-                        position = pixelLocation,
-                        worldId = world,
-                        changes = listOf(
-                            History(
-                                player = player,
-                                material = material.id(),
-                                timestamp = now
-                            )
-                        )
                     )
+                )
 
-                    col.replaceOne(
-                        Filters.and(
-                            Filters.eq("position", pixelLocation),
-                            Filters.eq("worldId", world)
-                        ),
-                        updatedPixel,
-                        ReplaceOptions().upsert(true)
-                    )
-                }
+                col.replaceOne(
+                    Filters.and(
+                        Filters.eq("position", pixelLocation),
+                        Filters.eq("worldId", world)
+                    ),
+                    updatedPixel,
+                    ReplaceOptions().upsert(true)
+                )
             }
         }
     }
