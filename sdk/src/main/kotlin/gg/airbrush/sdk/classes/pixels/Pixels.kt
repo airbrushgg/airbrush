@@ -73,7 +73,6 @@ class Pixels {
                     )
                 }
             }
-            println("[SDK] Pixels#paintMulti took $time ms, processed ${positions.size} pixels.")
         }
     }
 
