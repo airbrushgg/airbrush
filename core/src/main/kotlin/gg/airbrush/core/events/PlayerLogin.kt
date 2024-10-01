@@ -135,10 +135,20 @@ class PlayerLogin {
     }
 
     private fun executePreLogin(event: AsyncPlayerPreLoginEvent) {
-		if(!SDK.whitelist.isEnabled()) return
+        if(event.player.username.contains(".")) {
+            MinecraftServer.LOGGER.info("Player ${event.player.username} was kicked due to being on Bedrock.")
+            event.player.kick("Sorry, but Airbrush doesn't function properly on Bedrock :c")
+            return
+        }
+
+        if(!SDK.whitelist.isEnabled()) return
+
         val whitelistStatus = SDK.whitelist.get(event.playerUuid)
+
         if (whitelistStatus == null) {
+            MinecraftServer.LOGGER.info("Player ${event.player.username} was kicked due to not being on the whitelist.")
             event.player.kick(Translations.translate("core.whitelist").mm())
+            return
         }
     }
 
