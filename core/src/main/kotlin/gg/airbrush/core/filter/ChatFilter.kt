@@ -18,22 +18,16 @@ import cc.ekblad.toml.decode
 import cc.ekblad.toml.model.TomlValue
 import cc.ekblad.toml.tomlMapper
 import gg.airbrush.sdk.lib.ConfigUtils
-import gg.airbrush.core.filter.parsing.Tag
 import gg.airbrush.core.filter.parsing.Tokenizer
 import gg.airbrush.core.filter.ruleset.RegexWordList
 import gg.airbrush.core.filter.ruleset.TextWordList
 import gg.airbrush.core.filter.ruleset.WordList
-import net.minestom.server.MinecraftServer
+import gg.airbrush.server.lib.mm
 import net.minestom.server.entity.Player
 import org.slf4j.LoggerFactory
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import kotlin.io.path.Path
 import kotlin.io.path.absolute
 import kotlin.io.path.notExists
-import kotlin.math.log
 
 val chatFilterInstance = ChatFilter()
 
@@ -67,6 +61,7 @@ class ChatFilter {
         val tokens = tokenizer.tokenize(message)
         for (wordList in wordLists) {
             tokens.firstOrNull {wordList.test(it) }?.let { failedToken ->
+                player.sendMessage(config.root.message.mm())
                 return FilterResult(wordList.ruleset, listOf(failedToken))
             }
         }
@@ -85,6 +80,7 @@ class ChatFilter {
     }
 
     private fun loadConfiguration(): FilterConfig {
+        logger.info("Loading filter configuration...")
         val maybeConfig = runCatching { mapper.decode<FilterConfig>(configPath) }
         return maybeConfig.getOrElse {
             logger.error("Failed to load filter configuration. Loading default instead.", maybeConfig.exceptionOrNull())
