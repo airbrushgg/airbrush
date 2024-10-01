@@ -41,10 +41,7 @@ object Database {
             MongoClientSettings.getDefaultCodecRegistry()
         )
 
-	    // note: we could just use this to separate production and development but,
-	    // we use seperate ones to make sure latency is as small as it can be.
-	    // the dev db is hosted on the same machine, whereas the production db is hosted on atlas c:
-        db = conn.getDatabase("Airbrush")
+        db = conn.getDatabase(if(config.isDev) "AirbrushDev" else "Airbrush")
             .withCodecRegistry(codecRegistry)
     }
 
