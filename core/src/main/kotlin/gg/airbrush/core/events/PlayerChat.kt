@@ -32,6 +32,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.minestom.server.MinecraftServer
+import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.color.Color
 import net.minestom.server.event.player.PlayerChatEvent
 import org.slf4j.LoggerFactory
@@ -67,10 +68,15 @@ class PlayerChat {
 
         val filterResult = chatFilterInstance.validateMessage(player, event.message)
         val filterRuleset = filterResult.ruleset
+        val filterAction = filterRuleset?.action
 
-        if (filterRuleset?.action == FilterAction.BLOCK || filterRuleset?.action == FilterAction.BAN) {
+        if (filterAction == FilterAction.BLOCK || filterAction == FilterAction.BAN) {
             event.isCancelled = true
+
             logger.info("${player.username} triggered the filter with message: ${event.message}")
+
+            val underlinedMessage = event.message.replace(filterResult.failedTokens.first().value, "<u><<#ff6e6e>${filterResult.failedTokens.first().value}</#ff6e6e></u>")
+            Audiences.players { it.hasPermission("core.staff") }.sendMessage("<s>[Filter] <p>${player.username}</p> sent: $underlinedMessage (<p>$filterAction<p>)".mm())
 
             if (filterRuleset.action == FilterAction.BAN) {
                 Punishment(
@@ -93,7 +99,7 @@ class PlayerChat {
                        .setTitle("`${event.player.username}` triggered the filter")
                        .setColor(java.awt.Color.decode("#ff6e6e"))
                        .addField(MessageEmbed.Field("Message", formattedMessage, false))
-                       .addField(MessageEmbed.Field("Action", filterResult.ruleset.action.toString(), false))
+                       .addField(MessageEmbed.Field("Action", filterAction.toString(), false))
                        .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority})")
                        .build()
 
