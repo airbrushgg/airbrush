@@ -13,37 +13,37 @@
 package gg.airbrush.server.plugins
 
 import net.minestom.server.MinecraftServer
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.reflect.InvocationTargetException
 
 val PLUGIN_REGEX = Regex("[0-9a-z-]+")
 
 class PluginManager {
+    private val logger = LoggerFactory.getLogger(PluginManager::class.java)
     private val pluginsFolder = File("plugins")
     val plugins = mutableMapOf<String, Plugin>()
 
-    private val scheduler = MinecraftServer.getSchedulerManager()
-
     fun registerPlugins() {
         for (file in listJARs()) {
-            val loader = PluginClassLoader(file, this.javaClass.classLoader)
+            val loader = PluginClassLoader(file, javaClass.classLoader)
             val info = loader.getPluginInfo() ?: continue
 
             if (!info.id.matches(PLUGIN_REGEX)) {
-                MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
+                logger.error("Found plugin '${info.name}' with an invalid ID. ([0-9a-z-])")
                 continue
             }
 
             try {
-                val clazz = loader.loadClass(info.mainClass)
+                val clazz = Class.forName(info.mainClass, true, loader)
                 val plugin = clazz.getConstructor().newInstance() as Plugin
                 plugin.info = info
                 plugin.loader = loader
                 plugins[info.id.lowercase()] = plugin
             } catch (e: ClassNotFoundException) {
-                MinecraftServer.LOGGER.error("Found plugin '${info.name}' with an invalid main class.")
+                logger.error("Found plugin '${info.name}' with an invalid main class.")
             } catch (e: InvocationTargetException) {
-                MinecraftServer.LOGGER.error("Exception thrown while running plugin constructor", e.targetException)
+                logger.error("Exception thrown while running plugin constructor", e.targetException)
             }
         }
     }
@@ -57,7 +57,7 @@ class PluginManager {
 
             for (id in info.dependencies) {
                 if (!plugins.containsKey(id)) {
-                    MinecraftServer.LOGGER.warn("Plugin '${info.id}' requires dependency '$id' that is not present.")
+                    logger.warn("Plugin '${info.id}' requires dependency '$id' that is not present.")
                     continue@outer
                 }
 
@@ -67,7 +67,7 @@ class PluginManager {
                     continue
 
                 if (dependingPlugin.info.dependencies.contains(id)) {
-                    MinecraftServer.LOGGER.warn("Found circular dependency between '${info.id}' and '$id'.")
+                    logger.warn("Found circular dependency between '${info.id}' and '$id'.")
                     continue@outer
                 }
 
@@ -87,7 +87,7 @@ class PluginManager {
             return
         }
 
-        MinecraftServer.LOGGER.info("Enabling plugin '${plugin.info.id}'...")
+        logger.info("Enabling plugin '${plugin.info.id}'...")
         try {
             plugin.setup()
             plugin.isSetup = true
@@ -101,7 +101,7 @@ class PluginManager {
             return
         }
 
-        MinecraftServer.LOGGER.info("Disabling plugin '${plugin.info.id}'...")
+        logger.info("Disabling plugin '${plugin.info.id}'...")
         try {
             plugin.teardown()
         } catch (e: Exception) {
