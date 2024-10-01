@@ -49,3 +49,16 @@ Once Airbrush is up and running, you're free to join with the IP of `127.0.0.1:2
 > [!NOTE]
 > When updating a singular plugin, instead of running `./gradlew shadowJar` in the root, you can run it on the particular submodule itself. This way only that particular plugin is updated within the development container, *and* you save some time!
 
+### Debugging Airbrush
+
+It is assumed that you're using IntelliJ IDEA for this. If you're not, you will need to look up instructions for your
+particular IDE.
+
+1 - Open the `Edit Configurations...` menu in the top right of the IDE.
+
+2 - Click the `+` icon in the top left and select `Remote JVM Debug`. Make sure the debugger mode is set to
+`Attach to remote JVM`. The host must be `localhost` and the port must be set to `5005`. When done, click `Apply` and
+then `OK`.
+
+3 - Create a breakpoint, then run the `Remote JVM Debug` configuration. This will attach the debugger to the running
+JVM instance in the docker container. See [Running Airbrush](#running-airbrush) for how to start Airbrush.
