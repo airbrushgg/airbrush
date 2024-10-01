@@ -75,8 +75,8 @@ class PlayerChat {
 
             logger.info("${player.username} triggered the filter with message: ${event.message}")
 
-            val underlinedMessage = event.message.replace(filterResult.failedTokens.first().value, "<u><<#ff6e6e>${filterResult.failedTokens.first().value}</#ff6e6e></u>")
-            Audiences.players { it.hasPermission("core.staff") }.sendMessage("<s>[Filter] <p>${player.username}</p> sent: $underlinedMessage (<p>$filterAction<p>)".mm())
+            val underlinedMessage = event.message.replace(filterResult.failedTokens.first().value, "<u><#ff6e6e>${filterResult.failedTokens.first().value}</#ff6e6e></u>")
+            Audiences.players { it.hasPermission("core.staff") }.sendMessage("<s>[Filter] <p>${player.username}</p> sent: $underlinedMessage (<p>$filterAction</p>)".mm())
 
             if (filterRuleset.action == FilterAction.BAN) {
                 Punishment(
