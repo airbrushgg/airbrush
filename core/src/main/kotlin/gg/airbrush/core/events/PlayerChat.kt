@@ -95,12 +95,14 @@ class PlayerChat {
                        .replace("`", "\\`")
                        .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
 
+                   val environment = if(SDK.isDev) "Development" else "Production"
+
                    val logEmbed = EmbedBuilder()
                        .setTitle("`${event.player.username}` triggered the filter")
                        .setColor(java.awt.Color.decode("#ff6e6e"))
                        .addField(MessageEmbed.Field("Message", formattedMessage, false))
                        .addField(MessageEmbed.Field("Action", filterAction.toString(), false))
-                       .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority})")
+                       .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority}) [Env: $environment]")
                        .build()
 
                    logChannel.sendMessageEmbeds(logEmbed).queue()
