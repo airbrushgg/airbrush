@@ -46,8 +46,6 @@ fun debounce(time: Long, identifier: String, block: () -> Unit) {
         duration = time
     }
 
-    MinecraftServer.LOGGER.info("Creating debounce for ${cooldown.key} | ${cooldown.duration}")
-
     if(cooldown.isActive()) return
 
     cooldown.startCooldown()

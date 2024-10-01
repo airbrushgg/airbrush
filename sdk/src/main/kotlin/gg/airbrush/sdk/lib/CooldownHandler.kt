@@ -29,7 +29,6 @@ class Cooldown() {
     fun isActive(): Boolean {
         if (startTime == 0L) return false
         val currentTime = System.currentTimeMillis()
-        println("($currentTime - $startTime) < $duration = ${(currentTime - startTime) < duration} | value = ${currentTime - startTime}")
         return (currentTime - startTime) < duration
     }
 
