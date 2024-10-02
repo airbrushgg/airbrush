@@ -52,8 +52,10 @@ open class GUI(
             throw IllegalArgumentException("Received template with invalid size")
 
         inventory.addInventoryCondition { player, slot, clickType, result ->
-            if (slot !in clickHandlers)
+            if (slot !in clickHandlers) {
+                result.isCancel = true
                 return@addInventoryCondition
+            }
 
             result.isCancel = true
             clickHandlers[slot]!!.invoke(InventoryClickEvent(
