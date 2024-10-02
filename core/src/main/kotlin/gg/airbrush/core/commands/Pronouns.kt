@@ -75,13 +75,17 @@ class Pronouns : Command("pronouns") {
 		}
 
 		override fun apply(sender: CommandSender, context: CommandContext) {
+			if(sender !is Player) return
+
 			if (!context.has(pronounArgument)) {
 				sender.sendMessage("<error>Usage: /pronouns set <pronouns>".mm())
 				return
 			}
 
-			val pronouns = context.get(pronounArgument).joinToString(" ") { it }
-			val pronounPattern = Regex("^(he|him|his|she|her|hers|they|them|their|theirs)\\/(he|him|his|she|her|hers|they|them|their|theirs)$")
+			val pronouns = context.get(pronounArgument).joinToString(" ") { it }.lowercase()
+
+			val pronounSet = "(he|him|his|she|her|hers|they|them|their|theirs)"
+			val pronounPattern = Regex("^$pronounSet/$pronounSet(?:/$pronounSet)?$")
 			val proper = pronounPattern.matches(pronouns)
 
 			if(!proper) {
@@ -89,7 +93,7 @@ class Pronouns : Command("pronouns") {
 				return
 			}
 
-			SDK.players.get((sender as Player).uuid).setPronouns(pronouns)
+			SDK.players.get(sender.uuid).setPronouns(pronouns)
 
 			sender.sendMessage("<success>Successfully set your pronouns to <b>$pronouns</b>.".mm())
 		}
