@@ -15,7 +15,6 @@ package gg.airbrush.punishments.commands
 import gg.airbrush.pocket.GUI
 import gg.airbrush.punishments.lib.convertDate
 import gg.airbrush.sdk.SDK
-import gg.airbrush.sdk.lib.Input
 import gg.airbrush.sdk.lib.executeCommand
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.isConfirmed
@@ -86,7 +85,7 @@ class EditPunishmentCommand : Command("editpunishment") {
             it.player.executeCommand("revertpun $punishmentId")
         }
 
-        val reasonInput: Input = fetchInput(sender) {
+        val reasonInput = fetchInput(sender, bypassFilter = true) {
             punishment.setReason(it)
             sender.sendMessage("<success>Successfully edited reason.".mm())
         }
@@ -132,7 +131,7 @@ class EditPunishmentCommand : Command("editpunishment") {
             durationInput.prompt()
         }
 
-        val notesInput: Input = fetchInput(sender) {
+        val notesInput = fetchInput(sender, bypassFilter = true) {
             if(punishment.data.notes.isNullOrEmpty()) {
                 punishment.setNotes(it)
             } else {
@@ -142,7 +141,7 @@ class EditPunishmentCommand : Command("editpunishment") {
             sender.sendMessage("<success>Successfully edited notes.".mm())
         }
 
-        val confirmNoteWipeInput: Input = fetchInput(sender) {
+        val confirmNoteWipeInput = fetchInput(sender) {
             if(!sender.hasPermission("core.admin")) {
                 sender.sendMessage("<error>You do not have permission to clear notes.".mm())
                 return@fetchInput
