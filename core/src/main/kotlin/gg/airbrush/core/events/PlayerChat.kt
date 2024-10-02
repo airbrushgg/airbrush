@@ -24,6 +24,7 @@ import gg.airbrush.punishments.enums.PunishmentTypes
 import gg.airbrush.punishments.lib.Punishment
 import gg.airbrush.punishments.lib.User
 import gg.airbrush.sdk.SDK
+import gg.airbrush.sdk.lib.InputHandler
 import gg.airbrush.server.lib.mm
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -49,6 +50,54 @@ class PlayerChat {
         ) { event: PlayerChatEvent -> execute(event) }
     }
 
+    private fun PlayerChatEvent.runFilter() {
+        val filterResult = chatFilterInstance.validateMessage(this.player, this.message)
+        val filterRuleset = filterResult.ruleset
+        val filterAction = filterRuleset?.action
+
+        if (filterAction == FilterAction.BLOCK || filterAction == FilterAction.BAN) {
+            this.isCancelled = true
+
+            logger.info("${player.username} triggered the filter with message: ${this.message}")
+
+            val underlinedMessage = this.message.replace(filterResult.failedTokens.first().value, "<u><#ff6e6e>${filterResult.failedTokens.first().value}</#ff6e6e></u>")
+            Audiences.players { it.hasPermission("core.staff") }.sendMessage("<s>[Filter] <p>${player.username}</p> sent: $underlinedMessage (<p>$filterAction</p>)".mm())
+
+            if (filterRuleset.action == FilterAction.BAN) {
+                Punishment(
+                    User(nilUUID, "Console"),
+                    User(player.uuid, player.username),
+                    filterRuleset.banReason,
+                    PunishmentTypes.AUTO_BAN
+                ).handle()
+            }
+
+            useBot {
+                it.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
+                    val firstToken = filterResult.failedTokens.first()
+
+                    val formattedMessage = this.message
+                        .replace("`", "\\`")
+                        .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
+
+                    val environment = if(SDK.isDev) "Development" else "Production"
+
+                    val logEmbed = EmbedBuilder()
+                        .setTitle("`${this.player.username}` triggered the filter")
+                        .setColor(java.awt.Color.decode("#ff6e6e"))
+                        .addField(MessageEmbed.Field("Message", formattedMessage, false))
+                        .addField(MessageEmbed.Field("Action", filterAction.toString(), false))
+                        .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority}) [Env: $environment]")
+                        .build()
+
+                    logChannel.sendMessageEmbeds(logEmbed).queue()
+                }
+            }
+
+            return
+        }
+    }
+
     private fun execute(event: PlayerChatEvent) {
         if (Lockdown.isLockedDown()) {
             event.isCancelled = true
@@ -66,51 +115,7 @@ class PlayerChat {
             return
         }
 
-        val filterResult = chatFilterInstance.validateMessage(player, event.message)
-        val filterRuleset = filterResult.ruleset
-        val filterAction = filterRuleset?.action
-
-        if (filterAction == FilterAction.BLOCK || filterAction == FilterAction.BAN) {
-            event.isCancelled = true
-
-            logger.info("${player.username} triggered the filter with message: ${event.message}")
-
-            val underlinedMessage = event.message.replace(filterResult.failedTokens.first().value, "<u><#ff6e6e>${filterResult.failedTokens.first().value}</#ff6e6e></u>")
-            Audiences.players { it.hasPermission("core.staff") }.sendMessage("<s>[Filter] <p>${player.username}</p> sent: $underlinedMessage (<p>$filterAction</p>)".mm())
-
-            if (filterRuleset.action == FilterAction.BAN) {
-                Punishment(
-                    User(nilUUID, "Console"),
-                    User(player.uuid, player.username),
-                    filterRuleset.banReason,
-                    PunishmentTypes.AUTO_BAN
-                ).handle()
-            }
-
-            useBot {
-               it.getTextChannelById(chatFilterInstance.logChannel ?: "0")?.let { logChannel ->
-                   val firstToken = filterResult.failedTokens.first()
-
-                   val formattedMessage = event.message
-                       .replace("`", "\\`")
-                       .replaceFirst(firstToken.value, "`>>>${firstToken.value}<<<`")
-
-                   val environment = if(SDK.isDev) "Development" else "Production"
-
-                   val logEmbed = EmbedBuilder()
-                       .setTitle("`${event.player.username}` triggered the filter")
-                       .setColor(java.awt.Color.decode("#ff6e6e"))
-                       .addField(MessageEmbed.Field("Message", formattedMessage, false))
-                       .addField(MessageEmbed.Field("Action", filterAction.toString(), false))
-                       .setFooter("Path: ${filterResult.ruleset.path.substringAfterLast('/')} (Priority: ${filterResult.ruleset.priority}) [Env: $environment]")
-                       .build()
-
-                   logChannel.sendMessageEmbeds(logEmbed).queue()
-               }
-            }
-
-            return
-        }
+        if(!InputHandler.isUsingUnfiltered(player)) event.runFilter()
 
         event.setChatFormat { _ ->
             val level = sdkPlayer.getLevel()

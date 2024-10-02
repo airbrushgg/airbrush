@@ -22,6 +22,11 @@ typealias PromptHandler = (String) -> Unit
 
 fun isConfirmed (input: String): Boolean = input.equals("yes", true) || input.equals("y", true) || input.equals("confirm", true)
 
+object InputHandler {
+    internal val usingUnfilteredInput = mutableMapOf<Player, Boolean>()
+    fun isUsingUnfiltered(player: Player) = usingUnfilteredInput[player] ?: false
+}
+
 class Input {
     /**
      * The Player you want to fetch the input from.
@@ -33,9 +38,21 @@ class Input {
     var handler: PromptHandler = {}
 
     /**
+     * Whether to bypass the chat filter.
+     * */
+    var bypassFilter = false
+
+    /**
      * Waits for the player to input a message, and then calls the handler with the input.
      */
     fun prompt(): Input {
+        if(player == null) throw IllegalStateException("Player is null")
+
+        if(bypassFilter) {
+            println("Adding user to unfiltered input list")
+            InputHandler.usingUnfilteredInput[player!!] = true
+        }
+
         lateinit var inputHandler: EventListener<PlayerChatEvent>
         inputHandler = EventListener.of(PlayerChatEvent::class.java) { event ->
             if (event.player != player) return@of
@@ -43,6 +60,11 @@ class Input {
             event.isCancelled = true
             if(!event.message.equals("cancel", ignoreCase = true)) handler(event.message)
             else event.player.sendMessage("<s>Input cancelled.".mm())
+
+            if(bypassFilter) {
+                println("Action complete, removing user from unfiltered input list")
+                InputHandler.usingUnfilteredInput.remove(player)
+            }
 
             eventNode.removeListener(inputHandler)
         }
@@ -56,11 +78,26 @@ class Input {
 /**
  * Allows you to fetch an input from a player.
  *
+ * @param player The player to fetch the input from.
+ * @param handler The handler for the input.
+ *
  * @return An [Input] object.
  */
-fun fetchInput(player: Player, handler: PromptHandler): Input {
+fun fetchInput(player: Player, handler: PromptHandler) =  fetchInput(player, false, handler)
+
+/**
+ * Allows you to fetch an input from a player.
+ *
+ * @param player The player to fetch the input from.
+ * @param bypassFilter If true, the input will not be processed by the chat filter.
+ * @param handler The handler for the input.
+ *
+ * @return An [Input] object.
+ */
+fun fetchInput(player: Player, bypassFilter: Boolean = false, handler: PromptHandler): Input {
     val input = Input()
     input.handler = handler
     input.player = player
+    input.bypassFilter = bypassFilter
     return input
 }

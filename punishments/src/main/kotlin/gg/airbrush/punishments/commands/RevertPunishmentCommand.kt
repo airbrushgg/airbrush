@@ -18,7 +18,6 @@ import gg.airbrush.punishments.lib.getReasonInfo
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.punishments.AirbrushPunishment
 import gg.airbrush.sdk.classes.punishments.RevertedData
-import gg.airbrush.sdk.lib.Input
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.parsePlaceholders
 import gg.airbrush.sdk.lib.Placeholder
@@ -127,7 +126,7 @@ class RevertPunishmentCommand : Command("revertpun") {
 
 		sender.sendMessage("<s>Please enter a reason for the revert:".mm())
 
-		val input: Input = fetchInput(sender) {
+		val input = fetchInput(sender, bypassFilter = true) {
 			handleRevert(punishment, sender, it)
 		}
 
