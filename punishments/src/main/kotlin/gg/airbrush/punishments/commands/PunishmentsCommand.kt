@@ -71,7 +71,7 @@ fun Punishment.getReasonString(): String {
 	return text
 }
 
-class PunishmentsCommand : Command("punishments") {
+class PunishmentsCommand : Command("punishments", "puns") {
 	init {
 		setCondition { sender, _ ->
 			sender.hasPermission("core.staff")
