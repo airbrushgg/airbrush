@@ -12,11 +12,7 @@
 
 package gg.airbrush.sdk.classes.pixels
 
-import com.mongodb.client.model.Accumulators
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.*
 import gg.airbrush.sdk.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +20,6 @@ import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import org.bson.codecs.pojo.annotations.BsonId
 import java.util.*
-import kotlin.system.measureTimeMillis
 
 class Pixels {
     private val db = Database.get()
@@ -34,7 +29,12 @@ class Pixels {
         val now = System.currentTimeMillis()
 
         withContext(Dispatchers.IO) {
-            positions.forEach { pos ->
+            // Group and batch write.
+            val operations = positions.map { pos ->
+
+                // Only query for the changes field because that's the only data we actually reference here.
+                val projection = Projections.fields(Projections.include("changes"), Projections.excludeId())
+
                 val pixelLocation = pos.to()
 
                 val existingPixel = col.find(
@@ -42,7 +42,7 @@ class Pixels {
                         Filters.eq("position", pixelLocation),
                         Filters.eq("worldId", world)
                     )
-                ).firstOrNull()
+                ).projection(projection).firstOrNull()
 
                 val updatedPixel = existingPixel?.copy(
                     changes = existingPixel.changes + History(
@@ -62,7 +62,7 @@ class Pixels {
                     )
                 )
 
-                col.replaceOne(
+                ReplaceOneModel(
                     Filters.and(
                         Filters.eq("position", pixelLocation),
                         Filters.eq("worldId", world)
@@ -71,6 +71,8 @@ class Pixels {
                     ReplaceOptions().upsert(true)
                 )
             }
+
+            col.bulkWrite(operations)
         }
     }
 
