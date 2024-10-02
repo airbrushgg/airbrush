@@ -17,12 +17,31 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.capitalize
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
+import net.minestom.server.adventure.audience.Audiences
+import net.minestom.server.color.Color
 import net.minestom.server.entity.Player
 import net.minestom.server.tag.Tag
 
 fun Player.getXPThreshold(): Int {
     val sdkPlayer = SDK.players.get(uuid)
     return (sdkPlayer.getLevel() % 100 + 1) * 25
+}
+
+fun Player.updatePlayerListInfo() {
+    val sdkPlayer = SDK.players.get(uuid)
+    // Set the player's display name in the tab list.
+    val rankData = sdkPlayer.getRank().getData()
+    val levelColor = TextColor.color(ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), level))
+    val displayNameComponent = Component.text { builder ->
+        builder.append(Component.text("[$level]", levelColor))
+        builder.appendSpace()
+        if (rankData.prefix.isNotEmpty()) {
+            builder.append("<s>${rankData.prefix} ${this.username}".mm())
+        } else builder.append("<p>${this.username}".mm())
+    }
+    this.displayName = displayNameComponent
 }
 
 fun Player.teleportToCanvas(canvasUUID: String) {

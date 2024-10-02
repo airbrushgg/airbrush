@@ -17,6 +17,7 @@ package gg.airbrush.core.events
 import gg.airbrush.core.eventNode
 import gg.airbrush.core.lib.ColorUtil
 import gg.airbrush.core.lib.prettify
+import gg.airbrush.core.lib.updatePlayerListInfo
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.classes.players.PaletteType
 import gg.airbrush.sdk.events.LevelUpEvent
@@ -47,6 +48,8 @@ class PlayerLevelUp {
             Sound.sound(Key.key("entity.experience_orb.pickup"), Sound.Source.MASTER, 1.0f, 1.0f),
             Sound.Emitter.self()
         )
+
+        player.updatePlayerListInfo()
 
         if (level % 5 == 0) {
             val sdkPlayer = SDK.players.get(player.uuid)
