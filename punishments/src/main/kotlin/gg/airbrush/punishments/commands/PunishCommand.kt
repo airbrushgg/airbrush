@@ -39,7 +39,7 @@ import java.util.*
 
 var nilUUID = UUID(0, 0)
 
-class PunishCommand : Command("punish") {
+class PunishCommand : Command("punish", "p") {
 	private val confirmArg = ArgumentType.String("confirm")
 	private val typeArg = ArgumentType.String("type").setSuggestionCallback { _, context, suggestions ->
 		punishmentConfig.punishments.keys.forEach { suggestions.addEntry(SuggestionEntry(it)) }
