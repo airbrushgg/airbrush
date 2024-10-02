@@ -163,17 +163,7 @@ class PlayerLogin {
         player.level = level
         player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
 
-        // Set the player's display name in the tab list.
-        val rankData = sdkPlayer.getRank().getData()
-        val levelColor = TextColor.color(ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), level))
-        val displayNameComponent = Component.text { builder ->
-            builder.append(Component.text("[$level]", levelColor))
-            builder.appendSpace()
-            if (rankData.prefix.isNotEmpty()) {
-                builder.append("<s>${rankData.prefix} ${player.username}".mm())
-            } else builder.append("<p>${player.username}".mm())
-        }
-        player.displayName = displayNameComponent
+        player.updatePlayerListInfo()
 
         player.sendPlayerListHeaderAndFooter(getPlayerListHeader(), getPlayerListFooter())
 
