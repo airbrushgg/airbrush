@@ -18,6 +18,9 @@ import gg.airbrush.core.lib.*
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.color.Color
 import net.minestom.server.command.CommandSender
@@ -39,34 +42,40 @@ class Stats : Command("statistics", "stats"), CommandExecutor {
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
-        if (sender !is Player) return
-        val sdkPlayer = SDK.players.get(sender.uuid)
+       CoroutineScope(Dispatchers.IO).launch {
+           if (sender !is Player) return@launch
+           val sdkPlayer = SDK.players.get(sender.uuid)
 
-        val levelColor = ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), sdkPlayer.getLevel())
-        val xpThreshold = sender.getXPThreshold()
-        val exp = sdkPlayer.getExperience()
-        val totalExpOverall = sdkPlayer.getLevel() * xpThreshold + exp
-        val blocksCount = PlayerDataCache.blockCounts[sender.uuid] ?: 0
-        val playerLocale = Locale.forLanguageTag(sender.settings.locale.replace("_", "-"))
-        val joinDate = formatDateTime(Instant.ofEpochMilli(sdkPlayer.getData().firstJoin), playerLocale ?: Locale.US)
-        val timePlayed = PlayerDataCache.getCurrentPlaytime(sender.uuid).toDuration(DurationUnit.MILLISECONDS)
-        val topBlocks = SDK.pixels.getTopMaterials(sender.uuid)
+           val levelColor = ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), sdkPlayer.getLevel())
+           val xpThreshold = sender.getXPThreshold()
+           val exp = sdkPlayer.getExperience()
+           val totalExpOverall = sdkPlayer.getLevel() * xpThreshold + exp
+           val blocksCount = PlayerDataCache.blockCounts[sender.uuid] ?: 0
+           val playerLocale = Locale.forLanguageTag(sender.settings.locale.replace("_", "-"))
+           val joinDate = formatDateTime(Instant.ofEpochMilli(sdkPlayer.getData().firstJoin), playerLocale ?: Locale.US)
+           val timePlayed = PlayerDataCache.getCurrentPlaytime(sender.uuid).toDuration(DurationUnit.MILLISECONDS)
+           val topBlocks = SDK.pixels.getTopMaterials(sender.uuid)
 
-        sender.sendMessage("""
-            
-            <g>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><g>:
-                <s>Level: <${TextColor.color(levelColor).asHexString()}>[${sdkPlayer.getLevel()}]
-                <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall.format()}<s>) 
-                <s>Join Date: <p>${joinDate}
-                <s>Playtime: <p>${timePlayed}
-                <s>Total Blocks Painted: <p>${blocksCount.format()}
-            
-            <s>Top 3 Blocks:
-                <s>1. <p>${topBlocks[0].first.name().prettify()} <s>(<p>${topBlocks[0].second.format()}<s>)
-                <s>2. <p>${topBlocks[1].first.name().prettify()} <s>(<p>${topBlocks[1].second.format()}<s>)
-                <s>3. <p>${topBlocks[2].first.name().prettify()} <s>(<p>${topBlocks[2].second.format()}<s>)
-            
-        """.trimIndent().mm())
+           val message = StringBuilder("""
+                    <g>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><g>:
+                    <s>Level: <${TextColor.color(levelColor).asHexString()}>[${sdkPlayer.getLevel()}]
+                    <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall.format()}<s>)
+                    <s>Join Date: <p>${joinDate}
+                    <s>Playtime: <p>${timePlayed}
+                    <s>Total Blocks Painted: <p>${blocksCount.format()}
+                  
+                    <s>Top ${topBlocks.size} Blocks:
+            """.trimIndent())
+
+           for (i in topBlocks.indices) {
+               message.append("""
+                    <br><s>${i + 1}. <p>${topBlocks[i].first.name().prettify()} <s>(<p>${topBlocks[i].second.format()}<s>)
+                """.trimIndent())
+           }
+
+           sender.sendMessage(message.toString().mm())
+
+       }
     }
 
     private fun formatDateTime(instant: Instant, locale: Locale): String {

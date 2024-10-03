@@ -27,7 +27,7 @@ dependencies {
     compileOnly("net.minestom:minestom-snapshots:$minestomVersion")
     compileOnly("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
     compileOnly("dev.flavored:bamboo:1.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     compileOnly("dev.hollowcube:polar:1.11.2")
     compileOnly("cc.ekblad:4koma:1.2.0")
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

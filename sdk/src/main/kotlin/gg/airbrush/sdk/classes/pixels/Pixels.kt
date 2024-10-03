@@ -12,101 +12,178 @@
 
 package gg.airbrush.sdk.classes.pixels
 
-import com.mongodb.client.model.*
 import gg.airbrush.sdk.Database
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import gg.ingot.iron.Iron
+import gg.ingot.iron.annotations.Model
+import gg.ingot.iron.ironSettings
+import gg.ingot.iron.representation.DatabaseDriver
+import gg.ingot.iron.sql.params.sqlParams
+import gg.ingot.iron.strategies.NamingStrategy
+import kotlinx.coroutines.*
+import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
-import org.bson.codecs.pojo.annotations.BsonId
+import java.io.File
 import java.util.*
+import kotlin.math.roundToInt
+import kotlin.system.measureTimeMillis
+
+@Model
+data class PixelData(
+//    @Column(primaryKey = true)
+    val id: Int? = null,
+    val timestamp: Long,
+    val worldId: String,
+    val playerUuid: String,
+    val x: Int,
+    val y: Int,
+    val z: Int,
+    val material: Int,
+) {
+    companion object {
+        val tableDefinition = """
+            CREATE TABLE IF NOT EXISTS pixel_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp INTEGER NOT NULL,
+                world_id TEXT NOT NULL,
+                player_uuid TEXT NOT NULL,
+                x INTEGER NOT NULL,
+                y INTEGER NOT NULL,
+                z INTEGER NOT NULL,
+                material INTEGER NOT NULL
+            );
+        """.trimIndent()
+    }
+}
 
 class Pixels {
-    private val db = Database.get()
-    private val col = db.getCollection<Pixel>("pixels")
+    val data = File("data")
 
-    suspend fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) {
-        val now = System.currentTimeMillis()
+//    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db") {
+//        namingStrategy = NamingStrategy.SNAKE_CASE
+//        driver = DatabaseDriver.SQLITE
+//    }
 
-        withContext(Dispatchers.IO) {
-            // Group and batch write.
-            val operations = positions.map { pos ->
+    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db", ironSettings {
+        namingStrategy = NamingStrategy.SNAKE_CASE
+        driver = DatabaseDriver.SQLITE
+        minimumActiveConnections = 2
+        maximumConnections = 8
+    })
 
-                // Only query for the changes field because that's the only data we actually reference here.
-                val projection = Projections.fields(Projections.include("changes"), Projections.excludeId())
+    init {
+        if(!data.exists()) data.mkdir()
+        iron.connect()
 
-                val pixelLocation = pos.to()
-
-                val existingPixel = col.find(
-                    Filters.and(
-                        Filters.eq("position", pixelLocation),
-                        Filters.eq("worldId", world)
-                    )
-                ).projection(projection).firstOrNull()
-
-                val updatedPixel = existingPixel?.copy(
-                    changes = existingPixel.changes + History(
-                        player = player,
-                        material = material.id(),
-                        timestamp = now
-                    )
-                ) ?: Pixel(
-                    position = pixelLocation,
-                    worldId = world,
-                    changes = listOf(
-                        History(
-                            player = player,
-                            material = material.id(),
-                            timestamp = now
-                        )
-                    )
-                )
-
-                ReplaceOneModel(
-                    Filters.and(
-                        Filters.eq("position", pixelLocation),
-                        Filters.eq("worldId", world)
-                    ),
-                    updatedPixel,
-                    ReplaceOptions().upsert(true)
-                )
-            }
-
-            col.bulkWrite(operations)
+        CoroutineScope(Dispatchers.IO).launch {
+            iron.execute(PixelData.tableDefinition)
         }
     }
 
+    suspend fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) {
+        iron.transaction {
+            for (position in positions) {
+                val data = PixelData(
+                    worldId = world,
+                    timestamp = System.currentTimeMillis(),
+                    playerUuid = player.toString(),
+                    x = position.x().roundToInt(),
+                    y = position.y().roundToInt(),
+                    z = position.z().roundToInt(),
+                    material = material.id()
+                )
+                prepare("""
+                    INSERT INTO pixel_data (id, timestamp, world_id, player_uuid, x, y, z, material)
+                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
+            }
+        }
+    }
 
-    fun getHistoryAt(position: Point, limit: Int, world: String): List<History> {
-        val filter = Filters.and(
-            Filters.eq(Pixel::position.name, position.to()),
-            Filters.eq(Pixel::worldId.name, world)
-        )
-        val pixel = col.find(filter).firstOrNull()
-        return pixel?.changes ?: emptyList()
+    suspend fun getHistoryAt(position: Point, limit: Int, world: String): List<PixelData> {
+        val history: List<PixelData> = iron.prepare("""
+                 SELECT * FROM pixel_data
+                 WHERE world_id = :worldId AND x = :x AND y = :y AND z = :z
+                 ORDER BY timestamp DESC
+                 LIMIT :limit
+            """.trimIndent(),
+            sqlParams(
+                "worldId" to world,
+                "x" to position.x().roundToInt(),
+                "y" to position.y().roundToInt(),
+                "z" to position.z().roundToInt(),
+                "limit" to limit,
+            )
+        ).all<PixelData>()
+        return history
     }
 
     suspend fun wipeHistoryForWorld(world: String) {
-        val filter = Filters.eq(Pixel::worldId.name, world)
-        withContext(Dispatchers.IO) {
-            col.deleteMany(filter)
+        MinecraftServer.LOGGER.info("[SDK] Wiping history for world $world...")
+        val time = measureTimeMillis {
+            iron.prepare("""
+                DELETE FROM pixel_data
+                WHERE world_id = :worldId
+            """.trimIndent(), sqlParams("worldId" to world))
         }
+        MinecraftServer.LOGGER.info("[SDK] Wiped history for world $world in $time ms")
     }
 
-    data class MaterialPair(@BsonId val id: String, val count: Int)
+    suspend fun portFromMongo() {
+        val db = Database.get()
+        val col = db.getCollection<Pixel>("pixels")
+        val allPixels = col.find().toList()
 
-    fun getTopMaterials(player: UUID): List<Pair<Material, Int>> {
-        val result = col.aggregate<MaterialPair>(
-            listOf(
-                Aggregates.match(Filters.eq(History::player.name, player)),
-                Aggregates.group("\$${History::material.name}", Accumulators.sum("count", 1)),
-                Aggregates.sort(Sorts.descending(MaterialPair::count.name)),
-                Aggregates.limit(3),
-            )
-        )
+        MinecraftServer.LOGGER.info("[SDK] Porting ${allPixels.size} pixels from MongoDB to SQL...")
 
-        return result
-            .map { Material.fromNamespaceId(it.id)!! to it.count }
+        val time = measureTimeMillis {
+            iron.transaction {
+                for (pixel in allPixels) {
+                    pixel.changes.forEach { change ->
+                        val playerUUID = change.player.toString()
+
+                        if(playerUUID.contains("0000")) return@forEach
+
+                        val data = PixelData(
+                            worldId = pixel.worldId,
+                            timestamp = change.timestamp,
+                            playerUuid = playerUUID,
+                            x = pixel.position.x,
+                            y = pixel.position.y,
+                            z = pixel.position.z,
+                            material = change.material
+                        )
+
+                        prepare("""
+                    INSERT INTO pixel_data (id, timestamp, world_id, player_uuid, x, y, z, material)
+                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
+                    }
+                }
+            }
+        }
+
+        MinecraftServer.LOGGER.info("[SDK] Finished porting pixels from MongoDB to SQL, took $time ms")
+    }
+
+    @Model
+    data class MaterialPair(val material: Int, val count: Int)
+
+    suspend fun getTopMaterials(player: UUID): List<Pair<Material, Int>> {
+        val query = """
+            SELECT material, COUNT(*) AS count
+            FROM pixel_data
+            WHERE player_uuid = ?
+            GROUP BY material
+            ORDER BY count DESC
+            LIMIT 3;
+        """.trimIndent()
+
+        val topMaterials = iron.prepare(query, player).all<MaterialPair>()
+
+        return topMaterials
+            .map { Material.fromId(it.material)!! to it.count }
             .toList()
     }
+
 }
