@@ -56,21 +56,25 @@ class Stats : Command("statistics", "stats"), CommandExecutor {
            val timePlayed = PlayerDataCache.getCurrentPlaytime(sender.uuid).toDuration(DurationUnit.MILLISECONDS)
            val topBlocks = SDK.pixels.getTopMaterials(sender.uuid)
 
-           sender.sendMessage("""
+           val message = StringBuilder("""
+                    <g>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><g>:
+                    <s>Level: <${TextColor.color(levelColor).asHexString()}>[${sdkPlayer.getLevel()}]
+                    <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall.format()}<s>)
+                    <s>Join Date: <p>${joinDate}
+                    <s>Playtime: <p>${timePlayed}
+                    <s>Total Blocks Painted: <p>${blocksCount.format()}
+                  
+                    <s>Top ${topBlocks.size} Blocks:
+            """.trimIndent())
 
-            <g>Here are your stats on ${Translations.translate("core.scoreboard.title")}<reset><g>:
-                <s>Level: <${TextColor.color(levelColor).asHexString()}>[${sdkPlayer.getLevel()}]
-                <s>Experience: <p>${exp.format()}<s>/<p>${xpThreshold.format()} <s>(Total XP: <p>${totalExpOverall.format()}<s>)
-                <s>Join Date: <p>${joinDate}
-                <s>Playtime: <p>${timePlayed}
-                <s>Total Blocks Painted: <p>${blocksCount.format()}
+           for (i in topBlocks.indices) {
+               message.append("""
+                    <br><s>${i + 1}. <p>${topBlocks[i].first.name().prettify()} <s>(<p>${topBlocks[i].second.format()}<s>)
+                """.trimIndent())
+           }
 
-            <s>Top 3 Blocks:
-                <s>1. <p>${topBlocks[0].first.name().prettify()} <s>(<p>${topBlocks[0].second.format()}<s>)
-                <s>2. <p>${topBlocks[1].first.name().prettify()} <s>(<p>${topBlocks[1].second.format()}<s>)
-                <s>3. <p>${topBlocks[2].first.name().prettify()} <s>(<p>${topBlocks[2].second.format()}<s>)
+           sender.sendMessage(message.toString().mm())
 
-        """.trimIndent().mm())
        }
     }
 
