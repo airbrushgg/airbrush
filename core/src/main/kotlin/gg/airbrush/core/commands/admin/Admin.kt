@@ -13,26 +13,32 @@
 package gg.airbrush.core.commands.admin
 
 import gg.airbrush.core.lib.CanvasManager
+import gg.airbrush.core.lib.getCurrentWorldID
 import gg.airbrush.core.lib.teleportToSpawn
 import gg.airbrush.sdk.SDK
-import gg.airbrush.server.arguments.OfflinePlayer
-import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.sdk.lib.PlayerUtils
 import gg.airbrush.sdk.lib.delay
 import gg.airbrush.sdk.lib.fetchInput
 import gg.airbrush.sdk.lib.isConfirmed
+import gg.airbrush.server.arguments.OfflinePlayer
+import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
 import net.minestom.server.command.builder.CommandExecutor
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
+import net.minestom.server.instance.batch.AbsoluteBlockBatch
+import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
-import java.util.UUID
+import java.time.Instant
+import java.util.*
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 class Admin : Command("admin", "a"), CommandExecutor {
     init {
@@ -41,6 +47,7 @@ class Admin : Command("admin", "a"), CommandExecutor {
         addSubcommand(WorldInfo())
         addSubcommand(DeleteWorld())
         addSubcommand(AddBooster())
+        addSubcommand(ReplayHistory())
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
@@ -50,6 +57,50 @@ class Admin : Command("admin", "a"), CommandExecutor {
         sender.sendMessage("<s>➜ <p>/admin addbooster <s>Adds a booster to a player.".mm())
         sender.sendMessage("<s>➜ <p>/admin worldinfo <s>View world info.".mm())
         sender.sendMessage("<s>➜ <p>/admin deleteworld <s>Deletes a world.".mm())
+        sender.sendMessage("<s>➜ <p>/admin replayhistory <s>Replays history to undo crash rollbacks.".mm())
+    }
+
+    private class ReplayHistory: Command("replayhistory", "rh"), CommandExecutor {
+        private val timeArgument = ArgumentType.StringArray("time")
+
+        init {
+            defaultExecutor = CommandExecutor { sender, _ ->
+                sender.sendMessage("<error>Usage: /admin replayhistory <time>".mm())
+            }
+
+            setCondition { sender, _ -> sender.hasPermission("core.admin") }
+            addSyntax(this, timeArgument)
+        }
+
+        override fun apply(sender: CommandSender, context: CommandContext) {
+            if (sender !is Player)
+                return sender.sendMessage("<error>You aren't a player.".mm())
+
+            val timeString = context.get(timeArgument).joinToString(" ")
+            val duration = Duration.parseOrNull(timeString) ?: run {
+                sender.sendMessage("<error>Invalid time format. (Hint: Make sure to split units by spaces!)".mm())
+                return
+            }
+
+            val timestamp = Instant.now().minus(duration.toJavaDuration())
+            sender.sendMessage("<s>Replaying history...".mm())
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val batch = AbsoluteBlockBatch()
+
+                SDK.pixels.getHistoryByTime(timestamp, sender.getCurrentWorldID()).collect {
+                    batch.setBlock(Pos(
+                        it.x.toDouble(),
+                        it.y.toDouble(),
+                        it.z.toDouble()
+                    ), Material.fromId(it.material)!!.block())
+                }
+
+                batch.apply(sender.instance) {
+                    sender.sendMessage("<success>Finished replaying history.".mm())
+                }
+            }
+        }
     }
 
     private class WorldInfo: Command("worldinfo", "wi"), CommandExecutor {
