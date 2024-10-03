@@ -21,6 +21,7 @@ services:
       - ./plugins:/app/plugins
       - ./airbrush.jar:/app/airbrush.jar
       - ./canvases:/app/canvases
+      - ./data:/app/data
 
 volumes:
   airbrush-mongo-data:

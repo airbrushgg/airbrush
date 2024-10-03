@@ -19,6 +19,9 @@ import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.PlayerUtils
 import gg.airbrush.sdk.lib.handleCooldown
 import gg.airbrush.server.lib.mm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -27,6 +30,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 import net.minestom.server.item.Material
+import java.util.UUID
 
 class History : Command("history"), CommandExecutor {
     private val limitArgument = ArgumentType.Integer("limit")
@@ -57,30 +61,32 @@ class History : Command("history"), CommandExecutor {
             return
         }
 
-        // NOTE: This is up here because DB queries happen
-        // regardless of if the command succeeds or not.
+        // NOTE: This is up here because DB queries happen regardless of if the command succeeds or not.
         playerCooldown.startCooldown()
 
         player.sendMessage("<p>Loading pixel data for this pixel...".mm())
         val world = player.getCurrentWorldID()
 
         val limit = context.get(limitArgument) ?: 5
-        val pixelData = SDK.pixels.getHistoryAt(blockPos, limit, world)
-        if (pixelData.isEmpty()) {
-            sender.sendMessage("<error>Could not fetch pixel data for location".mm())
-            return
-        }
-
         val msg = mutableListOf<String>()
-        // Reverse the pixel data since it is returned in descending order (by timestamp).
-        pixelData.asReversed().forEach {
-            val time = it.timestamp.toRelativeTime()
-            val painter = PlayerUtils.getName(it.player)
-            val material = Material.fromId(it.material) ?: return@forEach
-            msg.add("<p><s>$painter</s> painted <s>${material.name().prettify()}</s> ($time)")
-        }
 
-        player.sendMessage("<p><s>${msg.size}</s> actions have occurred here.".mm())
-        player.sendMessage(msg.joinToString("\n").mm())
+        CoroutineScope(Dispatchers.IO).launch {
+            val pixelData = SDK.pixels.getHistoryAt(blockPos, limit, world)
+            if (pixelData.isEmpty()) {
+                sender.sendMessage("<error>There's no pixel history for this location".mm())
+                return@launch
+            }
+
+            // Reverse the pixel data since it is returned in descending order (by timestamp).
+            pixelData.forEach {
+                val time = it.timestamp.toRelativeTime()
+                val painter = PlayerUtils.getName(UUID.fromString(it.playerUuid))
+                val material = Material.fromId(it.material) ?: return@forEach
+                msg.add("<p><s>$painter</s> painted <s>${material.name().prettify()}</s> ($time)")
+            }
+
+            player.sendMessage("<p><s>${msg.size}</s> actions have occurred here.".mm())
+            player.sendMessage(msg.joinToString("\n").mm())
+        }
     }
 }
