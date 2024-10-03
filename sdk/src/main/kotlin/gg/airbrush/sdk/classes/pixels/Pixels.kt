@@ -12,6 +12,7 @@
 
 package gg.airbrush.sdk.classes.pixels
 
+import gg.airbrush.sdk.Database
 import gg.ingot.iron.Iron
 import gg.ingot.iron.annotations.Model
 import gg.ingot.iron.ironSettings
@@ -24,6 +25,7 @@ import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import java.io.File
 import java.util.*
+import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 @Model
@@ -33,9 +35,9 @@ data class PixelData(
     val timestamp: Long,
     val worldId: String,
     val playerUuid: String,
-    val x: Double,
-    val y: Double,
-    val z: Double,
+    val x: Int,
+    val y: Int,
+    val z: Int,
     val material: Int,
 ) {
     companion object {
@@ -85,9 +87,9 @@ class Pixels {
                     worldId = world,
                     timestamp = System.currentTimeMillis(),
                     playerUuid = player.toString(),
-                    x = position.x(),
-                    y = position.y(),
-                    z = position.z(),
+                    x = position.x().roundToInt(),
+                    y = position.y().roundToInt(),
+                    z = position.z().roundToInt(),
                     material = material.id()
                 )
                 prepare("""
@@ -107,9 +109,9 @@ class Pixels {
             """.trimIndent(),
             sqlParams(
                 "worldId" to world,
-                "x" to position.x(),
-                "y" to position.y(),
-                "z" to position.z(),
+                "x" to position.x().roundToInt(),
+                "y" to position.y().roundToInt(),
+                "z" to position.z().roundToInt(),
                 "limit" to limit,
             )
         ).all<PixelData>()
@@ -125,6 +127,43 @@ class Pixels {
             """.trimIndent(), sqlParams("worldId" to world))
         }
         MinecraftServer.LOGGER.info("[SDK] Wiped history for world $world in $time ms")
+    }
+
+    suspend fun portFromMongo() {
+        val db = Database.get()
+        val col = db.getCollection<Pixel>("pixels")
+        val allPixels = col.find().toList()
+
+        MinecraftServer.LOGGER.info("[SDK] Porting ${allPixels.size} pixels from MongoDB to SQL...")
+
+        val time = measureTimeMillis {
+            iron.transaction {
+                for (pixel in allPixels) {
+                    pixel.changes.forEach { change ->
+                        val playerUUID = change.player.toString()
+
+                        if(playerUUID.contains("0000")) return@forEach
+
+                        val data = PixelData(
+                            worldId = pixel.worldId,
+                            timestamp = change.timestamp,
+                            playerUuid = playerUUID,
+                            x = pixel.position.x,
+                            y = pixel.position.y,
+                            z = pixel.position.z,
+                            material = change.material
+                        )
+
+                        prepare("""
+                    INSERT INTO pixel_data (id, timestamp, world_id, player_uuid, x, y, z, material)
+                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
+                    }
+                }
+            }
+        }
+
+        MinecraftServer.LOGGER.info("[SDK] Finished porting pixels from MongoDB to SQL, took $time ms")
     }
 
     @Model
