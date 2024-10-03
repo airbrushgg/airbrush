@@ -13,8 +13,8 @@
 package gg.airbrush.sdk.classes.pixels
 
 import gg.ingot.iron.Iron
-import gg.ingot.iron.annotations.Column
 import gg.ingot.iron.annotations.Model
+import gg.ingot.iron.ironSettings
 import gg.ingot.iron.representation.DatabaseDriver
 import gg.ingot.iron.sql.params.sqlParams
 import gg.ingot.iron.strategies.NamingStrategy
@@ -28,7 +28,7 @@ import kotlin.system.measureTimeMillis
 
 @Model
 data class PixelData(
-    @Column(primaryKey = true)
+//    @Column(primaryKey = true)
     val id: Int? = null,
     val timestamp: Long,
     val worldId: String,
@@ -45,9 +45,9 @@ data class PixelData(
                 timestamp INTEGER NOT NULL,
                 world_id TEXT NOT NULL,
                 player_uuid TEXT NOT NULL,
-                x REAL NOT NULL,
-                y REAL NOT NULL,
-                z REAL NOT NULL,
+                x INTEGER NOT NULL,
+                y INTEGER NOT NULL,
+                z INTEGER NOT NULL,
                 material INTEGER NOT NULL
             );
         """.trimIndent()
@@ -57,10 +57,17 @@ data class PixelData(
 class Pixels {
     val data = File("data")
 
-    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db") {
+//    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db") {
+//        namingStrategy = NamingStrategy.SNAKE_CASE
+//        driver = DatabaseDriver.SQLITE
+//    }
+
+    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db", ironSettings {
         namingStrategy = NamingStrategy.SNAKE_CASE
         driver = DatabaseDriver.SQLITE
-    }
+        minimumActiveConnections = 2
+        maximumConnections = 8
+    })
 
     init {
         if(!data.exists()) data.mkdir()
@@ -84,9 +91,9 @@ class Pixels {
                     material = material.id()
                 )
                 prepare("""
-                    INSERT INTO pixel_data (timestamp, world_id, player_uuid, x, y, z, material)
-                     VALUES (:timestamp, :worldId, :playerUuid, :x, :y, :z, :material)
-                """.trimIndent(), data)
+                    INSERT INTO pixel_data (id, timestamp, world_id, player_uuid, x, y, z, material)
+                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
             }
         }
     }

@@ -25,7 +25,8 @@ dependencies {
 
     // db
     implementation("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
-    implementation("gg.ingot:iron:2859983d8f")
+    //implementation("gg.ingot:iron:2859983d8f")
+    implementation("gg.ingot:iron:1.3.5")
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
