@@ -3,7 +3,7 @@ name: "airbrush"
 services:
   mongo:
     image: mongo
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
@@ -11,7 +11,7 @@ services:
 
   server:
     build: .
-    restart: always
+    restart: unless-stopped
     ports:
       - "25565:25565"
       - "5005:5005"
