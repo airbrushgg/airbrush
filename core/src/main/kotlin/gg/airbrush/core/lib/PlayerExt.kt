@@ -19,10 +19,24 @@ import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
+import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.color.Color
 import net.minestom.server.entity.Player
+import net.minestom.server.network.packet.server.play.TeamsPacket
 import net.minestom.server.tag.Tag
+
+private val teamManger = MinecraftServer.getTeamManager()
+
+val adminTeam = teamManger.createBuilder("a_admin")
+    .collisionRule(TeamsPacket.CollisionRule.NEVER)
+    .build()
+val moderatorTeam = teamManger.createBuilder("b_mod")
+    .collisionRule(TeamsPacket.CollisionRule.NEVER)
+    .build()
+val defaultTeam = teamManger.createBuilder("c_default")
+    .collisionRule(TeamsPacket.CollisionRule.NEVER)
+    .build()
 
 fun Player.getXPThreshold(): Int {
     val sdkPlayer = SDK.players.get(uuid)

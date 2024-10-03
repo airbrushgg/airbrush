@@ -163,8 +163,13 @@ class PlayerLogin {
         player.level = level
         player.exp = sdkPlayer.getExperience().toFloat() / xpThreshold
 
-        player.updatePlayerListInfo()
+        player.team = when {
+            player.hasPermission("core.admin") -> adminTeam
+            player.hasPermission("core.staff") -> moderatorTeam
+            else -> defaultTeam
+        }
 
+        player.updatePlayerListInfo()
         player.sendPlayerListHeaderAndFooter(getPlayerListHeader(), getPlayerListFooter())
 
         if (player.uuid !in sidebars) {
