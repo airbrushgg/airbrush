@@ -19,11 +19,16 @@ import gg.ingot.iron.ironSettings
 import gg.ingot.iron.representation.DatabaseDriver
 import gg.ingot.iron.sql.params.sqlParams
 import gg.ingot.iron.strategies.NamingStrategy
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import java.io.File
+import java.time.Instant
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
@@ -98,6 +103,20 @@ class Pixels {
                 """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
             }
         }
+    }
+
+    suspend fun getHistoryByTime(threshold: Instant, world: String): Flow<PixelData> = flow {
+        val history = iron.prepare("""
+            SELECT * FROM pixel_data
+            WHERE world_id = :worldId AND timestamp >= :timestamp
+            ORDER BY timestamp ASC
+        """.trimIndent(), sqlParams(
+            "worldId" to world,
+            "timestamp" to threshold.toEpochMilli()
+        ))
+
+        while (history.next())
+            emit(history.get()!!)
     }
 
     suspend fun getHistoryAt(position: Point, limit: Int, world: String): List<PixelData> {
