@@ -25,7 +25,7 @@ import gg.airbrush.sdk.classes.whitelist.Whitelist
 import gg.airbrush.sdk.classes.worlds.Worlds
 import gg.airbrush.sdk.lib.ConfigUtils
 
-data class SDKConfig(val database: String, val isDev: Boolean, val whitelistEnabled: Boolean)
+data class SDKConfig(val database: String, val sqlURL: String, val isDev: Boolean, val whitelistEnabled: Boolean)
 lateinit var config: SDKConfig
 
 object SDK {

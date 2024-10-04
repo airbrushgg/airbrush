@@ -9,6 +9,15 @@ services:
     volumes:
       - airbrush-mongo-data:/data/db
 
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: airbrush
+      POSTGRES_PASSWORD: airbrush
+
   server:
     build: .
     restart: unless-stopped

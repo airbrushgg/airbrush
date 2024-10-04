@@ -12,6 +12,7 @@
 
 package gg.airbrush.sdk.classes.pixels
 
+import gg.airbrush.sdk.config
 import gg.ingot.iron.Iron
 import gg.ingot.iron.annotations.Model
 import gg.ingot.iron.ironSettings
@@ -28,17 +29,17 @@ import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
 import java.io.File
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 @Model
 data class PixelData(
-//    @Column(primaryKey = true)
     val id: Int? = null,
     val timestamp: Long,
     val worldId: String,
-    val playerUuid: String,
+    val playerUuid: UUID,
     val x: Int,
     val y: Int,
     val z: Int,
@@ -47,14 +48,14 @@ data class PixelData(
     companion object {
         val tableDefinition = """
             CREATE TABLE IF NOT EXISTS pixel_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp INTEGER NOT NULL,
+                id SERIAL PRIMARY KEY,
+                timestamp BIGINT NOT NULL,
                 world_id TEXT NOT NULL,
-                player_uuid TEXT NOT NULL,
-                x INTEGER NOT NULL,
-                y INTEGER NOT NULL,
-                z INTEGER NOT NULL,
-                material INTEGER NOT NULL
+                player_uuid UUID NOT NULL,
+                x SMALLINT NOT NULL,
+                y SMALLINT NOT NULL,
+                z SMALLINT NOT NULL,
+                material SMALLINT NOT NULL
             );
         """.trimIndent()
     }
@@ -63,16 +64,11 @@ data class PixelData(
 class Pixels {
     val data = File("data")
 
-//    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db") {
-//        namingStrategy = NamingStrategy.SNAKE_CASE
-//        driver = DatabaseDriver.SQLITE
-//    }
-
-    private val iron = Iron("jdbc:sqlite:${data.absolutePath}/pixel_data.db", ironSettings {
+    private val iron = Iron(config.sqlURL, ironSettings {
         namingStrategy = NamingStrategy.SNAKE_CASE
-        driver = DatabaseDriver.SQLITE
+        driver = DatabaseDriver.POSTGRESQL
         minimumActiveConnections = 2
-        maximumConnections = 8
+        maximumConnections = 10
     })
 
     init {
@@ -84,26 +80,32 @@ class Pixels {
         }
     }
 
+    /**
+     * Paints multiple pixels
+     */
     suspend fun paintMulti(positions: List<Point>, player: UUID, material: Material, world: String) {
         iron.transaction {
             for (position in positions) {
                 val data = PixelData(
                     worldId = world,
                     timestamp = System.currentTimeMillis(),
-                    playerUuid = player.toString(),
+                    playerUuid = player,
                     x = position.x().roundToInt(),
                     y = position.y().roundToInt(),
                     z = position.z().roundToInt(),
                     material = material.id()
                 )
                 prepare("""
-                    INSERT INTO pixel_data (id, timestamp, world_id, player_uuid, x, y, z, material)
-                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO pixel_data (timestamp, world_id, player_uuid, x, y, z, material)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
             }
         }
     }
 
+    /**
+     * Gets the history for a specific world, during a specific time.
+     */
     suspend fun getHistoryByTime(threshold: Instant, world: String): Flow<PixelData> = flow {
         val history = iron.prepare("""
             SELECT * FROM pixel_data
@@ -118,6 +120,9 @@ class Pixels {
             emit(history.get()!!)
     }
 
+    /**
+     * Gets the history for a specific position.
+     */
     suspend fun getHistoryAt(position: Point, limit: Int, world: String): List<PixelData> {
         val history: List<PixelData> = iron.prepare("""
                  SELECT * FROM pixel_data
@@ -136,6 +141,9 @@ class Pixels {
         return history
     }
 
+    /**
+     * Wipes all pixels for a specific world.
+     */
     suspend fun wipeHistoryForWorld(world: String) {
         MinecraftServer.LOGGER.info("[SDK] Wiping history for world $world...")
         val time = measureTimeMillis {
@@ -145,6 +153,27 @@ class Pixels {
             """.trimIndent(), sqlParams("worldId" to world))
         }
         MinecraftServer.LOGGER.info("[SDK] Wiped history for world $world in $time ms")
+    }
+
+    /**
+     * Prunes pixels older than three days.
+     */
+    fun prunePixels() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val threshold = Instant.now().minus(3, ChronoUnit.DAYS)
+
+            val count = iron.prepare("""
+                SELECT COUNT(*) FROM pixel_data
+                WHERE timestamp < ?
+            """.trimIndent(), threshold.toEpochMilli()).single<Long>()
+
+            if (count == 0L) return@launch
+
+            iron.prepare("""
+                DELETE FROM pixel_data
+                WHERE timestamp < ?
+            """.trimIndent(), threshold.toEpochMilli())
+        }
     }
 
     @Model

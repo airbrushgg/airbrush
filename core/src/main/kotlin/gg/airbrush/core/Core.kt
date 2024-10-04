@@ -32,6 +32,7 @@ import gg.airbrush.core.events.PlayerChat
 import gg.airbrush.core.events.PlayerBlockHandler
 import gg.airbrush.core.events.PlayerLevelUp
 import gg.airbrush.core.lib.CanvasManager
+import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.Translations
 import gg.airbrush.server.lib.mm
 import net.kyori.adventure.text.Component
@@ -101,6 +102,7 @@ class Core : Plugin() {
         registerCommands()
         registerEvents()
 
+		SDK.pixels.prunePixels()
 		Boost.restoreActiveBoosters()
 
 		MinecraftServer.LOGGER.info("[Core] Loaded!")
@@ -114,6 +116,10 @@ class Core : Plugin() {
 		    val message = broadcasts.random()
 		    Audiences.players().sendMessage(message.mm())
 	    }, TaskSchedule.immediate(), TaskSchedule.minutes(3))
+
+		MinecraftServer.getSchedulerManager().scheduleTask({
+			SDK.pixels.prunePixels()
+		}, TaskSchedule.immediate(), TaskSchedule.hours(12))
 
 		MinecraftServer.getSchedulerManager().scheduleTask({
 			Audiences.players().sendPlayerListHeaderAndFooter(getPlayerListHeader(), getPlayerListFooter())

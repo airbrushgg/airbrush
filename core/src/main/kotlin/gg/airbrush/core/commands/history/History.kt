@@ -30,7 +30,6 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 import net.minestom.server.item.Material
-import java.util.UUID
 
 class History : Command("history"), CommandExecutor {
     private val limitArgument = ArgumentType.Integer("limit")
@@ -80,7 +79,7 @@ class History : Command("history"), CommandExecutor {
             // Reverse the pixel data since it is returned in descending order (by timestamp).
             pixelData.forEach {
                 val time = it.timestamp.toRelativeTime()
-                val painter = PlayerUtils.getName(UUID.fromString(it.playerUuid))
+                val painter = PlayerUtils.getName(it.playerUuid)
                 val material = Material.fromId(it.material) ?: return@forEach
                 msg.add("<p><s>$painter</s> painted <s>${material.name().prettify()}</s> ($time)")
             }

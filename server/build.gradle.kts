@@ -28,7 +28,7 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.8")
     implementation("ch.qos.logback:logback-classic:1.5.8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.xerial:sqlite-jdbc:3.46.1.3")
+    implementation("org.postgresql:postgresql:42.7.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 }
 
