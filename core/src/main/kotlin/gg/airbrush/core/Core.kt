@@ -93,7 +93,6 @@ class Core : Plugin() {
 			Broadcast(),
 			WorldSettings(),
 			Admin(),
-			PortMongo(),
 	    )
 
 	    // On start
