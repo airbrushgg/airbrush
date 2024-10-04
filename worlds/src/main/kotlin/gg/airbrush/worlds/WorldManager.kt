@@ -157,6 +157,14 @@ object WorldManager {
         _defaultInstance.saveChunksToStorage().join()
     }
 
+    fun Instance.save() {
+        val internalWorldName = this.getTag(Tag.String("PersistentWorld")) ?: null
+        val canvasId = this.getTag(Tag.String("CanvasUUID")) ?: null
+        val worldName = internalWorldName ?: canvasId ?: "spawn"
+        saveChunksToStorage().join()
+        MinecraftServer.LOGGER.info("[Worlds] Saved world $worldName")
+    }
+
     private fun loadPersistentWorlds() {
         val persistentWorlds = config.persistentWorlds.orEmpty()
 

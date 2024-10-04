@@ -14,8 +14,10 @@ package gg.airbrush.worlds
 
 import gg.airbrush.server.plugins.Plugin
 import gg.airbrush.server.plugins.PluginInfo
+import gg.airbrush.worlds.WorldManager.save
 import gg.airbrush.worlds.listener.GlobalEventListeners
 import net.minestom.server.MinecraftServer
+import net.minestom.server.timer.TaskSchedule
 
 class Worlds : Plugin() {
     override fun setup() {
@@ -27,6 +29,18 @@ class Worlds : Plugin() {
             WorldManager.defaultInstance.saveChunksToStorage().join()
             WorldManager.dispose()
         }
+
+        MinecraftServer.getSchedulerManager().scheduleTask({
+            val worlds = WorldManager.getPersistentWorlds()
+
+            MinecraftServer.LOGGER.info("[Worlds] Saving ${worlds.size + 1} worlds...")
+
+            WorldManager.defaultInstance.save()
+
+            worlds.forEach {
+                it.save()
+            }
+        }, TaskSchedule.immediate(), TaskSchedule.seconds(60))
 
         // Register events
         GlobalEventListeners()
