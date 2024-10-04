@@ -12,6 +12,7 @@
 
 package gg.airbrush.sdk.classes.pixels
 
+import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.config
 import gg.ingot.iron.Iron
 import gg.ingot.iron.annotations.Model
@@ -46,8 +47,10 @@ data class PixelData(
     val material: Int,
 ) {
     companion object {
+        val TABLE_NAME = if(SDK.isDev) "pixel_data_dev" else "pixel_data"
+
         val tableDefinition = """
-            CREATE TABLE IF NOT EXISTS pixel_data (
+            CREATE TABLE IF NOT EXISTS $TABLE_NAME (
                 id SERIAL PRIMARY KEY,
                 timestamp BIGINT NOT NULL,
                 world_id TEXT NOT NULL,
@@ -96,7 +99,7 @@ class Pixels {
                     material = material.id()
                 )
                 prepare("""
-                    INSERT INTO pixel_data (timestamp, world_id, player_uuid, x, y, z, material)
+                    INSERT INTO ${PixelData.TABLE_NAME} (timestamp, world_id, player_uuid, x, y, z, material)
                      VALUES (?, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(), data.timestamp, data.worldId, data.playerUuid, data.x, data.y, data.z, data.material)
             }
@@ -108,7 +111,7 @@ class Pixels {
      */
     suspend fun getHistoryByTime(threshold: Instant, world: String): Flow<PixelData> = flow {
         val history = iron.prepare("""
-            SELECT * FROM pixel_data
+            SELECT * FROM ${PixelData.TABLE_NAME}
             WHERE world_id = :worldId AND timestamp >= :timestamp
             ORDER BY timestamp ASC
         """.trimIndent(), sqlParams(
@@ -125,7 +128,7 @@ class Pixels {
      */
     suspend fun getHistoryAt(position: Point, limit: Int, world: String): List<PixelData> {
         val history: List<PixelData> = iron.prepare("""
-                 SELECT * FROM pixel_data
+                 SELECT * FROM ${PixelData.TABLE_NAME}
                  WHERE world_id = :worldId AND x = :x AND y = :y AND z = :z
                  ORDER BY timestamp DESC
                  LIMIT :limit
@@ -148,7 +151,7 @@ class Pixels {
         MinecraftServer.LOGGER.info("[SDK] Wiping history for world $world...")
         val time = measureTimeMillis {
             iron.prepare("""
-                DELETE FROM pixel_data
+                DELETE FROM ${PixelData.TABLE_NAME}
                 WHERE world_id = :worldId
             """.trimIndent(), sqlParams("worldId" to world))
         }
@@ -163,14 +166,14 @@ class Pixels {
             val threshold = Instant.now().minus(3, ChronoUnit.DAYS)
 
             val count = iron.prepare("""
-                SELECT COUNT(*) FROM pixel_data
+                SELECT COUNT(*) FROM ${PixelData.TABLE_NAME}
                 WHERE timestamp < ?
             """.trimIndent(), threshold.toEpochMilli()).single<Long>()
 
             if (count == 0L) return@launch
 
             iron.prepare("""
-                DELETE FROM pixel_data
+                DELETE FROM ${PixelData.TABLE_NAME}
                 WHERE timestamp < ?
             """.trimIndent(), threshold.toEpochMilli())
         }
@@ -182,7 +185,7 @@ class Pixels {
     suspend fun getTopMaterials(player: UUID): List<Pair<Material, Int>> {
         val query = """
             SELECT material, COUNT(*) AS count
-            FROM pixel_data
+            FROM ${PixelData.TABLE_NAME}
             WHERE player_uuid = ?
             GROUP BY material
             ORDER BY count DESC

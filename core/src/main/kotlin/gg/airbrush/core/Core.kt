@@ -102,7 +102,6 @@ class Core : Plugin() {
         registerCommands()
         registerEvents()
 
-		SDK.pixels.prunePixels()
 		Boost.restoreActiveBoosters()
 
 		MinecraftServer.LOGGER.info("[Core] Loaded!")
