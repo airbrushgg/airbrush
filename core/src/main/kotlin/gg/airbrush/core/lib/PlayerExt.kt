@@ -47,6 +47,7 @@ fun Player.updatePlayerListInfo() {
     val sdkPlayer = SDK.players.get(uuid)
     // Set the player's display name in the tab list.
     val rankData = sdkPlayer.getRank().getData()
+    val level = sdkPlayer.getLevel()
     val levelColor = TextColor.color(ColorUtil.oscillateHSV(Color(0xff0000), Color(0xff00ff), level))
     val displayNameComponent = Component.text { builder ->
         builder.append(Component.text("[$level]", levelColor))
