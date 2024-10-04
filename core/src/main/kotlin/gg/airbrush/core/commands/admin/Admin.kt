@@ -14,6 +14,7 @@ package gg.airbrush.core.commands.admin
 
 import gg.airbrush.core.lib.CanvasManager
 import gg.airbrush.core.lib.getCurrentWorldID
+import gg.airbrush.core.lib.getCurrentWorldName
 import gg.airbrush.core.lib.teleportToSpawn
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.lib.PlayerUtils
@@ -25,6 +26,7 @@ import gg.airbrush.server.arguments.OfflinePlayerArgument
 import gg.airbrush.server.lib.mm
 import gg.airbrush.worlds.WorldManager
 import kotlinx.coroutines.*
+import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.CommandContext
@@ -48,6 +50,7 @@ class Admin : Command("admin", "a"), CommandExecutor {
         addSubcommand(DeleteWorld())
         addSubcommand(AddBooster())
         addSubcommand(ReplayHistory())
+        addSubcommand(SaveWorld())
     }
 
     override fun apply(sender: CommandSender, context: CommandContext) {
@@ -58,6 +61,7 @@ class Admin : Command("admin", "a"), CommandExecutor {
         sender.sendMessage("<s>➜ <p>/admin worldinfo <s>View world info.".mm())
         sender.sendMessage("<s>➜ <p>/admin deleteworld <s>Deletes a world.".mm())
         sender.sendMessage("<s>➜ <p>/admin replayhistory <s>Replays history to undo crash rollbacks.".mm())
+        sender.sendMessage("<s>➜ <p>/admin saveworld <s>Saves the world you are in.".mm())
     }
 
     private class ReplayHistory: Command("replayhistory", "rh"), CommandExecutor {
@@ -98,8 +102,31 @@ class Admin : Command("admin", "a"), CommandExecutor {
 
                 batch.apply(sender.instance) {
                     sender.sendMessage("<success>Finished replaying history.".mm())
+                    runBlocking {
+                        MinecraftServer.LOGGER.info("[Core] Saving chunks for default world...")
+                        WorldManager.defaultInstance.saveChunksToStorage().join()
+                    }
                 }
             }
+        }
+    }
+
+    private class SaveWorld: Command("saveworld", "sw"), CommandExecutor {
+        init {
+            setCondition { sender, _ -> sender.hasPermission("core.admin") }
+            addSyntax(this)
+        }
+
+        override fun apply(sender: CommandSender, context: CommandContext) {
+            if(sender !is Player) return
+
+            val worldName = sender.getCurrentWorldName()
+            sender.instance.saveChunksToStorage().join()
+
+            sender.sendMessage("<success>Saved the $worldName<reset><g> world!".mm())
+
+            val worldId = sender.getCurrentWorldID()
+            MinecraftServer.LOGGER.info("[Core] Forcefully saved the $worldId world.")
         }
     }
 
