@@ -36,10 +36,8 @@ import net.minestom.server.event.EventDispatcher
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.item.ItemDropEvent
-import net.minestom.server.event.player.PlayerBlockInteractEvent
 import net.minestom.server.event.player.PlayerHandAnimationEvent
 import net.minestom.server.event.player.PlayerUseItemEvent
-import net.minestom.server.event.trait.PlayerInstanceEvent
 import net.minestom.server.instance.batch.AbsoluteBlockBatch
 import net.minestom.server.instance.block.Block
 import net.minestom.server.item.Material
@@ -88,10 +86,6 @@ class BrushEvents {
         ) { event: PlayerUseItemEvent -> execute(event) }
 
         eventHandler.addListener(
-            PlayerBlockInteractEvent ::class.java
-        ) { event: PlayerBlockInteractEvent -> execute(event) }
-
-        eventHandler.addListener(
             PlayerHandAnimationEvent ::class.java
         ) { event: PlayerHandAnimationEvent -> brushGUI(event) }
 
@@ -107,7 +101,7 @@ class BrushEvents {
         sidebar.updateLineContent("xp", getXPLine(player))
     }
 
-    private fun execute(event: PlayerInstanceEvent) {
+    private fun execute(event: PlayerUseItemEvent) {
         val player = event.player
         val toolType = player.itemInMainHand.getTag(Constants.airbrushToolTag) ?: return
         when (toolType) {
@@ -140,9 +134,7 @@ class BrushEvents {
         }
 
         val world = player.getCurrentWorldID()
-        val targetPosition =
-            if (event is PlayerBlockInteractEvent) event.blockPosition
-            else player.getTargetBlockPosition(Constants.RANGE) ?: return
+        val targetPosition = player.getTargetBlockPosition(Constants.RANGE) ?: return
         val currentMask = PlayerDataCache.getBlockMask(player.uuid)
 
         val brushRadius = sdkPlayer.getData().brushRadius.current
