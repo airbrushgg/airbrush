@@ -15,10 +15,9 @@ package gg.airbrush.sdk.classes.pixels
 import gg.airbrush.sdk.SDK
 import gg.airbrush.sdk.config
 import gg.ingot.iron.Iron
+import gg.ingot.iron.annotations.Column
 import gg.ingot.iron.annotations.Model
-import gg.ingot.iron.ironSettings
-import gg.ingot.iron.representation.DatabaseDriver
-import gg.ingot.iron.sql.params.sqlParams
+import gg.ingot.iron.bindings.bind
 import gg.ingot.iron.strategies.NamingStrategy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Point
 import net.minestom.server.item.Material
-import java.io.File
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -39,7 +37,9 @@ import kotlin.system.measureTimeMillis
 data class PixelData(
     val id: Int? = null,
     val timestamp: Long,
+    @Column(name = "world_id")
     val worldId: String,
+    @Column(name = "player_uuid")
     val playerUuid: UUID,
     val x: Int,
     val y: Int,
@@ -64,18 +64,17 @@ data class PixelData(
     }
 }
 
-class Pixels {
-    val data = File("data")
+@Model
+data class MaterialPair(val material: Int, val count: Int)
 
-    private val iron = Iron(config.sqlURL, ironSettings {
+class Pixels {
+    private val iron = Iron(config.sqlURL) {
         namingStrategy = NamingStrategy.SNAKE_CASE
-        driver = DatabaseDriver.POSTGRESQL
-        minimumActiveConnections = 2
-        maximumConnections = 10
-    })
+        minConnections = 2
+        maxConnections = 10
+    }
 
     init {
-        if(!data.exists()) data.mkdir()
         iron.connect()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -114,10 +113,10 @@ class Pixels {
             SELECT * FROM ${PixelData.TABLE_NAME}
             WHERE world_id = :worldId AND timestamp >= :timestamp
             ORDER BY timestamp ASC
-        """.trimIndent(), sqlParams(
-            "worldId" to world,
+        """.trimIndent(), bind {
+            "worldId" to world
             "timestamp" to threshold.toEpochMilli()
-        ))
+        })
 
         while (history.next())
             emit(history.get()!!)
@@ -127,19 +126,19 @@ class Pixels {
      * Gets the history for a specific position.
      */
     suspend fun getHistoryAt(position: Point, limit: Int, world: String): List<PixelData> {
-        val history: List<PixelData> = iron.prepare("""
+         val history: List<PixelData> = iron.prepare("""
                  SELECT * FROM ${PixelData.TABLE_NAME}
                  WHERE world_id = :worldId AND x = :x AND y = :y AND z = :z
                  ORDER BY timestamp DESC
                  LIMIT :limit
             """.trimIndent(),
-            sqlParams(
-                "worldId" to world,
-                "x" to position.x().roundToInt(),
-                "y" to position.y().roundToInt(),
-                "z" to position.z().roundToInt(),
-                "limit" to limit,
-            )
+            bind {
+                "worldId" to world
+                "x" to position.x().roundToInt()
+                "y" to position.y().roundToInt()
+                "z" to position.z().roundToInt()
+                "limit" to limit
+            }
         ).all<PixelData>()
         return history
     }
@@ -153,7 +152,7 @@ class Pixels {
             iron.prepare("""
                 DELETE FROM ${PixelData.TABLE_NAME}
                 WHERE world_id = :worldId
-            """.trimIndent(), sqlParams("worldId" to world))
+            """.trimIndent(), bind("worldId" to world))
         }
         MinecraftServer.LOGGER.info("[SDK] Wiped history for world $world in $time ms")
     }
@@ -179,10 +178,7 @@ class Pixels {
         }
     }
 
-    @Model
-    data class MaterialPair(val material: Int, val count: Int)
-
-    suspend fun getTopMaterials(player: UUID): List<Pair<Material, Int>> {
+    suspend fun getTopMaterials(playerUUID: UUID): List<Pair<Material, Int>> {
         val query = """
             SELECT material, COUNT(*) AS count
             FROM ${PixelData.TABLE_NAME}
@@ -192,7 +188,7 @@ class Pixels {
             LIMIT 3;
         """.trimIndent()
 
-        val topMaterials = iron.prepare(query, player).all<MaterialPair>()
+        val topMaterials = iron.prepare(query, playerUUID).all<MaterialPair>()
 
         return topMaterials
             .map { Material.fromId(it.material)!! to it.count }

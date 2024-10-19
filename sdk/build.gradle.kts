@@ -1,9 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
     id("com.gradleup.shadow") version "8.3.1"
     `maven-publish`
     kotlin("plugin.serialization") version "2.0.0"
     id("com.palantir.git-version") version "3.0.0"
+    id("com.google.devtools.ksp") version "2.0.10-1.0.24"
 }
 
 group = "gg.airbrush"
@@ -25,8 +26,8 @@ dependencies {
 
     // db
     implementation("org.mongodb:mongodb-driver-kotlin-sync:4.10.1")
-    //implementation("gg.ingot:iron:2859983d8f")
-    implementation("gg.ingot:iron:1.3.5")
+    implementation("gg.ingot:iron:2.0.0-RC1")
+    ksp("gg.ingot:iron:2.0.0-RC1")
 
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")

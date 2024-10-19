@@ -1,5 +1,5 @@
 plugins {
-	kotlin("jvm") version "2.0.0"
+	kotlin("jvm") version "2.0.10"
 	id("com.gradleup.shadow") version "8.3.1"
 	kotlin("plugin.serialization") version "1.9.0"
 	id("com.palantir.git-version") version "3.0.0"
